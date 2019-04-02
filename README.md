@@ -1,2 +1,2 @@
-# Front
-海贝Front
+src/components: 公共组件
+src/pages: 页面
