@@ -1,9 +1,8 @@
-// src/components/div/index.js
 import React from "react";
 import MenuConfig from "./../../config/menuConfig"; //导入menuConfig这个文件
 import { Menu } from "antd"; //导入子组件菜单
+import { NavLink } from 'react-router-dom'
 import "./index.scss";
-import 'antd/dist/antd.css'
 
 const SubMenu = Menu.SubMenu;
 
@@ -31,7 +30,7 @@ export default class NavLeft extends React.Component {
       }
       return (
         <Menu.Item title={item.title} key={item.key}>
-          <div to={item.key}>{item.title}</div>
+          <NavLink to={item.key}>{item.title}</NavLink>
         </Menu.Item>
       );
     });
@@ -42,9 +41,9 @@ export default class NavLeft extends React.Component {
     //     backgroundColor:'red'
     // }
     return (
-          <Menu mode="horizontal">
-            {this.state.menuTreeNode}
-          </Menu>
+      <Menu mode="horizontal">
+        {this.state.menuTreeNode}
+      </Menu>
     );
   }
 }

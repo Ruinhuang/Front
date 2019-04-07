@@ -5,18 +5,12 @@ const menuList = [
         key: '/home'
     },
     {
-        title: '注册表单',
-        key: '/form',
-        children: [
-            {
-                title: '登录',
-                key: '/form/login',
-            },
-            {
-                title: '注册',
-                key: '/form/reg',
-            }
-        ]
+        title: '登录',
+        key: '/login',
+    },
+    {
+        title: '注册',
+        key: '/register',
     },
     {
         title: '表格',
