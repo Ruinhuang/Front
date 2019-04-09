@@ -29,7 +29,7 @@ export default class NavLeft extends React.Component {
         );
       }
       return (
-        <Menu.Item title={item.title} key={item.key}>
+        <Menu.Item title={undefined} key={item.key}>
           <NavLink to={item.key}>{item.title}</NavLink>
         </Menu.Item>
       );
