@@ -23,7 +23,7 @@ export default class Ajax {
                             let res = response.data
                             // 业务状态码返回0说明业务层面请求被正常处理
                             if (res.code === 0) {
-                                // message.success(res.successMsg);
+                                message.success(res.successMsg);
                                 resolve(res)
                             } else {
                                 notification.error({

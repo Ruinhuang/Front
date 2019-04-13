@@ -15,4 +15,5 @@ export const selectTag = (arr, item) => {
   } else {
     arr.splice(position, 1)
   }
+  return arr
 }

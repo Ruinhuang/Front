@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Table, Modal, Button, message, Badge } from 'antd';
+import { Card, Table, Modal, Button, message } from 'antd';
 import Ajax from '../../components/Ajax'
 import { selectTag } from '../../utils/index'
 export default class HighTable extends React.Component {
@@ -7,33 +7,56 @@ export default class HighTable extends React.Component {
     super(props)
     this.state = {
       loading: true,
+      // radio or checkbox
+      tableType: 'radio',
       dataSource: [],
       selectedRowKeys: [],
       selectedItems: [],
     }
   }
-  request = () => {
+
+  request = (offset, limit) => {
     Ajax.ajax(
       'get',
       '/v1/users/',
       {
-        offset: 1,
-        limit: 10,
+        offset,
+        limit,
       },
       'https://mook.sunlin.fun/mock/9',
     )
       .then(
-        res => this.setState(() => ({ dataSource: res.data, loading: false })))
+        res => {
+          this.setState(
+            (prevState) => (
+              {
+                dataSource: prevState.dataSource.concat(res.data),
+                loading: false,
+              }
+            )
+          )
+        })
       .catch(
         () => message.error("数据渲染失败"))
   }
 
   componentDidMount = () => {
-    this.request()
+    this.request(1, 10)
+  }
+
+  warning = (items, method) => {
+    Modal.confirm({
+      title: `${method}`,
+      content: `${JSON.stringify(items)}`,
+      onCancel: () => { },
+      onOk: () => { },
+    })
   }
 
 
   render() {
+    const ButtonGroup = Button.Group
+
     const roleMap = {
       1: "管理员",
       2: "商户",
@@ -73,14 +96,71 @@ export default class HighTable extends React.Component {
 
     return (
       <div>
-        <Card title="用户详单" style={{ margin: '10px 0' }}>
+        <Card style={{ margin: '10px 0' }}>
+          <Button
+            style={{ margin: 10 }}
+            shape="round"
+            onClick={
+              () => {
+                this.setState(() => ({ tableType: 'checkbox', }))
+              }
+            }
+          >
+            批量选择
+            </Button>
+          <ButtonGroup>
+            <Button
+              type="primary"
+              icon="edit"
+              onClick={
+                () => {
+                  Modal.info({
+                    title: '编辑',
+                    content: `${this.state.selectedItems.name}, ${roleMap[this.state.selectedItem.role]}`,
+                  })
+                }
+              }
+              disabled={this.state.selectedItems.length > 1}
+            >
+              编辑
+          </Button>
+            <Button
+              type="primary"
+              icon="plus"
+              href="/#/register"
+              target="_black"
+            >
+              新增
+          </Button>
+            <Button
+              type="danger"
+              icon="delete"
+              onClick={
+                () => {
+                  this.warning(this.state.selectedItems, 'delete')
+                }
+              }
+            >
+              删除
+          </Button>
+            <Button
+              onClick={
+                () => {
+                  this.request(2, 10)
+                }
+              }
+            >
+              加载更多
+          </Button>
+
+          </ButtonGroup>
           <Table
+            size="small"
             bordered
             loading={this.state.loading}
             rowSelection={
               {
-                // type: 'radio',
-                type: 'checkbox',
+                type: this.state.tableType,
                 selectedRowKeys: this.state.selectedRowKeys,
                 // 点击行首小圆圈才能触发onChange事件
                 onChange: (selectedRowKeys, selectedItems) => {
@@ -93,26 +173,37 @@ export default class HighTable extends React.Component {
               }
             }
             onRow={(selectedItem) => ({
-              // 点击一行的所有位置都能触发勾选操作
               onClick: () => {
-                // 以下代码仅对checkbox多选有效
-                var selectedItems = [...this.state.selectedItems]
-                var selectedRowKeys = [...this.state.selectedRowKeys]
-                selectTag(selectedItems, selectedItem)
-                selectTag(selectedRowKeys, selectedItem.key)
-                // 以下代码仅对radio单选有效
-                // const selectedItems = [selectedItem]
-                // const selectedRowKeys = [selectedItem.key]
-                this.setState(() => ({
-                  selectedRowKeys,
-                  selectedItems,
-                }))
+                if (this.state.tableType === 'checkbox') {
+                  let selectedItems = selectTag([...this.state.selectedItems], selectedItem)
+                  let selectedRowKeys = selectTag([...this.state.selectedRowKeys], selectedItem.key)
+                  this.setState(() => ({
+                    selectedRowKeys,
+                    selectedItems,
+                  }))
+                }
+                if (this.state.tableType === 'radio') {
+                  let selectedItems = [selectedItem]
+                  let selectedRowKeys = [selectedItem.key]
+                  this.setState(() => ({
+                    selectedRowKeys,
+                    selectedItems,
+                  }))
+                }
               },
               onMouseEnter: () => { },
               onDoubleClick: () => {
-                Modal.info({
-                  title: '信息',
-                  content: `${selectedItem.name}, ${roleMap[selectedItem.role]}`
+                Modal.confirm({
+                  title: '详细信息',
+                  content: `
+                  ${selectedItem.name}
+                  ${roleMap[selectedItem.role]}
+                  ${selectedItem.email}
+                  注册时间：
+                  活跃用户
+                  `,
+                  onCancel: () => { },
+                  onOk: () => { },
                 })
               },
             }
@@ -122,7 +213,7 @@ export default class HighTable extends React.Component {
             pagination={false}
           />
         </Card>
-      </div>
+      </div >
     )
   }
 }
