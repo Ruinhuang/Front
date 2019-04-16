@@ -8,6 +8,7 @@ export const formateDate = (time) => {
     '-' + checkTime(date.getDate()) + ' ' +
     checkTime(date.getHours()) + ":" + checkTime(date.getMinutes()) + ":" + checkTime(date.getSeconds());
 }
+
 export const selectTag = (arr, item) => {
   let position = arr.indexOf(item)
   if (position < 0) {
@@ -17,3 +18,12 @@ export const selectTag = (arr, item) => {
   }
   return arr
 }
+
+export const pagination = (data, callback) => ({
+  onChange: current => callback(current),
+  current: data.page,
+  dataSize: data.data_size,
+  total: data.total,
+  showTotal:()=>(`共${data.total}条数据`),
+})
+  

@@ -24,7 +24,7 @@ export default class Ajax {
                             // 业务状态码返回0说明业务层面请求被正常处理
                             if (res.code === 0) {
                                 message.success(res.successMsg);
-                                resolve(res)
+                                resolve(res.data)
                             } else {
                                 notification.error({
                                     message: res.errMsg,

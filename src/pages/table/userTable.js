@@ -1,37 +1,41 @@
 import React from 'react';
-import { Card, Table, Modal, Button, message } from 'antd';
+import { Card, Table, Modal, Button, message} from 'antd';
 import Ajax from '../../components/Ajax'
-import { selectTag } from '../../utils/index'
+import { pagination ,selectTag } from '../../utils/index'
 export default class HighTable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       loading: true,
-      // radio or checkbox
       tableType: 'radio',
       dataSource: [],
       selectedRowKeys: [],
       selectedItems: [],
+      pagination: {},
     }
   }
 
-  request = (offset, limit) => {
+  request = () => {
     Ajax.ajax(
       'get',
       '/v1/users/',
       {
-        offset,
-        limit,
+        params: {},
+        body: {},
       },
       'https://mook.sunlin.fun/mock/9',
     )
       .then(
-        res => {
+        data => {
           this.setState(
             (prevState) => (
               {
-                dataSource: prevState.dataSource.concat(res.data),
+                dataSource: data.list,
                 loading: false,
+                pagination: pagination(data, (current)=>{
+                  console.log(`按到了${current}页`)
+                  this.request()
+                }),
               }
             )
           )
@@ -41,15 +45,15 @@ export default class HighTable extends React.Component {
   }
 
   componentDidMount = () => {
-    this.request(1, 10)
+    this.request()
   }
 
-  warning = (items, method) => {
+  warning = (items, method, ok = () => { }, cancel = () => { },) => {
     Modal.confirm({
       title: `${method}`,
       content: `${JSON.stringify(items)}`,
-      onCancel: () => { },
-      onOk: () => { },
+      onCancel: cancel,
+      onOk: ok,
     })
   }
 
@@ -137,22 +141,16 @@ export default class HighTable extends React.Component {
               icon="delete"
               onClick={
                 () => {
-                  this.warning(this.state.selectedItems, 'delete')
-                }
-              }
+                  this.warning(this.state.selectedItems, 'delete',
+                    () => {
+                      message.info('删除成功')
+                      this.setState(() => ({ selectedItems: [], selectedRowKeys: [] }))
+                    }
+                  )
+                }}
             >
               删除
           </Button>
-            <Button
-              onClick={
-                () => {
-                  this.request(2, 10)
-                }
-              }
-            >
-              加载更多
-          </Button>
-
           </ButtonGroup>
           <Table
             size="small"
@@ -199,8 +197,6 @@ export default class HighTable extends React.Component {
                   ${selectedItem.name}
                   ${roleMap[selectedItem.role]}
                   ${selectedItem.email}
-                  注册时间：
-                  活跃用户
                   `,
                   onCancel: () => { },
                   onOk: () => { },
@@ -210,7 +206,7 @@ export default class HighTable extends React.Component {
             )}
             columns={columns}
             dataSource={this.state.dataSource}
-            pagination={false}
+            pagination={this.state.pagination}
           />
         </Card>
       </div >
