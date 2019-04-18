@@ -4,15 +4,16 @@ export default class Ajax {
     static ajax = (
         method,
         url,
-        data = '',
+        data,
         baseURL,
         timeout = 5000, ) => (
             new Promise(
                 (resolve, reject) => {
+                    // 默认写的是get 方法的封装
                     axios({
                         method,
                         url,
-                        data,
+                        params: data,
                         baseURL,
                         timeout,
                     }).then(response => {

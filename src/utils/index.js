@@ -21,9 +21,9 @@ export const selectTag = (arr, item) => {
 
 export const pagination = (data, callback) => ({
   onChange: current => callback(current),
-  current: data.page,
-  dataSize: data.data_size,
-  total: data.total,
+  current: parseInt(data.page),
+  pageSize: parseInt(data.page_size),
+  total: parseInt(data.total),
   showTotal:()=>(`共${data.total}条数据`),
 })
   
