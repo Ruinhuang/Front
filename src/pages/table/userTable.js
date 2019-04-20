@@ -72,32 +72,15 @@ export default class HighTable extends React.Component {
         key: 'id',
         width: 80,
         dataIndex: 'id',
-        fixed: 'left',
+        // 横向滚动头部锁定
+        // fixed: 'left',
       },
       {
         title: '用户名',
         key: 'name',
         width: 80,
         dataIndex: 'name',
-        fixed: 'left',
-      },
-      {
-        title: '邮箱',
-        key: 'email',
-        width: 80,
-        dataIndex: 'email'
-      },
-      {
-        title: '邮箱',
-        key: 'email',
-        width: 80,
-        dataIndex: 'email'
-      },
-      {
-        title: '邮箱',
-        key: 'email',
-        width: 80,
-        dataIndex: 'email'
+        // fixed: 'left',
       },
       {
         title: '邮箱',
@@ -120,18 +103,6 @@ export default class HighTable extends React.Component {
     return (
       <div>
         <Card style={{ margin: '10px 0' }}>
-          <Button
-            onClick={
-              () => {
-                this.setState(() => ({
-                  selectedRowKeys: [],
-                  selectedItems: [],
-                }))
-              }
-            }
-          >
-            取消所选项
-          </Button>
           <ButtonGroup>
             <Button
               type="primary"
@@ -141,7 +112,7 @@ export default class HighTable extends React.Component {
                   if (this.state.selectedItems.length < 1) return
                   Modal.info({
                     title: '编辑',
-                    content: `${this.state.selectedItems.name}, ${roleMap[this.state.selectedItem.role]}`,
+                    content: `${this.state.selectedItems[0].name}, ${roleMap[this.state.selectedItems[0].role]}`,
                   })
                 }
               }
@@ -179,7 +150,11 @@ export default class HighTable extends React.Component {
             bordered
             loading={this.state.loading}
             columns={columns}
-            scroll={{ x: 1440, y: 580 }}
+            // 关闭列表 滚动
+            // scroll={{ 
+            //   x: 1440,
+            //   y: 580 
+            // }}
             dataSource={this.state.dataSource}
             //若没有pagination属性，会根据antd中table的默认样式，每页显示10个数据，将这一次请求获得的数据进行纯前端样式的静态的分页，*点击切换页面按钮不会发送请求
             // 若 有 pagination={false}的 设定，table不会分页， 此次请求获得的所有数据会全部显示出来
