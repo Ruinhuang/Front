@@ -8,7 +8,7 @@ import {
   Checkbox,
   message,
 } from "antd";
-import './index.scss'
+import '../../style/common.scss'
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;

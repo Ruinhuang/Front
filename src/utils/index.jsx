@@ -9,13 +9,27 @@ export const formateDate = (time) => {
     checkTime(date.getHours()) + ":" + checkTime(date.getMinutes()) + ":" + checkTime(date.getSeconds());
 }
 
-export const selectTag = (arr, item) => {
-  let position = arr.indexOf(item)
-  if (position < 0) {
-    arr.push(item)
-  } else {
-    arr.splice(position, 1)
-  }
+export const selectTag = (arr, items) => {
+  // 非幂等
+  items.forEach(item => {
+    let position = arr.indexOf(item)
+    if (position < 0) {
+      arr.push(item)
+    } else {
+      arr.splice(position, 1)
+    }
+  });
+  return arr
+}
+
+export const removeFromArray = (arr, items) => {
+  // 非幂等
+  items.forEach(item => {
+    let position = arr.indexOf(item)
+    if (position >= 0) {
+      arr.splice(position, 1)
+    }
+  });
   return arr
 }
 
@@ -24,6 +38,6 @@ export const pagination = (data, callback) => ({
   current: parseInt(data.page),
   pageSize: parseInt(data.page_size),
   total: parseInt(data.total),
-  showTotal:()=>(`共${data.total}条数据`),
+  showTotal: () => (`共${data.total}条数据`),
 })
-  
+
