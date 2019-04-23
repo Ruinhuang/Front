@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { HashRouter, Route, Switch } from "react-router-dom";
+import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
+import App from "./app"
+import Common from "./common"
 import Login from "./pages/form/login";
 import Register from "./pages/form/register";
 import UserTable from "./pages/manager/userTable";
@@ -12,19 +14,35 @@ export default class IRouter extends Component {
   render() {
     return (
       <HashRouter>
-        <Admin>
-          <div>
-            <Switch>
-              <Route exact={true} path="/" component={Home} />
-              <Route path="/login" component={Login} />
-              <Route path="/register" component={Register} />
-              <Route path="/home" component={Home} />
-              <Route path="/ads" component={adTable} />
-              <Route path="/manager/users" component={UserTable} />
-              <Route component={Nomatch} />
-            </Switch>
-          </div>
-        </Admin>
+        <App>
+          <Switch>
+            <Route exact={true} path="/" >
+              <Redirect to="/admin/home/" />
+            </Route>
+            <Route path="/admin"
+              render={() =>
+                <Admin>
+                  <div>
+                    <Route exact={true} path="/admin" component={Home} />
+                    <Route path="/admin/home" component={Home} />
+                    <Route path="/admin/ads" component={adTable} />
+                    <Route path="/admin/manager/users" component={UserTable} />
+                  </div>
+                </Admin>
+              }
+            />
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
+            <Route path="/common"
+              render={() =>
+                <Common>
+                  <div>hello</div>
+                </Common>
+              }
+            />
+            <Route component={Nomatch} />
+          </Switch>
+        </App>
       </HashRouter >
     );
   }

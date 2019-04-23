@@ -9,10 +9,6 @@ const Option = Select.Option;
 
 // child component FilterFrom
 class FilterForm extends React.Component {
-  componentWillUpdate = () => {
-    if (this.props.resetFields)
-      this.props.form.resetFields()
-  }
 
   render = () => {
     const { getFieldDecorator } = this.props.form;
@@ -55,12 +51,12 @@ class FilterForm extends React.Component {
           }
         </FormItem>
         <FormItem>
-          <div style={{ display: "inline-block", border: "5px" }}>
+          <div style={{ display: "inline-block" }}>
             全局过滤
           <Switch
               checkedChildren="开"
               unCheckedChildren="关"
-              onClick={(checked)=>this.props.changeGlobalFilter(checked)}
+              onClick={(checked) => this.props.openGlobalFilter(checked)}
             />
           </div>
           <Button
@@ -102,12 +98,11 @@ export default class userTable extends React.Component {
   }
 
   componentDidMount = () => {
-      this.request()
+    this.request()
   }
   componentDidUpdate = () => {
     if (!this.state.globalFilter) {
-      // 父组件更新后 将子组件props的reset标志关闭
-      this.resetFields = false
+      this.filterForm.props.form.resetFields()
     }
   }
 
@@ -115,11 +110,11 @@ export default class userTable extends React.Component {
     this.filterRules = rules
     this.setState(prevState => ({ dataSource: prevState.allSource.filter(this.filterRules) }))
   }
-  
-  changeGlobalFilter = checked => {
+
+  openGlobalFilter = checked => {
     this.setState(
-      ()=>({
-       globalFilter: checked, 
+      () => ({
+        globalFilter: checked,
       })
     )
   }
@@ -146,7 +141,7 @@ export default class userTable extends React.Component {
                   this.page = current
                   if (!this.state.globalFilter) {
                     // 翻页时将子组件标记重置
-                    this.resetFields = true
+                    this.filterForm.props.form.resetFields()
                   }
                   this.request()
                 }),
@@ -305,7 +300,11 @@ export default class userTable extends React.Component {
     return (
       <div>
         <Card>
-          <FilterForm changeFilterRules={this.changeFilterRules} changeGlobalFilter={this.changeGlobalFilter} resetFields={this.resetFields} />
+          <FilterForm
+            changeFilterRules={this.changeFilterRules}
+            openGlobalFilter={this.openGlobalFilter}
+            // 将子组件实例关联到父组件属性上, 方便调用子组件成员变量和函数
+            wrappedComponentRef={(inst) => { this.filterForm = inst }} />
         </Card>
         <Card style={{
           marginTop: '10px',

@@ -1,42 +1,34 @@
 const menuList = [
     {
         title: '首页',
-        key: '/home'
+        key: '/admin/home'
     },
     {
         title: '管理',
-        key: '/manager',
+        key: '/admin/manager',
         children: [
             {
                 title: '用户管理',
-                key: '/manager/users',
+                key: '/admin/manager/users',
             },
             {
                 title: '订单管理',
-                key: '/manager/orders',
+                key: '/admin/manager/orders',
             },
             {
                 title: '广告管理',
-                key: '/manager/ads',
+                key: '/admin/manager/ads',
             },
 
         ]
     },
     {
         title: '广告区',
-        key: '/ads',
+        key: '/admin/ads',
     },
     {
         title: '统计',
-        key: '/charts',
-    },
-    {
-        title: '登录',
-        key: '/login',
-    },
-    {
-        title: '注册',
-        key: '/register',
+        key: '/admin/charts',
     },
 ];
 export default menuList;
