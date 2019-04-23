@@ -46,7 +46,7 @@ class Header extends React.Component {
                                     <Button
                                         onClick={
                                             () => {
-                                                window.location.href = "/#/login"
+                                                window.location.href = window.location.href.split('#')[0] + '#/login'
                                             }
                                         }
                                     >
@@ -55,7 +55,7 @@ class Header extends React.Component {
                                     <Button
                                         onClick={
                                             () => {
-                                                window.location.href = "/#/register"
+                                                window.location.href = window.location.href.split('#')[0] + '#/register'
                                             }
                                         }
                                     >
