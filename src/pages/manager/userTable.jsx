@@ -56,7 +56,7 @@ class FilterForm extends React.Component {
           <Switch
               checkedChildren="开"
               unCheckedChildren="关"
-              onClick={(checked) => this.props.openGlobalFilter(checked)}
+              onClick={(checked) => this.props.changeGlobalFilter(checked)}
             />
           </div>
           <Button
@@ -83,7 +83,7 @@ export default class userTable extends React.Component {
     super(props)
     this.state = {
       loading: true,
-      tableType: 'checkbox',
+      tableType: "radio",
       dataSource: [],
       allSource: [],
       selectedRowKeys: [],
@@ -111,10 +111,18 @@ export default class userTable extends React.Component {
     this.setState(prevState => ({ dataSource: prevState.allSource.filter(this.filterRules) }))
   }
 
-  openGlobalFilter = checked => {
+  changeGlobalFilter = checked => {
     this.setState(
       () => ({
         globalFilter: checked,
+      })
+    )
+  }
+
+  changeTableType = checked => {
+    this.setState(
+      () => ({
+        tableType: checked ? "checkbox" : "radio",
       })
     )
   }
@@ -225,10 +233,6 @@ export default class userTable extends React.Component {
                 type="primary"
                 onClick={
                   () => {
-                    this.setState((prevState) => ({
-                      selectedItems: selectTag([...prevState.selectedItems], [item]),
-                      selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
-                    }))
                     Modal.confirm({
                       title: 'edit',
                       content: JSON.stringify(item),
@@ -238,16 +242,20 @@ export default class userTable extends React.Component {
                       ) => {
                         message.warning('这里改写成向后端发送验证的流程// TODO')
                         callback()
-                        this.setState((prevState) => ({
-                          selectedItems: removeFromArray([...prevState.selectedItems], [item]),
-                          selectedRowKeys: removeFromArray([...prevState.selectedRowKeys], [item.key])
-                        }))
+                        if (this.state.tableType === "checkbox") {
+                          this.setState((prevState) => ({
+                            selectedItems: selectTag([...prevState.selectedItems], [item]),
+                            selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+                          }))
+                        }
                       },
                       onCancel: () => {
-                        this.setState((prevState) => ({
-                          selectedItems: selectTag([...prevState.selectedItems], [item]),
-                          selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
-                        }))
+                        if (this.state.tableType === "checkbox") {
+                          this.setState((prevState) => ({
+                            selectedItems: selectTag([...prevState.selectedItems], [item]),
+                            selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+                          }))
+                        }
                       }
                     },
                     )
@@ -278,10 +286,12 @@ export default class userTable extends React.Component {
                         callback()
                       },
                       onCancel: () => {
-                        this.setState((prevState) => ({
-                          selectedItems: selectTag([...prevState.selectedItems], [item]),
-                          selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
-                        }))
+                        if (this.state.tableType === "checkbox") {
+                          this.setState((prevState) => ({
+                            selectedItems: selectTag([...prevState.selectedItems], [item]),
+                            selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+                          }))
+                        }
                       }
                     }
                     )
@@ -302,22 +312,23 @@ export default class userTable extends React.Component {
         <Card>
           <FilterForm
             changeFilterRules={this.changeFilterRules}
-            openGlobalFilter={this.openGlobalFilter}
+            changeGlobalFilter={this.changeGlobalFilter}
             // 将子组件实例关联到父组件属性上, 方便调用子组件成员变量和函数
             wrappedComponentRef={(inst) => { this.filterForm = inst }} />
         </Card>
         <Card style={{
           marginTop: '10px',
         }}>
+          <div style={{ display: "inline-block" }}>
+            多选模式
+             <Switch
+              checkedChildren="开"
+              unCheckedChildren="关"
+              defaultChecked={this.state.tableType==="checkbox"}
+              onClick={(checked) => this.changeTableType(checked)}
+            />
+          </div>
           <ButtonGroup style={{ padding: '0', float: 'right' }}>
-            <Button
-              type="primary"
-              icon="plus"
-              href="/#/register"
-              target="_black"
-            >
-              新增
-        </Button>
             <Button
               type="danger"
               icon="delete"
