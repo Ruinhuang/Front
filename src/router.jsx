@@ -23,10 +23,12 @@ export default class IRouter extends Component {
               render={() =>
                 <Admin>
                   <div>
-                    <Route exact={true} path="/admin" component={Home} />
-                    <Route path="/admin/home" component={Home} />
-                    <Route path="/admin/ads" component={adTable} />
-                    <Route path="/admin/manager/users" component={UserTable} />
+                    <Switch>
+                      <Route exact={true} path="/admin" component={Home} />
+                      <Route path="/admin/home" component={Home} />
+                      <Route path="/admin/ads/:page" component={adTable} />
+                      <Route path="/admin/manager/users" component={UserTable} />
+                    </Switch>
                   </div>
                 </Admin>
               }

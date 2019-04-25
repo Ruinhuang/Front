@@ -24,7 +24,7 @@ const menuList = [
     },
     {
         title: '广告区',
-        key: '/admin/ads',
+        key: '/admin/ads/index',
     },
     {
         title: '统计',
