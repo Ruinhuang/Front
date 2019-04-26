@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Card, Input, Icon, Table, Modal, Button, message, Badge, } from 'antd';
 import Ajax from '../../components/Ajax'
-import { pagination, selectTag, } from '../../utils/index'
+import { pagination, selectTag, goToUrl } from '../../utils'
 import { Route, NavLink, HashRouter, Switch } from 'react-router-dom'
 import '../../style/common.scss'
 
@@ -18,11 +18,17 @@ class StepForm extends Component {
                     <Route
                       exact={true}
                       path="/admin/ads/info"
-                      render={() => <Info selectedItem={this.props.selectedItem} />}
+                      render={() =>
+                        <Info
+                          selectedItem={this.props.selectedItem}
+                        />}
                     />
                     <Route
                       path="/admin/ads/confirm"
-                      render={() => <Confirm />}
+                      render={() =>
+                        <Confirm
+                          refreshData={this.props.refreshData}
+                        />}
                     />
                   </Switch>
                 </div>
@@ -44,7 +50,7 @@ class FormInfo extends React.Component {
       if (!err) {// ${}  是变量
         message.success("正在下单")
         // 前端验证完毕, 向后端发起调用
-        window.location.href = window.location.href.split('#')[0] + '#/admin/ads/confirm'
+        goToUrl('/admin/ads/confirm')
       }
     });
   };
@@ -124,35 +130,37 @@ class FormInfo extends React.Component {
 const Info = Form.create()(FormInfo)
 
 class Confirm extends React.Component {
-  handleSubmit = () => message.success(`请等待商户确认`)
+  handleSubmit = () => {
+    message.success(`请等待商户确认`)
+    goToUrl('/admin/ads/index')
+    this.props.refreshData()
+  }
   render() {
     return (
       <Card title="付款码">
-        <img style={{ display: "block" }} alt="Cierra01.jpg" src="https://img.moegirl.org/common/thumb/a/aa/Cierra01.jpg/260px-Cierra01.jpg" width="260" height="260" />
-        <Button
-          type="primary"
-          onClick={
-            () => {
-              this.handleSubmit()
-              Modal.success({
-                title: 'success',
-                content: 'success',
-                onOk: () => {
-                  // 需要跳转到我的订单详情页
-                  window.location.href = window.location.href.split('#')[0] + '#/admin/ads/index'
-                  // 刷新页面以更新数据
-                  window.location.reload()
-                },
-                onCancel: () => {
-                  window.location.href = window.location.href.split('#')[0] + '#/admin/ads/index'
-                  window.location.reload()
+        <Form>
+          <FormItem
+          >
+            <img alt="Cierra.jpg" src="https://img.moegirl.org/common/thumb/a/aa/Cierra01.jpg/260px-Cierra01.jpg" />
+          </FormItem>
+          <FormItem
+            style={{
+              margin: 'auto',
+              width: 200,
+            }}
+          >
+            <Button
+              type="primary"
+              onClick={
+                () => {
+                  this.handleSubmit()
                 }
-              })
-            }
-          }
-        >
-          我已付款
+              }
+            >
+              我已付款
         </Button>
+          </FormItem>
+        </Form>
       </Card>
     )
   }
@@ -177,6 +185,10 @@ export default class adTable extends React.Component {
     }
     this.page = 1
     this.filterRules = this.state.defaultFilterRules
+  }
+  componentWillMount = () => {
+    //  初始化载入ads页面时， 将路由跳转到ads/index
+    goToUrl('/admin/ads/index')
   }
 
   componentDidMount = () => {
@@ -273,36 +285,44 @@ export default class adTable extends React.Component {
       dataIndex: 'status',
       render: (text) => statusMap[text],
     },
-    {
-      title: 'operation',
-      key: 'operation',
-      width: 80,
-      render: (text, item, index, ) => (
-        <div>
-          <Button
-            className="link-button"
-          >
-            <NavLink to="/admin/ads/info">下单</NavLink>
-          </Button>
-        </div>
-      )
-    },
     ]
 
     return (
       <div className="content-wrap">
         <Modal
-          visible={this.props.match.params.page === "info" || this.props.match.params.page === "confirm"}
-          title={this.props.match.params.page}
-          onCancel={() => window.location.href = window.location.href.split('#')[0] + '#/admin/ads/index'}
+          visible={
+            this.state.selectedItems.length > 0
+            &&
+            (
+              this.props.match.params.page === "info"
+              ||
+              this.props.match.params.page === "confirm"
+            )
+          }
+          // 退出下单界面， 广告信息需要更新
+          onCancel={
+            () => {
+              message.warning('下单中断')
+              goToUrl('/admin/ads/index')
+              this.request()
+            }
+          }
           afterClose={this.changeModalKey}
           footer={null}
         >
           <StepForm
             key={this.state.formKey}
             selectedItem={this.state.selectedItems[0]}
+            refreshData={this.request}
             changeModalKey={this.changeMormKey} />
         </Modal >
+        <Card>
+          <Button
+            type="primary"
+          >
+            <NavLink to="/admin/ads/info">下单</NavLink>
+          </Button>
+        </Card>
         <Table
           size="small"
           bordered

@@ -9,6 +9,9 @@ export const formateDate = (time) => {
     checkTime(date.getHours()) + ":" + checkTime(date.getMinutes()) + ":" + checkTime(date.getSeconds());
 }
 
+export const goToUrl = p =>
+  window.location.href = `${window.location.href.split('#')[0]}#${p}`
+
 export const selectTag = (arr, items) => {
   // 非幂等
   items.forEach(item => {
