@@ -1,3 +1,7 @@
+import React from 'react'
+import { Select } from 'antd'
+const Option = Select.Option
+
 export const formateDate = (time) => {
   const checkTime = (time) => {
     return time < 10 ? "0" + time : time
@@ -44,3 +48,19 @@ export const pagination = (data, callback) => ({
   showTotal: () => (`共${data.total}条数据`),
 })
 
+
+export const getOptionList = data => {
+  let options = []
+  if (!data) {
+    return options
+  }
+  data.forEach(item => {
+    options.push(
+      <Option value={item.id} key={item.id}>
+        {item.name}
+      </Option>
+    )
+  }
+  )
+  return options
+}

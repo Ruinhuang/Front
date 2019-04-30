@@ -5,6 +5,7 @@ import Common from "./common"
 import Login from "./pages/form/login";
 import Register from "./pages/form/register";
 import UserTable from "./pages/manager/userTable";
+import OrderTable from "./pages/manager/orderTable";
 import adTable from "./pages/ad/"
 import Admin from "./admin";
 import Home from "./pages/home";
@@ -28,6 +29,7 @@ export default class IRouter extends Component {
                       <Route path="/admin/home" component={Home} />
                       <Route path="/admin/ads/:page" component={adTable} />
                       <Route path="/admin/manager/users" component={UserTable} />
+                      <Route path="/admin/manager/orders" component={OrderTable} />
                     </Switch>
                   </div>
                 </Admin>
