@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Input, Select, Form, Checkbox, Switch, Button } from 'antd'
+import { Input, Select, Form, Checkbox, Switch, Button, DatePicker } from 'antd'
 import { getOptionList } from '../../utils'
 const FormItem = Form.Item
 
@@ -61,6 +61,32 @@ class BaseForm extends Component {
                                         <Checkbox>
                                             {label}
                                         </Checkbox>
+                                    )
+                                }
+                            </FormItem>
+                        )
+                    }
+                    if (item.type === 'TIME') {
+                        formItemList.push(
+                            <FormItem label="时间" key={field}>
+                                {
+                                    getFieldDecorator('begin_time')(
+                                        <DatePicker
+                                            showTime={true}
+                                            placeholder={placeholder}
+                                            format="YYYY-MM-DD HH:mm:ss" />
+                                    )
+                                }
+                            </FormItem >
+                        )
+                        formItemList.push(
+                            <FormItem label="~" colon={false} key={field}>
+                                {
+                                    getFieldDecorator('end_time')(
+                                        <DatePicker
+                                            showTime={true}
+                                            placeholder={placeholder}
+                                            format="YYYY-MM-DD HH:mm:ss" />
                                     )
                                 }
                             </FormItem>
