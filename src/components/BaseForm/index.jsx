@@ -119,6 +119,7 @@ class BaseForm extends Component {
     handleSubmit = () => {
         let fieldsValue = this.props.form.getFieldsValue()
         console.log(fieldsValue)
+        // 由父组件传入的函数处理表单提交的数据
         this.props.submitFunc(fieldsValue)
     }
 

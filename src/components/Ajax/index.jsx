@@ -6,29 +6,33 @@ export default class Ajax {
         url,
         data,
         baseURL,
-        timeout = 5000, ) => (
+        timeout = 5000,
+        ) => (
             new Promise(
                 (resolve, reject) => {
                     // 默认写的是get 方法的封装
                     axios({
                         method,
                         url,
-                        params: data,
+                        data, // post方法使用这个属性
+                        params:data,// get方法会使用这个属性
                         baseURL,
                         timeout,
                     }).then(response => {
                         // HTTP状态码返回200说明HTTP协议层面被正常处理
-                        if (response.status === 200) {
+                        if (response.status === 200 ) {
                             // response 是http请求的响应返回
                             // res 是业务层面的数据
                             let res = response.data
-                            // 业务状态码返回0说明业务层面请求被正常处理
-                            if (res.code === 0) {
-                                message.success(res.successMsg);
+                            // 业务状态码返回200说明业务层面请求被正常处理
+                            if (res.code === 200) {
+                                notification.success({
+                                    message: res.msg,
+                                })
                                 resolve(res.data)
                             } else {
                                 notification.error({
-                                    message: res.errMsg,
+                                    message: res.msg,
                                 })
                             }
                         } else {

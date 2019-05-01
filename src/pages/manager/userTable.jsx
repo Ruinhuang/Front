@@ -324,7 +324,7 @@ export default class userTable extends React.Component {
              <Switch
               checkedChildren="开"
               unCheckedChildren="关"
-              defaultChecked={this.state.tableType==="checkbox"}
+              defaultChecked={this.state.tableType === "checkbox"}
               onClick={(checked) => this.changeTableType(checked)}
             />
           </div>

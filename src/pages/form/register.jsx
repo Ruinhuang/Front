@@ -8,6 +8,7 @@ import {
   Checkbox,
   message,
 } from "antd";
+import Ajax from '../../components/Ajax'
 import '../../style/common.scss'
 
 const FormItem = Form.Item;
@@ -15,6 +16,15 @@ const RadioGroup = Radio.Group;
 
 class FormRegister extends React.Component {
 
+  post = (formData) => {
+    Ajax.ajax(
+      'post',
+      '/user-register',
+      formData,
+      'http://192.168.0.105:8080',
+    )
+      .then(() => { }).catch(() => { })
+  }
 
   passwordValidator = (rule, value, callback) => {
     var pwd = this.props.form.getFieldsValue().password
@@ -26,8 +36,9 @@ class FormRegister extends React.Component {
   }
 
   handleSubmit = () => {
-    let userInfo = this.props.form.getFieldsValue();// 可以(获取表单中)object对象
-    message.success(`${userInfo.userName} 密码为:${userInfo.password}`)
+    let formData = this.props.form.getFieldsValue();// 可以(获取表单中)object对象
+    this.post(formData)
+
 
   };
   getBase64 = (img, callback) => {
@@ -49,6 +60,10 @@ class FormRegister extends React.Component {
       }));
     }
   };
+
+  componentDidMount = () => {
+
+  }
 
   render() {
     const { getFieldDecorator } = this.props.form;
