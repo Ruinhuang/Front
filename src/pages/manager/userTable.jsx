@@ -68,7 +68,7 @@ class FilterForm extends React.Component {
               let rules = item => (((!ruleInfo.status) || (item.status === parseInt(ruleInfo.status))) && (((!ruleInfo.role) || (item.role === parseInt(ruleInfo.role)))))
               this.props.changeFilterRules(rules)
             }}
-          >过滤一下
+          >筛选结果
           </Button>
         </FormItem>
       </Form>
