@@ -1,6 +1,7 @@
-import React  from 'react';
+import React from 'react';
 import { Card } from 'antd';
 import BaseForm from '../../components/BaseForm'
+import BaseTable from '../../components/BaseTable'
 import '../../style/common.scss'
 
 
@@ -31,11 +32,58 @@ export default class userTable extends React.Component {
 
 
     render = () => {
+        const columns = [
+            {
+                title: 'id',
+                dataIndex: 'id'
+            }, {
+                title: '用户名',
+                dataIndex: 'username'
+            }, {
+                title: '性别',
+                dataIndex: 'sex',
+                render(sex) {
+                    return sex === 1 ? '男' : '女';
+                }
+            }, {
+                title: '状态',
+                dataIndex: 'state',
+                render(state) {
+                    let config = {
+                        '1': "咸🐟一条",
+                        '2': '风华浪子',
+                        '3': '北大才子一枚',
+                        '4': '百度FE',
+                        '5': '创业者',
+                    };
+                    return config[state];
+                }
+            },
+            {
+                title: '生日',
+                dataIndex: 'birthday'
+            }, {
+                title: '联系地址',
+                dataIndex: 'address'
+            }, {
+                title: '早起时间',
+                dataIndex: 'time'
+            },
+        ];
+
         return (
             <div>
                 <Card>
                     <BaseForm submitFunc={() => { }} switchFunc={() => { }} formList={this.formList} />
                 </Card>
+                <BaseTable
+                    columns={columns}
+                // updateSelectedItem={Utils.updateSelectedItem.bind(this)}
+                // selectedRowKeys={this.state.selectedRowKeys}
+                // selectedItem={this.state.selectedItem}
+                // dataSource={this.state.list}
+                // pagination={this.state.pagination}
+                />
             </div>
         )
     }
