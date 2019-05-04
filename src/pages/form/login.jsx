@@ -1,14 +1,25 @@
 import React from "react";
 import { Button, Card, Form, Icon, Input, message } from "antd";
+import Ajax from '../../components/Ajax'
 
 const FormItem = Form.Item;
 class FormLogin extends React.Component {
+
+  post = (formData) => {
+    Ajax.ajax(
+      'post',
+      '/user-login',
+      formData,
+      'http://192.168.0.105:8080',
+    )
+      .then(() => { }).catch(() => { })
+  }
+
   handleSubmit = () => {//绑定提交事件进行校验
-    let userInfo = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
-    // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
+    let formData = this.props.form.getFieldsValue();// 可以(获取表单中)object对象
     this.props.form.validateFields((err, values) => {
       if (!err) {// ${}  是变量
-        message.success(`${userInfo.userName} 欢迎登录`)
+        this.post(formData)
       }
     });
   };
@@ -32,42 +43,31 @@ class FormLogin extends React.Component {
           <Form
             layout="horizontal"
           >
-            <FormItem
-              label="帐号"
-              {...formItemLayout}
-            >
+            <FormItem label="手机号" {...formItemLayout}>
               {
-                getFieldDecorator('userName', {
+                getFieldDecorator('phone', {
                   initialValue: '',
                   rules: [
                     {
+                      pattern: new RegExp('^\\d+$', 'g'),
+                      message: '手机号码必须为字母'
+                    },
+                    {
                       required: true,
-                      message: '用户名不能为空'
+                      message: '手机号不能为空'
                     },
-                    {
-                      min: 5, max: 10,
-                      message: '长度不在范围内'
-                    },
-                    {
-                      pattern: new RegExp('^\\w+$', 'g'),
-                      message: '用户名必须为字母或数字'
-                    }
                   ]
                 })(
-                  <Input
-                    prefix={<Icon type="user" />}
-                    placeholder="请输入用户名"
-                  />
+                  <Input placeholder="请输入手机号码" />
                 )
               }
-
             </FormItem>
             <FormItem
               label="密码"
               {...formItemLayout}
             >
               {
-                getFieldDecorator('userPwd', {
+                getFieldDecorator('password', {
                   initialValue: '',
                   rules: [{
                     required: true,
