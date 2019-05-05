@@ -125,7 +125,7 @@ class BaseForm extends Component {
 
     render() {
         return (
-            <Form layout="inline">
+            <Form layout={this.props.layout}>
                 {this.initFormList()}
                 <Button type="primary" onClick={() => this.handleSubmit()}>
                     Done

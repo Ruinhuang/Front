@@ -161,8 +161,8 @@ class FormRegister extends React.Component {
                 }
                 )(
                   <RadioGroup>
-                    <Radio value="0">普通用户</Radio>
-                    <Radio value="1">商户</Radio>
+                    <Radio value={0}>普通用户</Radio>
+                    <Radio value={1}>商户</Radio>
                   </RadioGroup>
                 )
               }

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Card, Table, Form, Modal, Button, message, Badge, Select, Switch } from 'antd';
+import { Input, Radio, Card, Table, Form, Modal, Button, message, Badge, Select, Switch } from 'antd';
 import Ajax from '../../components/Ajax'
-import { pagination, selectTag, removeFromArray } from '../../utils/index'
+import { pagination, selectTag } from '../../utils/index'
 import '../../style/common.scss'
 
-const FormItem = Form.Item;
-const Option = Select.Option;
+const FormItem = Form.Item
+const Option = Select.Option
+const RadioGroup = Radio.Group
 
 // child component FilterFrom
 class FilterForm extends React.Component {
@@ -24,10 +25,10 @@ class FilterForm extends React.Component {
               <Select
                 style={{ width: 100 }}
               >
-                <Option value="">全部</Option>
-                <Option value="1">管理员</Option>
-                <Option value="2">商户</Option>
-                <Option value="3">普通用户</Option>
+                <Option value=''>全部</Option>
+                <Option value={1}>管理员</Option>
+                <Option value={2}>商户</Option>
+                <Option value={3}>普通用户</Option>
               </Select>
             )
           }
@@ -42,10 +43,11 @@ class FilterForm extends React.Component {
               <Select
                 style={{ width: 100 }}
               >
-                <Option value="">全部</Option>
-                <Option value="1">已审批</Option>
-                <Option value="2">未审批</Option>
-                <Option value="3">冻结中</Option>
+                <Option value='' >全部</Option>
+                <Option value={1}>已审批</Option>
+                {/* <Option value="1">已审批</Option> */}
+                <Option value={2}>未审批</Option>
+                <Option value={3}>冻结中</Option>
               </Select>
             )
           }
@@ -65,7 +67,11 @@ class FilterForm extends React.Component {
             onClick={() => {
               let ruleInfo = this.props.form.getFieldsValue()//object对象,包含表单中所有信息
               // 根据filterFrom提交的内容构建过滤规则
-              let rules = item => (((!ruleInfo.status) || (item.status === parseInt(ruleInfo.status))) && (((!ruleInfo.role) || (item.role === parseInt(ruleInfo.role)))))
+              let rules = item => (
+                ((!ruleInfo.status) || (item.status === ruleInfo.status))
+                &&
+                ((!ruleInfo.role) || (item.role === ruleInfo.role))
+              )
               this.props.changeFilterRules(rules)
             }}
           >筛选结果
@@ -82,6 +88,7 @@ export default class userTable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      visibleModal: null,
       loading: true,
       tableType: "radio",
       dataSource: [],
@@ -122,6 +129,8 @@ export default class userTable extends React.Component {
   changeTableType = checked => {
     this.setState(
       () => ({
+        selectedRowKeys: [],
+        selectedItems: [],
         tableType: checked ? "checkbox" : "radio",
       })
     )
@@ -305,11 +314,25 @@ export default class userTable extends React.Component {
       //       </div>
       //     )
       //   }
-      // // },
+      // },
     ];
 
     return (
       <div>
+        <Modal
+          visibleModal={this.state.visibleModal}
+          title={this.state.visibleModal}
+          visible={this.state.visibleModal !== null}
+          onCancel={() => {
+            this.setState(() => ({ visibleModal: null }))
+          }}
+          footer={null}
+        >
+          <UserForm
+            userInfo={this.state.selectedItems}
+            wrappedComponentRef={(inst) => this.userForm = inst}
+          />
+        </Modal>
         <Card>
           <FilterForm
             changeFilterRules={this.changeFilterRules}
@@ -318,65 +341,56 @@ export default class userTable extends React.Component {
             wrappedComponentRef={(inst) => { this.filterForm = inst }} />
         </Card>
         <Card
-        className="operate-wrap"
-         style={{
-          marginTop: '10px',
-        }}>
-            多选模式
+          className="operate-wrap"
+          style={{
+            marginTop: '10px',
+          }}>
+          多选模式
              <Switch
-              checkedChildren="开"
-              unCheckedChildren="关"
-              defaultChecked={this.state.tableType === "checkbox"}
-              onClick={(checked) => this.changeTableType(checked)}
-            />
-            <Button
-              icon='edit'
-              type="primary"
-              disabled={this.state.selectedItems.length > 1}
-              onClick={
-                () => {
-                  if (this.state.selectedItems.length < 1) return
-                  Modal.confirm(
-                    {
-                      title: 'edit',
-                      content: JSON.stringify(this.state.selectedItems),
-                      onOk: (callback = () => { message.info('成功') }) => {
-                        message.warning('这里改写成向后端发送验证的流程// TODO')
-                        callback()
-                      },
-                    }
-                  )
-                }
+            checkedChildren="开"
+            unCheckedChildren="关"
+            defaultChecked={this.state.tableType === "checkbox"}
+            onClick={(checked) => this.changeTableType(checked)}
+          />
+          <Button
+            icon='edit'
+            type="primary"
+            disabled={this.state.selectedItems.length > 1}
+            onClick={
+              () => {
+                if (this.state.selectedItems.length < 1) return
+                this.setState(() => ({ visibleModal: 'edit' }))
               }
-            >
-              编辑
+            }
+          >
+            编辑
               </Button>
-            <Button
-              type="danger"
-              icon="delete"
-              onClick={
-                () => {
-                  if (this.state.selectedItems.length < 1) return
-                  Modal.confirm({
-                    title: 'delete',
-                    content: JSON.stringify(this.state.selectedItems),
-                    onOk: (callback = () => {
-                      message.info('删除成功')
-                      this.setState((prevState) => ({
-                        dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
-                        selectedItems: [], selectedRowKeys: []
-                      }))
-                    },
-                    ) => {
-                      message.warning('这里改写成向后端发送验证的流程// TODO')
-                      callback()
-                    },
-                  }
-                  )
+          <Button
+            type="danger"
+            icon="delete"
+            onClick={
+              () => {
+                if (this.state.selectedItems.length < 1) return
+                Modal.confirm({
+                  title: 'delete',
+                  content: JSON.stringify(this.state.selectedItems),
+                  onOk: (callback = () => {
+                    message.info('删除成功')
+                    this.setState((prevState) => ({
+                      dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
+                      selectedItems: [], selectedRowKeys: []
+                    }))
+                  },
+                  ) => {
+                    message.warning('这里改写成向后端发送验证的流程// TODO')
+                    callback()
+                  },
                 }
+                )
               }
-            >
-              删除
+            }
+          >
+            删除
             </Button>
         </Card>
         <div className="content-wrap">
@@ -455,3 +469,67 @@ export default class userTable extends React.Component {
     )
   }
 }
+
+class UserForm extends React.Component {
+
+  render() {
+    let userInfo = this.props.userInfo[0] || {};
+    const formItemLayout = {
+      labelCol: {
+        span: 5
+      },
+      wrapperCol: {
+        span: 19
+      }
+    };
+
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <Form layout="horizontal">
+        <FormItem label="用户名" {...formItemLayout}>
+          {
+            getFieldDecorator('name', {
+              initialValue: userInfo.name
+            })(
+              <Input type="text" placeholder="请输入用户名" />
+            )
+          }
+        </FormItem>
+        <FormItem label="角色" {...formItemLayout}>
+          {
+            getFieldDecorator('role', {
+              initialValue: userInfo.role
+            })(
+              <RadioGroup>
+                <Radio value={1}>用户</Radio>
+                <Radio value={2}>商户</Radio>
+              </RadioGroup>
+            )
+          }
+        </FormItem>
+        <FormItem label="状态" {...formItemLayout}>
+          {
+            getFieldDecorator('status', {
+              initialValue: userInfo.status
+            })(
+              <Select>
+                <Option value={1}>已审核</Option>
+                <Option value={2}>未审核</Option>
+                <Option value={3}>已冻结</Option>
+              </Select>
+            )
+          }
+        </FormItem>
+        <FormItem>
+          <Button
+            onClick={() => { message.warning('这里改写成向后端发送验证的流程// TODO') }}
+          >
+            提交
+          </Button>
+        </FormItem>
+      </Form>
+    );
+  }
+}
+
+UserForm = Form.create({})(UserForm);

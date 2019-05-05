@@ -24,6 +24,7 @@ export default class adTable extends Component {
       defaultFilterRules: () => true,
     }
     this.page = 1
+    this.userForm = undefined
     this.filterRules = this.state.defaultFilterRules
   }
   componentWillMount = () => {

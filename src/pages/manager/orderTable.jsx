@@ -76,7 +76,7 @@ export default class userTable extends React.Component {
         return (
             <div>
                 <Card>
-                    <BaseForm submitFunc={() => { }} switchFunc={() => { }} formList={this.formList} />
+                    <BaseForm layout="inline" submitFunc={() => { }} switchFunc={() => { }} formList={this.formList} />
                 </Card>
                 <BaseTable
                     columns={columns}
