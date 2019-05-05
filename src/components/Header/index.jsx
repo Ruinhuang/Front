@@ -2,7 +2,7 @@
 import React from "react";
 import { Row, Col, Button } from "antd";
 import "./index.scss";
-import { formateDate } from "../../utils"; //导入公共机制
+import { formateDate, goToUrl } from "../../utils"; //导入公共机制
 // import axios from "../axios"; //引入axios组件
 
 
@@ -39,21 +39,18 @@ class Header extends React.Component {
                     <Col span={18} style={{ float: "right" }}>
                         {
                             this.state.isLogin ?
-                                <span>{this.state.userName}</span>
+                                <Button
+                                >{this.state.userName}
+                                </Button>
                                 :
                                 <span>
-
                                     <Button
-                                        onClick={
-                                            () => window.location.href = window.location.href.split('#')[0] + '#/login'
-                                        }
+                                        onClick={() => goToUrl('/login')}
                                     >
                                         登录
                         </Button>
                                     <Button
-                                        onClick={
-                                            () => window.location.href = window.location.href.split('#')[0] + '#/register'
-                                        }
+                                        onClick={() => goToUrl('/register')}
                                     >
                                         注册
                         </Button>

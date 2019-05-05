@@ -220,91 +220,92 @@ export default class userTable extends React.Component {
           return statusMap[text]
         }
       },
-      {
-        title: 'operation',
-        key: 'operation',
-        width: 80,
-        render: (text, item, index, ) => {
-          return (
-            <div>
-              <Button
-                className="link-button"
-                icon='edit'
-                type="primary"
-                onClick={
-                  () => {
-                    Modal.confirm({
-                      title: 'edit',
-                      content: JSON.stringify(item),
-                      onOk: (callback = () => {
-                        message.info('修改成功')
-                      },
-                      ) => {
-                        message.warning('这里改写成向后端发送验证的流程// TODO')
-                        callback()
-                        if (this.state.tableType === "checkbox") {
-                          this.setState((prevState) => ({
-                            selectedItems: selectTag([...prevState.selectedItems], [item]),
-                            selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
-                          }))
-                        }
-                      },
-                      onCancel: () => {
-                        if (this.state.tableType === "checkbox") {
-                          this.setState((prevState) => ({
-                            selectedItems: selectTag([...prevState.selectedItems], [item]),
-                            selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
-                          }))
-                        }
-                      }
-                    },
-                    )
-                  }
-                }
-              >
-                编辑
-              </Button>
-              <Button
-                className="link-button"
-                type="danger"
-                icon='delete'
-                onClick={
-                  () => {
-                    Modal.confirm({
-                      title: 'delete',
-                      content: JSON.stringify(item),
-                      onOk: (callback = () => {
-                        message.info('删除成功')
-                        this.setState((prevState) => ({
-                          dataSource: removeFromArray([...prevState.dataSource], [item]),
-                          selectedItems: removeFromArray([...prevState.selectedItems], [item]),
-                          selectedRowKeys: removeFromArray([...prevState.selectedRowKeys], [item.key])
-                        }))
-                      },
-                      ) => {
-                        message.warning('这里改写成向后端发送验证的流程// TODO')
-                        callback()
-                      },
-                      onCancel: () => {
-                        if (this.state.tableType === "checkbox") {
-                          this.setState((prevState) => ({
-                            selectedItems: selectTag([...prevState.selectedItems], [item]),
-                            selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
-                          }))
-                        }
-                      }
-                    }
-                    )
-                  }
-                }
-              >
-                删除
-              </Button>
+      // 行内操作按钮
+      // {
+      //   title: 'operation',
+      //   key: 'operation',
+      //   width: 80,
+      //   render: (text, item, index, ) => {
+      //     return (
+      //       <div>
+      //         <Button
+      //           className="link-button"
+      //           icon='edit'
+      //           type="primary"
+      //           onClick={
+      //             () => {
+      //               Modal.confirm({
+      //                 title: 'edit',
+      //                 content: JSON.stringify(item),
+      //                 onOk: (callback = () => {
+      //                   message.info('修改成功')
+      //                 },
+      //                 ) => {
+      //                   message.warning('这里改写成向后端发送验证的流程// TODO')
+      //                   callback()
+      //                   if (this.state.tableType === "checkbox") {
+      //                     this.setState((prevState) => ({
+      //                       selectedItems: selectTag([...prevState.selectedItems], [item]),
+      //                       selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+      //                     }))
+      //                   }
+      //                 },
+      //                 onCancel: () => {
+      //                   if (this.state.tableType === "checkbox") {
+      //                     this.setState((prevState) => ({
+      //                       selectedItems: selectTag([...prevState.selectedItems], [item]),
+      //                       selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+      //                     }))
+      //                   }
+      //                 }
+      //               },
+      //               )
+      //             }
+      //           }
+      //         >
+      //           编辑
+      //         </Button>
+      //         <Button
+      //           className="link-button"
+      //           type="danger"
+      //           icon='delete'
+      //           onClick={
+      //             () => {
+      //               Modal.confirm({
+      //                 title: 'delete',
+      //                 content: JSON.stringify(item),
+      //                 onOk: (callback = () => {
+      //                   message.info('删除成功')
+      //                   this.setState((prevState) => ({
+      //                     dataSource: removeFromArray([...prevState.dataSource], [item]),
+      //                     selectedItems: removeFromArray([...prevState.selectedItems], [item]),
+      //                     selectedRowKeys: removeFromArray([...prevState.selectedRowKeys], [item.key])
+      //                   }))
+      //                 },
+      //                 ) => {
+      //                   message.warning('这里改写成向后端发送验证的流程// TODO')
+      //                   callback()
+      //                 },
+      //                 onCancel: () => {
+      //                   if (this.state.tableType === "checkbox") {
+      //                     this.setState((prevState) => ({
+      //                       selectedItems: selectTag([...prevState.selectedItems], [item]),
+      //                       selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+      //                     }))
+      //                   }
+      //                 }
+      //               }
+      //               )
+      //             }
+      //           }
+      //         >
+      //           删除
+      //         </Button>
 
-            </div>
-          )
-        }
-      },
+      //       </div>
+      //     )
+      //   }
+      // // },
     ];
 
     return (
@@ -316,10 +317,11 @@ export default class userTable extends React.Component {
             // 将子组件实例关联到父组件属性上, 方便调用子组件成员变量和函数
             wrappedComponentRef={(inst) => { this.filterForm = inst }} />
         </Card>
-        <Card style={{
+        <Card
+        className="operate-wrap"
+         style={{
           marginTop: '10px',
         }}>
-          <div style={{ display: "inline-block" }}>
             多选模式
              <Switch
               checkedChildren="开"
@@ -327,8 +329,28 @@ export default class userTable extends React.Component {
               defaultChecked={this.state.tableType === "checkbox"}
               onClick={(checked) => this.changeTableType(checked)}
             />
-          </div>
-          <ButtonGroup style={{ padding: '0', float: 'right' }}>
+            <Button
+              icon='edit'
+              type="primary"
+              disabled={this.state.selectedItems.length > 1}
+              onClick={
+                () => {
+                  if (this.state.selectedItems.length < 1) return
+                  Modal.confirm(
+                    {
+                      title: 'edit',
+                      content: JSON.stringify(this.state.selectedItems),
+                      onOk: (callback = () => { message.info('成功') }) => {
+                        message.warning('这里改写成向后端发送验证的流程// TODO')
+                        callback()
+                      },
+                    }
+                  )
+                }
+              }
+            >
+              编辑
+              </Button>
             <Button
               type="danger"
               icon="delete"
@@ -354,9 +376,8 @@ export default class userTable extends React.Component {
                 }
               }
             >
-              批量删除
+              删除
             </Button>
-          </ButtonGroup>
         </Card>
         <div className="content-wrap">
           <Table
