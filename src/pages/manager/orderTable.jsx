@@ -12,20 +12,22 @@ export default class userTable extends React.Component {
         }
         this.formList = [
             {
-                type: 'INPUT',
-                label: '模式',
-                field: 'mode',
-                placeholder: '请输入模式',
+                type: 'SELECT',
+                label: '订单类型',
+                field: 'type',
+                placeholder: '全部',
+                initialValue: '',
                 width: 100,
+                list: [{ id: '', name: '全部' }, { id: '1', name: '买入' }, { id: '2', name: '卖出' }]
             },
             {
                 type: 'SELECT',
                 label: '订单状态',
-                field: 'order_status',
+                field: 'status',
                 placeholder: '全部',
                 initialValue: '1',
                 width: 100,
-                list: [{ id: '0', name: '全部' }, { id: '1', name: '进行中' }, { id: '2', name: '结束行程' }]
+                list: [{ id: '0', name: '全部' }, { id: '1', name: '待付款' }, { id: '2', name: '待确认' }, { id: '3', name: '已完成' }, {id: '4', name: '已过期' }]
             },
         ];
     }
