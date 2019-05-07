@@ -10,7 +10,6 @@ export default class Ajax {
     ) => (
             new Promise(
                 (resolve, reject) => {
-                    // 默认写的是get 方法的封装
                     axios(
                         method === 'get' ?
                             {
@@ -29,22 +28,8 @@ export default class Ajax {
                                 timeout,
                             }
                     ).then(response => {
-                        // HTTP状态码返回200说明HTTP协议层面被正常处理
-                        if (response.status === 200) {
-                            // response 是http请求的响应返回
-                            // res 是业务层面的数据
-                            let res = response.data
-                            notification.success({
-                                message: res.message,
-                            })
-                            resolve(res)
-                        } else {
-                            notification.error({
-                                message: response.status,
-                            })
-                            reject(response.data)
-                        }
-                    }
+                            // response 是http请求的响应 response.data 可以拿到业务层的数据
+                            resolve(response.data)
                     ).catch(() => {
                         Modal.error({
                             title: "请求发送失败",
