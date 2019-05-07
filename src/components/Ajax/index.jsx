@@ -31,7 +31,6 @@ export default class Ajax {
                     // response 是http请求的响应 response.data 可以拿到业务层的数据
                     ).catch(() => message.error("请求发送失败"))
                     })
-                }
             )
         )
 }
