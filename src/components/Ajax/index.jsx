@@ -34,17 +34,10 @@ export default class Ajax {
                             // response 是http请求的响应返回
                             // res 是业务层面的数据
                             let res = response.data
-                            // 业务状态码返回200说明业务层面请求被正常处理
-                            if (res.status === 200) {
-                                notification.success({
-                                    message: res.message,
-                                })
-                                resolve(res.data)
-                            } else {
-                                notification.error({
-                                    message: res.message,
-                                })
-                            }
+                            notification.success({
+                                message: res.message,
+                            })
+                            resolve(res)
                         } else {
                             notification.error({
                                 message: response.status,
