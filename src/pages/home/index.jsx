@@ -1,5 +1,4 @@
-import React from "react"
-import '../../style/common.scss'
+import React from "react";
 import {
   G2,
   Chart,
@@ -16,7 +15,7 @@ import {
   Util
 } from "bizcharts";
 
-export default class Home extends React.Component {
+class Basic extends React.Component {
   render() {
     const data = [
       {
@@ -65,7 +64,7 @@ export default class Home extends React.Component {
       }
     };
     return (
-      <div className="home-wrap">
+      <div>
         <Chart height={400} data={data} scale={cols} forceFit>
           <Axis name="year" />
           <Axis name="value" />
@@ -90,3 +89,5 @@ export default class Home extends React.Component {
     );
   }
 }
+
+export default Home;
