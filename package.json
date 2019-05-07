@@ -6,6 +6,7 @@
   "dependencies": {
     "antd": "^3.16.1",
     "axios": "^0.18.0",
+    "bizcharts": "^3.5.2",
     "gh-pages": "^2.0.1",
     "jspon": "^1.0.1",
     "node-sass": "^4.11.0",
