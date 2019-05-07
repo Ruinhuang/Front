@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react
 import '../../style/common.scss'
 import {
   G2,
@@ -65,7 +65,7 @@ class Home extends React.Component {
       }
     };
     return (
-      <div class="home-wrap">
+      <div class="content-wrap">
         <Chart height={400} data={data} scale={cols} forceFit>
           <Axis name="year" />
           <Axis name="value" />
