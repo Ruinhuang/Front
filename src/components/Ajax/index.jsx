@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { notification, Modal, message } from 'antd';
+import { message } from 'antd';
 export default class Ajax {
     static ajax = (
         method,
@@ -27,14 +27,9 @@ export default class Ajax {
                                 baseURL,
                                 timeout,
                             }
-                    ).then(response => {
-                            // response 是http请求的响应 response.data 可以拿到业务层的数据
-                            resolve(response.data)
-                    ).catch(() => {
-                        Modal.error({
-                            title: "请求发送失败",
-                            content: "网络状态异常",
-                        })
+                    ).then(response => resolve(response.data))
+                    // response 是http请求的响应 response.data 可以拿到业务层的数据
+                    ).catch(() => message.error("请求发送失败"))
                     })
                 }
             )
