@@ -15,7 +15,7 @@ import {
   Util
 } from "bizcharts";
 
-class Basic extends React.Component {
+class Home extends React.Component {
   render() {
     const data = [
       {
