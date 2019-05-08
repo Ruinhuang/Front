@@ -57,7 +57,7 @@ class Home extends React.Component {
       }
     };
     return (
-      <div class="content-wrap">
+      <div className="content-wrap">
         <Card title="走势">
           <Chart height={400} data={data} scale={cols} forceFit>
             <Axis name="day" />

@@ -6,6 +6,7 @@ import Login from "./pages/form/login";
 import Register from "./pages/form/register";
 import UserTable from "./pages/manager/userTable";
 import OrderTable from "./pages/manager/orderTable";
+import PermissionTable from "./pages/manager/permissionTable";
 import adTable from "./pages/ad/"
 import MainPage from "./mainpage";
 import Home from "./pages/home";
@@ -38,6 +39,7 @@ export default class IRouter extends Component {
                       <Route path="/ads/:page" component={adTable} />
                       <Route path="/manager/users" component={UserTable} />
                       <Route path="/manager/orders" component={OrderTable} />
+                      <Route path="/manager/permission" component={PermissionTable} />
                     </Switch>
                   </div>
                 </MainPage>

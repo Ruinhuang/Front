@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card } from 'antd';
 import BaseForm from '../../components/BaseForm'
-import BaseTable from '../../components/BaseTable'
 import '../../style/common.scss'
 
 
@@ -78,14 +77,6 @@ export default class userTable extends React.Component {
                 <Card>
                     <BaseForm layout="inline" submitFunc={() => { }} switchFunc={() => { }} formList={this.formList} />
                 </Card>
-                <BaseTable
-                    columns={columns}
-                // updateSelectedItem={Utils.updateSelectedItem.bind(this)}
-                // selectedRowKeys={this.state.selectedRowKeys}
-                // selectedItem={this.state.selectedItem}
-                // dataSource={this.state.list}
-                // pagination={this.state.pagination}
-                />
             </div>
         )
     }
