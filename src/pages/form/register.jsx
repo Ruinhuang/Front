@@ -27,9 +27,9 @@ class FormRegister extends React.Component {
   }
 
   passwordValidator = (rule, value, callback) => {
-    var pwd = this.props.form.getFieldsValue().password
-    console.log(rule, value, pwd)
-    if (value && value !== pwd) {
+    let password = this.props.form.getFieldsValue().password
+    console.log(rule, value, password)
+    if (value && value !== password) {
       callback('密码输入不一致！')
     }
     callback()
@@ -94,7 +94,7 @@ class FormRegister extends React.Component {
           <Form layout="horizontal">
             <FormItem label="用户名" {...formItemLayout}>
               {
-                getFieldDecorator('userName', {
+                getFieldDecorator('username', {
                   initialValue: '',
                   rules: [
                     {
@@ -133,14 +133,13 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="确认密码" {...formItemLayout}>
               {
-                getFieldDecorator('passwordcomfire', {
+                getFieldDecorator('repeat', {
                   rules: [
                     {
                       required: true,
                       message: '请再次输入密码',
                     },
                     {
-                      validator: this.passwordValidator,
                     }
                   ],
                 },
@@ -151,7 +150,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="用户角色" {...formItemLayout}>
               {
-                getFieldDecorator('userType', {
+                getFieldDecorator('role', {
                   initialValue: "0",
                   rules: [{
                     required: true,
@@ -203,7 +202,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="身份证号" {...formItemLayout}>
               {
-                getFieldDecorator('idCard', {
+                getFieldDecorator('idcard', {
                   initialValue: '',
                   rules: [
                     {
