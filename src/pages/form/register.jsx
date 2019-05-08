@@ -102,7 +102,7 @@ class FormRegister extends React.Component {
                       message: '用户名不能为空'
                     },
                     {
-                      min: 5, max: 10,
+                      min: 1, max: 16,
                       message: '长度不在范围内'
                     },
                     {
@@ -140,6 +140,7 @@ class FormRegister extends React.Component {
                       message: '请再次输入密码',
                     },
                     {
+		      validator: this.passwordValidator,
                     }
                   ],
                 },
@@ -175,6 +176,10 @@ class FormRegister extends React.Component {
                       required: true,
                       message: '手机号不能为空'
                     },
+                    {
+                      pattern: new RegExp('^\\d+$', 'g'),
+                      message: '手机号码必须为数字'
+                    }
                   ]
                 })(
                   <Input placeholder="请输入手机号码" />
