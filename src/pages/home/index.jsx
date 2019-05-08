@@ -1,91 +1,85 @@
 import React from "react"
+import { Card } from "antd"
 import '../../style/common.scss'
 import {
-  G2,
   Chart,
   Geom,
   Axis,
   Tooltip,
-  Coord,
-  Label,
-  Legend,
-  View,
-  Guide,
-  Shape,
-  Facet,
-  Util
 } from "bizcharts";
 
 class Home extends React.Component {
   render() {
     const data = [
       {
-        year: "1991",
-        value: 3
+        day: "1",
+        value: 0.89
       },
       {
-        year: "1992",
-        value: 4
+        day: "2",
+        value: 0.99
       },
       {
-        year: "1993",
-        value: 3.5
+        day: "3",
+        value: 0.96
       },
       {
-        year: "1994",
-        value: 5
+        day: "4",
+        value: 1.12
       },
       {
-        year: "1995",
-        value: 4.9
+        day: "5",
+        value: 1.22
       },
       {
-        year: "1996",
-        value: 6
+        day: "6",
+        value: 0.88
       },
       {
-        year: "1997",
-        value: 7
+        day: "7",
+        value: 1.11
       },
       {
-        year: "1998",
-        value: 9
+        day: "8",
+        value: 1.09
       },
       {
-        year: "1999",
-        value: 13
+        day: "9",
+        value: 1.3
       }
     ];
     const cols = {
       value: {
         min: 0
       },
-      year: {
+      day: {
         range: [0, 1]
       }
     };
     return (
       <div class="content-wrap">
-        <Chart height={400} data={data} scale={cols} forceFit>
-          <Axis name="year" />
-          <Axis name="value" />
-          <Tooltip
-            crosshairs={{
-              type: "y"
-            }}
-          />
-          <Geom type="line" position="year*value" size={2} />
-          <Geom
-            type="point"
-            position="year*value"
-            size={4}
-            shape={"circle"}
-            style={{
-              stroke: "#fff",
-              lineWidth: 1
-            }}
-          />
-        </Chart>
+        <Card title="走势">
+          <Chart height={400} data={data} scale={cols} forceFit>
+            <Axis name="day" />
+            <Axis name="value" />
+            <Tooltip
+              crosshairs={{
+                type: "y"
+              }}
+            />
+            <Geom type="line" position="day*value" size={2} />
+            <Geom
+              type="point"
+              position="day*value"
+              size={4}
+              shape={"circle"}
+              style={{
+                stroke: "#fff",
+                lineWidth: 1
+              }}
+            />
+          </Chart>
+        </Card>
       </div>
     );
   }

@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import { goToUrl } from '../../utils'
 import { Route, HashRouter, Switch } from 'react-router-dom'
-import { Form, Card, Input, Icon, Button, message, } from 'antd';
+import { Modal, Form, Card, Input, Icon, Button, message, } from 'antd';
 export default class StepForm extends Component {
     render() {
         return (
             <HashRouter>
                 <div>
-                    <Route path="/admin/ads"
+                    <Route path="/ads"
                         render={() =>
                             <div>
                                 <Switch>
                                     <Route
                                         exact={true}
-                                        path="/admin/ads/info"
+                                        path="/ads/info"
                                         render={() =>
                                             <Info
                                                 selectedItem={this.props.selectedItem}
@@ -21,7 +21,7 @@ export default class StepForm extends Component {
                                         }
                                     />
                                     <Route
-                                        path="/admin/ads/confirm"
+                                        path="/ads/confirm"
                                         render={() =>
                                             <Confirm
                                                 refreshData={this.props.refreshData}
@@ -46,7 +46,7 @@ class FormInfo extends React.Component {
             if (!err) {// ${}  是变量
                 message.success("正在下单")
                 // 前端验证完毕, 向后端发起调用
-                goToUrl('/admin/ads/confirm')
+                goToUrl('/ads/confirm')
             }
         });
     };
@@ -127,8 +127,10 @@ const Info = Form.create()(FormInfo)
 
 class FormConfirm extends React.Component {
     handleSubmit = () => {
-        message.success(`请等待商户确认`)
-        goToUrl('/admin/ads/index')
+        goToUrl('/ads/index')
+        Modal.success({
+            title:"请等待商户确认"
+        })
         this.props.refreshData()
     }
     render() {

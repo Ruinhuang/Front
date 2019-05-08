@@ -5,7 +5,7 @@ import Footer from "./components/Footer";
 import NavLeft from "./components/NavLeft";
 import './style/common.scss'
 import 'antd/dist/antd.css'
-export default class Admin extends React.Component {
+export default class MainPage extends React.Component {
   render() {
     return (
       <Row className="container">

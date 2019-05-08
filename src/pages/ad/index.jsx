@@ -29,7 +29,7 @@ export default class adTable extends Component {
   }
   componentWillMount = () => {
     //  初始化载入ads页面时， 将路由跳转到ads/index
-    goToUrl('/admin/ads/index')
+    goToUrl('/ads/index')
   }
 
   componentDidMount = () => {
@@ -144,7 +144,7 @@ export default class adTable extends Component {
           onCancel={
             () => {
               message.warning('下单中断')
-              goToUrl('/admin/ads/index')
+              goToUrl('/ads/index')
               this.request()
             }
           }
@@ -161,7 +161,7 @@ export default class adTable extends Component {
           <Button
             type="primary"
           >
-            <NavLink to="/admin/ads/info">下单</NavLink>
+            <NavLink to="/ads/info">下单</NavLink>
           </Button>
         </Card>
         <Table
