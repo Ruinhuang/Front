@@ -1,38 +1,16 @@
+// 采用重复编码的方式保障传入的动作描述与定义的一致
 export const actionTypes = {
-    CHANGE_INPUT_VALUE: 'change_input_value',
-    ADD_TODO_ITEM: 'add_todo_item',
-    DELETE_TODO_ITEM: 'delete_todo_item',
-    INIT_LIST: 'init_list',
-    GET_INIT_LIST: 'get_init_list',
+    CLEAR_LOGIN_DATA: 'clear_login_data',
+    SAVE_LOGIN_DATA: 'save_login_data',
 }
 
 export const actionCreator = {
-    // 引入redux-thunk后, 可以返回一个函数, dispatch检测到传入的对象如果是函数,会执行函数
-    getInputAction: (value) => {
-        return (dispatch) => {
-            const action = {
-                type: actionTypes.CHANGE_INPUT_VALUE,
-                value,
-            }
-            dispatch(action)
-        }
-    },
-
-    clickButtonAction: () => ({
-        type: actionTypes.ADD_TODO_ITEM,
+    clearLoginData: () => ({
+        type: actionTypes.CLEAR_LOGIN_DATA,
     }),
 
-    deleteItemAction: (index) => ({
-        type: actionTypes.DELETE_TODO_ITEM,
-        index,
-    }),
-
-    initListAction: (data) => ({
-        type: actionTypes.INIT_LIST,
+    saveLoginData: (data) => ({
+        type: actionTypes.SAVE_LOGIN_DATA,
         data,
-    }),
-
-    getInitList: () => ({
-        type: actionTypes.GET_INIT_LIST,
     }),
 }

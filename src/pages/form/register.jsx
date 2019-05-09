@@ -94,7 +94,7 @@ class FormRegister extends React.Component {
           <Form layout="horizontal">
             <FormItem label="用户名" {...formItemLayout}>
               {
-                getFieldDecorator('username', {
+                getFieldDecorator('userName', {
                   initialValue: '',
                   rules: [
                     {
@@ -151,7 +151,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="用户角色" {...formItemLayout}>
               {
-                getFieldDecorator('role', {
+                getFieldDecorator('userType', {
                   initialValue: "0",
                   rules: [{
                     required: true,

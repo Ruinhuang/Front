@@ -9,10 +9,6 @@ import { goToUrl } from "../../utils"; //导入公共机制
 
 class Header extends React.Component {
     //声明 state变量 在setState之前要声明变量
-    componentWillMount() {
-
-    }
-
     render() {
         return (
             <div className="header">
@@ -25,8 +21,12 @@ class Header extends React.Component {
                         {
                             this.props.isLogin ?
                                 <span>
-                                    <Button>{this.props.user.username}</Button>
-                                    <Button onClick={this.props.logout}>安全登出</Button>
+                                    <Button>{this.props.user.userName}</Button>
+                                    <Button onClick={() => {
+                                        goToUrl('/login')
+                                        this.props.clearLoginData()
+                                    }}
+                                    >安全登出</Button>
                                 </span>
                                 :
                                 <span>
@@ -50,9 +50,8 @@ const mapStateToProps = (state) => ({
 // props 方法
 const mapDispatchToProps = (dispatch) => {
     return {
-        logout() {
-            dispatch(actionCreator.Logout())
-            goToUrl('/register')
+        clearLoginData() {
+            dispatch(actionCreator.clearLoginData())
         },
     }
 }

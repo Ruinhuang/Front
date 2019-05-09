@@ -1,5 +1,8 @@
 import React from "react";
+import { connect } from "react-redux"
+import { actionCreator } from "../../redux/action"
 import { Button, Card, Form, Icon, Input, message } from "antd";
+import { goToUrl } from "../../utils"; //导入公共机制
 import Ajax from '../../components/Ajax'
 
 const FormItem = Form.Item;
@@ -12,11 +15,18 @@ class FormLogin extends React.Component {
       formData,
       'http://192.168.0.105:8080',
     )
-      .then(() => { }).catch(() => { })
+      .then(
+        (data) => {
+          if (true) {
+            this.props.saveLoginData(data.data)
+            goToUrl('/home')
+          } else { }
+        }
+      ).catch(() => { })
   }
 
   handleSubmit = () => {//绑定提交事件进行校验
-    let formData = this.props.form.getFieldsValue();// 可以(获取表单中)object对象
+    let formData = this.props.form.getFieldsValue()// 可以(获取表单中)object对象
     this.props.form.validateFields((err, values) => {
       if (!err) {// ${}  是变量
         this.post(formData)
@@ -95,4 +105,20 @@ class FormLogin extends React.Component {
   }
 }
 
-export default Form.create()(FormLogin);
+// props 属性
+const mapStateToProps = (state) => ({
+  isLogin: state.isLogin,
+  user: state.user
+})
+
+// props 方法
+const mapDispatchToProps = (dispatch) => {
+  return {
+    saveLoginData(data) {
+      dispatch(actionCreator.saveLoginData(data))
+    },
+  }
+}
+
+// 把逻辑方法与UI组件连接起来变成新容器组件
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(FormLogin))
