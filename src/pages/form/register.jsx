@@ -27,9 +27,9 @@ class FormRegister extends React.Component {
   }
 
   passwordValidator = (rule, value, callback) => {
-    var pwd = this.props.form.getFieldsValue().password
-    console.log(rule, value, pwd)
-    if (value && value !== pwd) {
+    let password = this.props.form.getFieldsValue().password
+    console.log(rule, value, password)
+    if (value && value !== password) {
       callback('密码输入不一致！')
     }
     callback()
@@ -94,7 +94,7 @@ class FormRegister extends React.Component {
           <Form layout="horizontal">
             <FormItem label="用户名" {...formItemLayout}>
               {
-                getFieldDecorator('userName', {
+                getFieldDecorator('username', {
                   initialValue: '',
                   rules: [
                     {
@@ -102,7 +102,7 @@ class FormRegister extends React.Component {
                       message: '用户名不能为空'
                     },
                     {
-                      min: 5, max: 10,
+                      min: 1, max: 16,
                       message: '长度不在范围内'
                     },
                     {
@@ -133,14 +133,14 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="确认密码" {...formItemLayout}>
               {
-                getFieldDecorator('passwordcomfire', {
+                getFieldDecorator('repeat', {
                   rules: [
                     {
                       required: true,
                       message: '请再次输入密码',
                     },
                     {
-                      validator: this.passwordValidator,
+		      validator: this.passwordValidator,
                     }
                   ],
                 },
@@ -151,7 +151,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="用户角色" {...formItemLayout}>
               {
-                getFieldDecorator('userType', {
+                getFieldDecorator('role', {
                   initialValue: "0",
                   rules: [{
                     required: true,
@@ -176,6 +176,10 @@ class FormRegister extends React.Component {
                       required: true,
                       message: '手机号不能为空'
                     },
+                    {
+                      pattern: new RegExp('^\\d+$', 'g'),
+                      message: '手机号码必须为数字'
+                    }
                   ]
                 })(
                   <Input placeholder="请输入手机号码" />
@@ -203,7 +207,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="身份证号" {...formItemLayout}>
               {
-                getFieldDecorator('idCard', {
+                getFieldDecorator('idcard', {
                   initialValue: '',
                   rules: [
                     {
