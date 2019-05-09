@@ -1,31 +1,16 @@
-// src/components/Header/index.js
 import React from "react";
+import { connect } from "react-redux"
+import { actionCreator } from "../../redux/action"
+import Logo from "./logo.svg"
 import { Row, Col, Button } from "antd";
 import "./index.scss";
-import { formateDate, goToUrl } from "../../utils"; //导入公共机制
-// import axios from "../axios"; //引入axios组件
+import { goToUrl } from "../../utils"; //导入公共机制
 
 
 class Header extends React.Component {
     //声明 state变量 在setState之前要声明变量
-    state = {
-        isLogin: false,
-        sysTime: undefined,
-        userName: "用户007",
-    };
-
     componentWillMount() {
-        /*
-            创建定时器,每隔一秒获取时间
-            * 获取时间的方法
-            */
-        setInterval(() => {
-            // new Date();
-            let sysTime = formateDate(new Date().getTime());
-            this.setState({
-                sysTime
-            });
-        }, 1000);
+
     }
 
     render() {
@@ -33,27 +18,20 @@ class Header extends React.Component {
             <div className="header">
                 <Row className="header-top">
                     <Col span={6} className="logo">
-                        <img src="/assets/logo-ant.svg" alt="" />
-                        <span>{this.state.sysTime}</span>
+                        <img src={Logo} alt="" />
+                        <span>Logo</span>
                     </Col>
                     <Col span={18} style={{ float: "right" }}>
                         {
-                            this.state.isLogin ?
-                                <Button
-                                >{this.state.userName}
-                                </Button>
+                            this.props.isLogin ?
+                                <span>
+                                    <Button>{this.props.user.username}</Button>
+                                    <Button onClick={this.props.logout}>安全登出</Button>
+                                </span>
                                 :
                                 <span>
-                                    <Button
-                                        onClick={() => goToUrl('/login')}
-                                    >
-                                        登录
-                        </Button>
-                                    <Button
-                                        onClick={() => goToUrl('/register')}
-                                    >
-                                        注册
-                        </Button>
+                                    <Button onClick={() => goToUrl('/login')}>登录</Button>
+                                    <Button onClick={() => goToUrl('/register')}>注册</Button>
                                 </span>
                         }
                     </Col>
@@ -63,4 +41,21 @@ class Header extends React.Component {
     }
 }
 
-export default Header
+// props 属性
+const mapStateToProps = (state) => ({
+    isLogin: state.isLogin,
+    user: state.user
+})
+
+// props 方法
+const mapDispatchToProps = (dispatch) => {
+    return {
+        logout() {
+            dispatch(actionCreator.Logout())
+            goToUrl('/register')
+        },
+    }
+}
+
+// 把逻辑方法与UI组件连接起来变成新容器组件
+export default connect(mapStateToProps, mapDispatchToProps)(Header)
