@@ -1,7 +1,12 @@
 const menuList = [
     {
         title: '首页',
-        key: '/home'
+        key: '/home',
+        // children: [{
+        //     title: '子页',
+        //     key: '/home/child',
+
+        // }]
     },
     {
         title: '用户管理',
@@ -22,6 +27,10 @@ const menuList = [
     {
         title: '广告',
         key: '/ads/index',
+    },
+    {
+        title: '游戏',
+        key: '/games',
     },
 ];
 export default menuList;

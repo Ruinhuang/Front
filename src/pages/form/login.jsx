@@ -12,17 +12,20 @@ class FormLogin extends React.Component {
       'post',
       '/user-login',
       formData,
-      'http://192.168.0.105:8080',
+      // 'http://192.168.0.105:8080',
+      'https://mook.sunlin.fun/mock/9',
     )
       .then(
         (res) => {
           this.props.saveLoginData(res.data)
-          goToUrl('/home')
           sessionStorage.setItem("token", res.data.token);
           if (this.autoLogin) {
             //将token存入localStorage
             localStorage.setItem("token", res.data.token);
+          } else {
+            localStorage.removeItem("token");
           }
+          goToUrl('/home')
         }
       ).catch(() => { })
   }

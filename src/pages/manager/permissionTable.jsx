@@ -3,6 +3,7 @@ import { Table, message, Card, Button, Form, Modal, Input, Select, Tree, Transfe
 import Ajax from "../../components/Ajax"
 import menuConfig from "./../../config/menuConfig";
 import { selectTag, pagination } from "../../utils"
+import { getMenus } from '../../components/Api'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -70,7 +71,8 @@ export default class PermissionUser extends React.Component {
         this.setState({
             isPermVisible: true,
             detailInfo: item,
-            menuInfo: item.menus
+            // menuInfo: item.menus,
+            menuInfo: (getMenus(item.role)).map(item => item.key),
         });
     };
 
@@ -78,7 +80,7 @@ export default class PermissionUser extends React.Component {
         // 获取表单的值 ,添加wrappedComponentRef属性
         let data = this.permForm.props.form.getFieldsValue();
         data.role_key = this.state.selectedItem.key; // 将角色key传回
-        data.menus = this.state.menuInfo; // 需要将menus数据  传到接口
+        data.menus = this.state.menuInfo; // 需要将menus数据传到接口
 
         this.setState({
             isPermVisible: false
@@ -168,9 +170,10 @@ export default class PermissionUser extends React.Component {
                 }
             },
             {
-                title: "访问权限",
-                dataIndex: "menus",
-                render: (menus) => JSON.stringify(menus)
+                title: "可访问功能",
+                dataIndex: "role",
+                render: (role) =>
+                    getMenus(role).map(item => `${item.title}, `)
             },
         ];
         return (

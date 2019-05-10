@@ -1,16 +1,20 @@
-import Ajax from '../../components/Ajax'
 // 本地缓存了菜单列表
 const menus = {
     undefined: [
         {
             title: '首页',
-            key: '/home'
+            key: '/home',
+            // children: [{
+            //     title: '子页',
+            //     key: '/home/child',
+
+            // }]
         },
     ],
     1: [
         {
             title: '首页',
-            key: '/home'
+            key: '/home',
         },
         {
             title: '用户管理',
@@ -56,22 +60,3 @@ const menus = {
 }
 
 export const getMenus = (userType) => menus[userType]
-
-export const autoLoginByToken = (token) =>
-    new Promise((resolve, reject) => {
-        Ajax.ajax(
-            'post',
-            '/user-login',
-            { 'token': token },
-            'http://192.168.0.105:8080',
-        )
-            .then(
-                (res) => {
-                    this.props.saveLoginData(res.data)
-                    sessionStorage.setItem("token", res.data.token);
-                    return resolve(res.data)
-                }
-            ).catch((error) => { 
-                console.log("token 自动登录失败", error) })
-    }
-    )
