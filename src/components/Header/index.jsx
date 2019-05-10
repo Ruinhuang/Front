@@ -24,6 +24,9 @@ class Header extends React.Component {
                                     <Button>{this.props.user.userName}</Button>
                                     <Button onClick={() => {
                                         goToUrl('/login')
+                                        // 安全退出 需要清空本地缓存的token
+                                        sessionStorage.removeItem("token")
+                                        localStorage.removeItem("token")
                                         this.props.clearLoginData()
                                     }}
                                     >安全登出</Button>

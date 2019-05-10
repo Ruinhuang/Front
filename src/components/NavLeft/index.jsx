@@ -1,16 +1,18 @@
 import React from "react";
-import MenuConfig from "./../../config/menuConfig"; //导入menuConfig这个文件
+import { connect } from "react-redux"
 import { Menu } from "antd"; //导入子组件菜单
 import { NavLink } from 'react-router-dom'
+import { getMenus } from '../Api'
 import "./index.scss";
 
 const SubMenu = Menu.SubMenu;
 
-export default class NavLeft extends React.Component {
+class NavLeft extends React.Component {
   componentWillMount() {
-    //通过MenuConfig读取文件
+    // 依据redux中保存的用户类型返回导航菜单， 未登录用户默认返回undefined
+    let menus = getMenus(this.props.userType)
     //通过递归(遍历)实现菜单(是一个List)的渲染
-    const menuTreeNode = this.renderMenu(MenuConfig);
+    const menuTreeNode = this.renderMenu(menus);
     this.setState(
       { menuTreeNode }
     )
@@ -47,3 +49,11 @@ export default class NavLeft extends React.Component {
     );
   }
 }
+// props 属性
+const mapStateToProps = (state) => ({
+  isLogin: state.isLogin,
+  user: state.user
+})
+
+// 把逻辑方法与UI组件连接起来变成新容器组件
+export default connect(mapStateToProps)(NavLeft)

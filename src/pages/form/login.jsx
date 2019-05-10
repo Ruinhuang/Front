@@ -1,13 +1,12 @@
 import React from "react";
 import { connect } from "react-redux"
 import { actionCreator } from "../../redux/action"
-import { Button, Card, Form, Icon, Input, message } from "antd";
+import { Button, Card, Form, Icon, Input, Checkbox, message } from "antd";
 import { goToUrl } from "../../utils"; //导入公共机制
 import Ajax from '../../components/Ajax'
 
 const FormItem = Form.Item;
 class FormLogin extends React.Component {
-
   post = (formData) => {
     Ajax.ajax(
       'post',
@@ -16,11 +15,14 @@ class FormLogin extends React.Component {
       'http://192.168.0.105:8080',
     )
       .then(
-        (data) => {
-          if (true) {
-            this.props.saveLoginData(data.data)
-            goToUrl('/home')
-          } else { }
+        (res) => {
+          this.props.saveLoginData(res.data)
+          goToUrl('/home')
+          sessionStorage.setItem("token", res.data.token);
+          if (this.autoLogin) {
+            //将token存入localStorage
+            localStorage.setItem("token", res.data.token);
+          }
         }
       ).catch(() => { })
   }
@@ -29,6 +31,7 @@ class FormLogin extends React.Component {
     let formData = this.props.form.getFieldsValue()// 可以(获取表单中)object对象
     this.props.form.validateFields((err, values) => {
       if (!err) {// ${}  是变量
+        this.autoLogin = formData.autoLogin
         this.post(formData)
       }
     });
@@ -36,6 +39,15 @@ class FormLogin extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const offsetLayout = {
+      wrapperCol: {
+        xs: 24,
+        sm: {
+          span: 12,
+          offset: 4
+        }
+      }
+    };
     const formItemLayout = {
       labelCol: {
         xs: 24,
@@ -88,6 +100,16 @@ class FormLogin extends React.Component {
                 )
               }
 
+            </FormItem>
+            <FormItem  {...offsetLayout}>
+              {
+                getFieldDecorator('autoLogin', {
+                  valuePropName: 'checked',
+                  initialValue: true,
+                })(
+                  <Checkbox>自动登录</Checkbox>
+                )
+              }
             </FormItem>
             <FormItem
               style={{
