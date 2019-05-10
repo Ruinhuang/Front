@@ -61,7 +61,14 @@ export default class Ajax {
 				// Promise对象的异步操作抛出错误，状态会变为rejected，会调用catch指定的回调函数处理异常
 				// then方法指定的回调函数，如果运行中抛出错误，也会被catch方法捕获。
 				// catch方法返回的还是一个 Promise 对象，后面可以接着调用then方法
-			).catch(error => console.log('axios catch in', JSON.stringify(error)))
+			).catch(error => {
+				let errorInfo = `
+				${error.response.data.status} ${error.response.data.error}: ${error.response.data.message} 
+				`
+				message.error(errorInfo)
+			}
+				// 若没有error.response的返回值，则会报错，继续抛出异常
+			).catch(() => message.error('网络异常'))
 		}
 	)
 }
