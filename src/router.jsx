@@ -4,15 +4,12 @@ import App from "./app"
 import Common from "./common"
 import Login from "./pages/form/login";
 import Register from "./pages/form/register";
-import UserTable from "./pages/manager/userTable";
-import OrderTable from "./pages/manager/orderTable";
-import PermissionTable from "./pages/manager/permissionTable";
-import adTable from "./pages/ad/"
 import MainPage from "./mainpage";
-import Home from "./pages/home";
 import Nomatch from "./pages/nomatch"
+import { connect } from "react-redux"
+import { getRoutes } from "./components/Api"
 
-export default class IRouter extends Component {
+class IRouter extends Component {
   render() {
     return (
       <HashRouter>
@@ -28,22 +25,20 @@ export default class IRouter extends Component {
               }
             />
             <Route path="/"
-              render={() =>
-                <MainPage>
-                  <div>
-                    <Switch>
-                      <Route exact={true} path="/" >
-                        <Redirect to="/home/" />
-                      </Route>
-                      <Route path="/home" component={Home} />
-                      <Route path="/ads/:page" component={adTable} />
-                      <Route path="/manager/users" component={UserTable} />
-                      <Route path="/manager/orders" component={OrderTable} />
-                      <Route path="/manager/permission" component={PermissionTable} />
-                    </Switch>
-                  </div>
-                </MainPage>
-              }
+              render={() => {
+
+                return (
+                  <MainPage>
+                    <div>
+                      <Switch>
+                        <Route exact={true} path="/" >
+                          <Redirect to="/home/" />
+                        </Route>
+                        {getRoutes(this.props.user.userType)}
+                      </Switch>
+                    </div>
+                  </MainPage>)
+              }}
             />
             <Route component={Nomatch} />
           </Switch>
@@ -52,3 +47,11 @@ export default class IRouter extends Component {
     );
   }
 }
+
+// props 属性
+const mapStateToProps = (state) => ({
+  user: state.user
+})
+
+// 把逻辑方法与UI组件连接起来变成新容器组件
+export default connect(mapStateToProps)(IRouter)

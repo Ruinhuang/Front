@@ -1,3 +1,11 @@
+import React from 'react'
+import UserTable from "../../pages/manager/userTable";
+import AdTable from "../../pages/manager/adTable";
+import OrderTable from "../../pages/manager/orderTable";
+import PermissionTable from "../../pages/manager/permissionTable";
+import adTable from "../../pages/ad/"
+import Home from "../../pages/home";
+import { Route } from 'react-router-dom'
 // 本地缓存了菜单列表
 const menus = {
     undefined: [
@@ -58,5 +66,15 @@ const menus = {
         },
     ],
 }
+// 菜单列表对应的权限路由规则
+const routeMap = {
+    '/home': <Route key="/home" path="/home" component={Home} />,
+    '/ads/index': <Route key="/ads/:page" path="/ads/:page" component={adTable} />,
+    '/manager/users': <Route key="/manager/users" path="/manager/users" component={UserTable} />,
+    '/manager/orders': <Route key="/manager/orders" path="/manager/orders" component={OrderTable} />,
+    '/manager/ads': <Route key="/manager/ads" path="/manager/ads" component={AdTable} />,
+    '/manager/permission': <Route key="/manager/permission" path="/manager/permission" component={PermissionTable} />,
+}
 
 export const getMenus = (userType) => menus[userType]
+export const getRoutes = (userType) => getMenus(userType).map(item => item.key).map(item => routeMap[item])
