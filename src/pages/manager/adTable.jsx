@@ -1,14 +1,15 @@
 import React from 'react';
-import { Input, Radio, Table, Form, Modal, Button, message, Badge, Select } from 'antd';
+import { Card, Input, Radio, Table, Form, Modal, Button, message, Badge, Select } from 'antd';
 import Ajax from '../../components/Ajax'
 import { pagination, selectTag } from '../../utils/index'
 import '../../style/common.scss'
+import BaseForm from '../../components/BaseForm'
 
 const FormItem = Form.Item
 const Option = Select.Option
 const RadioGroup = Radio.Group
 
-export default class userTable extends React.Component {
+export default class adTable extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -23,6 +24,26 @@ export default class userTable extends React.Component {
             sortOrder: false,
         }
         this.page = 1
+        this.formList = [
+            {
+                type: 'SELECT',
+                label: '订单类型',
+                field: 'type',
+                placeholder: '全部',
+                initialValue: '',
+                width: 100,
+                list: [{ id: '', name: '全部' }, { id: '1', name: '买入' }, { id: '2', name: '卖出' }]
+            },
+            {
+                type: 'SELECT',
+                label: '订单状态',
+                field: 'status',
+                placeholder: '全部',
+                initialValue: '1',
+                width: 100,
+                list: [{ id: '0', name: '全部' }, { id: '1', name: '待付款' }, { id: '2', name: '待确认' }, { id: '3', name: '已完成' }, { id: '4', name: '已过期' }]
+            },
+        ]
     }
 
     componentDidMount = () => {
@@ -66,39 +87,42 @@ export default class userTable extends React.Component {
             )
     }
 
-
-
     render = () => {
         const statusMap = {
-            1: <Badge status="success" text="已审批" />,
-            2: <Badge status="default" text="未审批" />,
-            3: <Badge status="error" text="冻结中" />,
+            1: <Badge status="success" text="展示中" />,
+            2: <Badge status="error" text="未展示" />,
+        }
+        const adTypeMap = {
+            1: <Badge status="success" text="买入积分" />,
+            2: <Badge status="default" text="卖出积分" />,
         }
         const columns = [
             {
-                title: 'id',
-                key: 'id',
+                title: 'adID',
+                key: 'key',
                 width: 80,
-                dataIndex: 'id',
-                sorter: (a, b) => {
-                    return a.id - b.id
-                },
-                sortOrder: this.state.sortOrder,
-                // 横向滚动头部锁定
-                // fixed: 'left',
-            },
-            {
-                title: '用户',
-                key: 'name',
-                width: 80,
-                dataIndex: 'name',
-                // fixed: 'left',
+                dataIndex: 'key',
             },
             {
                 title: '商户',
-                key: 'names',
+                key: 'name',
                 width: 80,
-                dataIndex: 'names',
+                dataIndex: 'name',
+            },
+            {
+                title: 'price',
+                key: 'price',
+                width: 80,
+                dataIndex: 'price',
+            },
+            {
+                title: '商户广告类型',
+                key: 'adType',
+                width: 80,
+                dataIndex: 'adType',
+                render: (text) => {
+                    return adTypeMap[text]
+                },
             },
             {
                 title: '状态',
@@ -107,7 +131,11 @@ export default class userTable extends React.Component {
                 dataIndex: 'status',
                 render: (text) => {
                     return statusMap[text]
-                }
+                },
+                sorter: (a, b) => {
+                    return a.status - b.status
+                },
+                sortOrder: this.state.sortOrder,
             },
             // 行内操作按钮
             // {
@@ -213,46 +241,51 @@ export default class userTable extends React.Component {
                         wrappedComponentRef={(inst) => this.userForm = inst}
                     />
                 </Modal>
-                <Button
-                    icon='edit'
-                    type="primary"
-                    disabled={this.state.selectedItems.length > 1}
-                    onClick={
-                        () => {
-                            if (this.state.selectedItems.length < 1) return
-                            this.setState(() => ({ visibleModal: 'edit' }))
-                        }
-                    }
-                >
-                    编辑
-              </Button>
-                <Button
-                    type="danger"
-                    icon="delete"
-                    onClick={
-                        () => {
-                            if (this.state.selectedItems.length < 1) return
-                            Modal.confirm({
-                                title: 'delete',
-                                content: JSON.stringify(this.state.selectedItems),
-                                onOk: (callback = () => {
-                                    message.info('删除成功')
-                                    this.setState((prevState) => ({
-                                        dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
-                                        selectedItems: [], selectedRowKeys: []
-                                    }))
-                                },
-                                ) => {
-                                    message.warning('这里改写成向后端发送验证的流程// TODO')
-                                    callback()
-                                },
+                <Card>
+                    <BaseForm layout="inline" submitFunc={() => { }} switchFunc={() => { }} formList={this.formList} />
+                </Card>
+                <Card>
+                    <Button
+                        icon='edit'
+                        type="primary"
+                        disabled={this.state.selectedItems.length > 1}
+                        onClick={
+                            () => {
+                                if (this.state.selectedItems.length < 1) return
+                                this.setState(() => ({ visibleModal: 'edit' }))
                             }
-                            )
                         }
-                    }
-                >
-                    删除
+                    >
+                        编辑
+              </Button>
+                    <Button
+                        type="danger"
+                        icon="delete"
+                        onClick={
+                            () => {
+                                if (this.state.selectedItems.length < 1) return
+                                Modal.confirm({
+                                    title: 'delete',
+                                    content: JSON.stringify(this.state.selectedItems),
+                                    onOk: (callback = () => {
+                                        message.info('删除成功')
+                                        this.setState((prevState) => ({
+                                            dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
+                                            selectedItems: [], selectedRowKeys: []
+                                        }))
+                                    },
+                                    ) => {
+                                        message.warning('这里改写成向后端发送验证的流程// TODO')
+                                        callback()
+                                    },
+                                }
+                                )
+                            }
+                        }
+                    >
+                        删除
             </Button>
+                </Card>
                 <div className="content-wrap">
                     <Table
                         size="small"
