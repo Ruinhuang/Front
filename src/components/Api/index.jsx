@@ -5,6 +5,7 @@ import OrderTable from "../../pages/manager/orderTable";
 import PermissionTable from "../../pages/manager/permissionTable";
 import adTable from "../../pages/ad/"
 import Home from "../../pages/home";
+import Publish from "../../pages/form/publish";
 import { Route } from 'react-router-dom'
 // 本地缓存了菜单列表
 const menus = {
@@ -50,8 +51,12 @@ const menus = {
             title: '广告',
             key: '/ads/index',
         },
+        {
+            title: '发布广告',
+            key: '/business/publish',
+        },
     ],
-    3: [
+    0: [
         {
             title: '首页',
             key: '/home'
@@ -74,6 +79,7 @@ const routeMap = {
     '/manager/orders': <Route key="/manager/orders" path="/manager/orders" component={OrderTable} />,
     '/manager/ads': <Route key="/manager/ads" path="/manager/ads" component={AdTable} />,
     '/manager/permission': <Route key="/manager/permission" path="/manager/permission" component={PermissionTable} />,
+    '/business/publish': <Route key="/business/publish" path="/business/publish" component={Publish} />
 }
 
 export const getMenus = (userType) => menus[userType]

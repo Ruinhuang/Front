@@ -5,7 +5,6 @@ const menuList = [
         // children: [{
         //     title: '子页',
         //     key: '/home/child',
-
         // }]
     },
     {
@@ -27,6 +26,10 @@ const menuList = [
     {
         title: '广告',
         key: '/ads/index',
+    },
+    {
+        title: '发布广告',
+        key: '/business/publish',
     },
     {
         title: '游戏',

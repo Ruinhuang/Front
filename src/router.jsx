@@ -25,22 +25,20 @@ class IRouter extends Component {
               }
             />
             <Route path="/"
-              render={() => {
-
-                return (
-                  <MainPage>
-                    <div>
-                      <Switch>
-                        <Route exact={true} path="/" >
-                          <Redirect to="/home/" />
-                        </Route>
-                        {getRoutes(this.props.user.userType)}
-                      </Switch>
-                    </div>
-                  </MainPage>)
-              }}
+              render={() =>
+                <MainPage>
+                  <div>
+                    <Switch>
+                      <Route exact={true} path="/" >
+                        <Redirect to="/home/" />
+                      </Route>
+                      {getRoutes(this.props.user.userType)}
+                      <Route component={Nomatch} />
+                    </Switch>
+                  </div>
+                </MainPage>
+              }
             />
-            <Route component={Nomatch} />
           </Switch>
         </App>
       </HashRouter >

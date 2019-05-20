@@ -10,6 +10,7 @@ import {
 } from "antd";
 import Ajax from '../../components/Ajax'
 import '../../style/common.scss'
+import {goToUrl} from '../../utils'
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -20,10 +21,12 @@ class FormRegister extends React.Component {
     Ajax.ajax(
       'post',
       '/user-register',
+      {},
       formData,
-      'http://192.168.0.105:8080',
+      "http://207.148.65.10:8080",
     )
-      .then(() => { }).catch(() => { })
+      .then(() => {message.info("注册成功")})
+      // .catch(() => { })
   }
 
   passwordValidator = (rule, value, callback) => {
@@ -162,7 +165,8 @@ class FormRegister extends React.Component {
                 )(
                   <RadioGroup>
                     <Radio value={0}>普通用户</Radio>
-                    <Radio value={1}>商户</Radio>
+                    <Radio value={1}>管理员</Radio>
+                    <Radio value={2}>商户</Radio>
                   </RadioGroup>
                 )
               }
@@ -236,6 +240,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem {...offsetLayout}>
               <Button type="primary" onClick={this.handleSubmit}>注册</Button>
+              <Button type="primary" onClick={()=>goToUrl('/login')}>去登录</Button>
             </FormItem>
           </Form>
         </Card>

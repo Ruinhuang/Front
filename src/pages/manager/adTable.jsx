@@ -63,9 +63,12 @@ export default class adTable extends React.Component {
     request = () => {
         Ajax.ajax(
             'get',
-            '/v1/ads',
-            { page: this.page },
-            'https://mook.sunlin.fun/mock/9',
+            '/ad/page',
+            { "X-BM-USER-ID": '1' },
+            // {},
+            { type: "buy" },
+            // 'https://mook.sunlin.fun/mock/9',
+            'http://45.76.14.27',
         )
             .then(
                 data => {

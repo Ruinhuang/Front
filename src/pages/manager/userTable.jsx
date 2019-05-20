@@ -17,7 +17,7 @@ class FilterForm extends React.Component {
       <Form layout="inline">
         <FormItem label="角色">
           {
-            getFieldDecorator('role',
+            getFieldDecorator('userType',
               {
                 initialValue: ""
               }
@@ -26,9 +26,9 @@ class FilterForm extends React.Component {
                 style={{ width: 100 }}
               >
                 <Option value=''>全部</Option>
-                <Option value={1}>管理员</Option>
-                <Option value={2}>商户</Option>
-                <Option value={3}>普通用户</Option>
+                <Option value="1">普通用户</Option>
+                <Option value="2">管理员</Option>
+                <Option value="3">商户</Option>
               </Select>
             )
           }
@@ -44,10 +44,10 @@ class FilterForm extends React.Component {
                 style={{ width: 100 }}
               >
                 <Option value='' >全部</Option>
-                <Option value={1}>已审批</Option>
-                {/* <Option value="1">已审批</Option> */}
-                <Option value={2}>未审批</Option>
-                <Option value={3}>冻结中</Option>
+                {/* <Option value={1}>已审批</Option> */}
+                <Option value="1">已审批</Option>
+                <Option value="2">未审批</Option>
+                <Option value="3">冻结中</Option>
               </Select>
             )
           }
@@ -70,7 +70,7 @@ class FilterForm extends React.Component {
               let rules = item => (
                 ((!ruleInfo.status) || (item.status === ruleInfo.status))
                 &&
-                ((!ruleInfo.role) || (item.role === ruleInfo.role))
+                ((!ruleInfo.userType) || (item.userType === ruleInfo.userType))
               )
               this.props.changeFilterRules(rules)
             }}
@@ -139,9 +139,10 @@ export default class userTable extends React.Component {
   request = () => {
     Ajax.ajax(
       'get',
-      '/v1/users',
+      '/query-all',
+      {},
       { page: this.page },
-      'https://mook.sunlin.fun/mock/9',
+      'http://207.148.65.10:8080',
     )
       .then(
         data => {
@@ -151,8 +152,8 @@ export default class userTable extends React.Component {
           this.setState(
             () => (
               {
-                allSource: data.list,
-                dataSource: data.list.filter(this.filterRules),
+                allSource: data.data,
+                dataSource: data.data.filter(this.filterRules),
                 loading: false,
                 pagination: pagination(data, (current) => {
                   this.page = current
@@ -176,33 +177,40 @@ export default class userTable extends React.Component {
   render = () => {
     const ButtonGroup = Button.Group
     const roleMap = {
-      1: "管理员",
-      2: "商户",
-      3: "普通用户",
+      1: "普通用户",
+      2: "管理员",
+      3: "商户",
     }
     const statusMap = {
-      1: <Badge status="success" text="已审批" />,
-      2: <Badge status="default" text="未审批" />,
-      3: <Badge status="error" text="冻结中" />,
+      "1": <Badge status="success" text="已审批" />,
+      "2": <Badge status="default" text="未审批" />,
+      "3": <Badge status="error" text="冻结中" />,
     }
     const columns = [
       {
-        title: 'id',
-        key: 'id',
+        title: 'userId',
+        key: 'userId',
         width: 80,
-        dataIndex: 'id',
+        dataIndex: 'userId',
         sorter: (a, b) => {
-          return a.id - b.id
+          return a.userId - b.userId
         },
         sortOrder: this.state.sortOrder,
         // 横向滚动头部锁定
         // fixed: 'left',
       },
       {
-        title: '用户名',
-        key: 'name',
+        title: '电话号码',
+        key: 'phone',
         width: 80,
-        dataIndex: 'name',
+        dataIndex: 'phone',
+        // fixed: 'left',
+      },
+      {
+        title: '用户名',
+        key: 'userName',
+        width: 80,
+        dataIndex: 'userName',
         // fixed: 'left',
       },
       {
@@ -213,9 +221,9 @@ export default class userTable extends React.Component {
       },
       {
         title: '角色',
-        key: 'role',
+        key: 'userType',
         width: 80,
-        dataIndex: 'role',
+        dataIndex: 'userType',
         render: (text) => {
           return roleMap[text]
         }
@@ -407,8 +415,8 @@ export default class userTable extends React.Component {
             dataSource={this.state.dataSource}
             //若没有pagination属性，会根据antd中table的默认样式，每页显示10个数据，将这一次请求获得的数据进行纯前端样式的静态的分页，*点击切换页面按钮不会发送请求
             // 若 有 pagination={false}的 设定，tab le不会分页， 此次请求获得的所有数据会全部显示出来
-            pagination={this.state.pagination}
-            // pagination={false}
+            // pagination={this.state.pagination}
+            pagination={false}
             // onChange 事件会自动传入这三个参数
             onChange={(pagination, filters, sorter) => {
               this.setState(() => ({
@@ -453,9 +461,10 @@ export default class userTable extends React.Component {
                 Modal.confirm({
                   title: '详细信息',
                   content: `
-                  ${selectedItem.name}
-                  ${roleMap[selectedItem.role]}
+                  ${selectedItem.userName}
+                  ${roleMap[selectedItem.userType]}
                   ${selectedItem.email}
+                  ${selectedItem.createdAt}
                 `,
                   onCancel: () => { },
                   onOk: () => { },
@@ -488,8 +497,8 @@ class UserForm extends React.Component {
       <Form layout="horizontal">
         <FormItem label="用户名" {...formItemLayout}>
           {
-            getFieldDecorator('name', {
-              initialValue: userInfo.name
+            getFieldDecorator('userName', {
+              initialValue: userInfo.userName
             })(
               <Input type="text" placeholder="请输入用户名" />
             )
@@ -497,12 +506,12 @@ class UserForm extends React.Component {
         </FormItem>
         <FormItem label="角色" {...formItemLayout}>
           {
-            getFieldDecorator('role', {
-              initialValue: userInfo.role
+            getFieldDecorator('userType', {
+              initialValue: userInfo.userType
             })(
               <RadioGroup>
-                <Radio value={1}>用户</Radio>
-                <Radio value={2}>商户</Radio>
+                <Radio value="1">用户</Radio>
+                <Radio value="2">商户</Radio>
               </RadioGroup>
             )
           }
@@ -513,9 +522,9 @@ class UserForm extends React.Component {
               initialValue: userInfo.status
             })(
               <Select>
-                <Option value={1}>已审核</Option>
-                <Option value={2}>未审核</Option>
-                <Option value={3}>已冻结</Option>
+                <Option value="1">已审核</Option>
+                <Option value="2">未审核</Option>
+                <Option value="3">已冻结</Option>
               </Select>
             )
           }

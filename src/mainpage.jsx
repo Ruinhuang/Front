@@ -26,11 +26,11 @@ class MainPage extends React.Component {
   autoLoginByToken = (token) =>
     new Promise((resolve, reject) => {
       Ajax.ajax(
-        'post',
-        '/user-login',
+        'get',
+        '/user/query/token',
+        {},
         { 'token': token },
-        // 'http://192.168.0.105:8080',
-        'https://mook.sunlin.fun/mock/9',
+        'http://207.148.65.10:8080',
       )
         .then(
           (res) => {

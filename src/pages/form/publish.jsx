@@ -1,12 +1,13 @@
 import React from "react";
 import { connect } from "react-redux"
 import { actionCreator } from "../../redux/action"
-import { Button, Card, Form, Icon, Input, Checkbox, message } from "antd";
+import { Button, Card, Form, Icon, Input, Checkbox, message, Radio } from "antd";
 import { goToUrl } from "../../utils"; //导入公共机制
 import Ajax from '../../components/Ajax'
 
+const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
-class FormLogin extends React.Component {
+class FormPublish extends React.Component {
   post = (formData) => {
     Ajax.ajax(
       'post',
@@ -17,15 +18,6 @@ class FormLogin extends React.Component {
     )
       .then(
         (res) => {
-          this.props.saveLoginData(res.data)
-          sessionStorage.setItem("token", res.data.token);
-          if (this.autoLogin) {
-            //将token存入localStorage
-            localStorage.setItem("token", res.data.token);
-          } else {
-            localStorage.removeItem("token");
-          }
-          goToUrl('/home')
         }
       ).catch(() => { })
   }
@@ -63,54 +55,45 @@ class FormLogin extends React.Component {
     };
     return (
       <div>
-        <Card title="登录"
+        <Card title="发表广告"
         >
           <Form
             layout="horizontal"
           >
-            <FormItem label="手机号" {...formItemLayout}>
+            <FormItem label="金额" {...formItemLayout}>
               {
                 getFieldDecorator('phone', {
                   initialValue: '',
                   rules: [
                     {
                       pattern: new RegExp('^\\d+$', 'g'),
-                      message: '手机号码必须为字母'
+                      message: '金额必须为数字'
                     },
                     {
                       required: true,
-                      message: '手机号不能为空'
+                      message: '金额不能为空'
                     },
                   ]
                 })(
-                  <Input placeholder="请输入手机号码" />
+                  <Input placeholder="请输入发布金额" />
                 )
               }
             </FormItem>
-            <FormItem
-              label="密码"
-              {...formItemLayout}
-            >
+            <FormItem label="发布类型" {...formItemLayout}>
               {
-                getFieldDecorator('password', {
-                  initialValue: '',
+                getFieldDecorator('adType', {
+                  initialValue: "0",
                   rules: [{
                     required: true,
-                    message: '密码不能为空'
-                  }]
-                })(
-                  <Input prefix={<Icon type="lock" />} type="password" placeholder="请输入密码" />
-                )
-              }
-
-            </FormItem>
-            <FormItem  {...offsetLayout}>
-              {
-                getFieldDecorator('autoLogin', {
-                  valuePropName: 'checked',
-                  initialValue: true,
-                })(
-                  <Checkbox>自动登录</Checkbox>
+                    message: '类型必选'
+                  },
+                  ]
+                }
+                )(
+                  <RadioGroup>
+                    <Radio value={0}>买入</Radio>
+                    <Radio value={1}>卖出</Radio>
+                  </RadioGroup>
                 )
               }
             </FormItem>
@@ -121,8 +104,7 @@ class FormLogin extends React.Component {
                 width: 200,
               }}
             >
-              <Button type="primary" onClick={this.handleSubmit}>登录</Button>
-              <Button type="primary" onClick={()=>goToUrl('/register')}>去注册</Button>
+              <Button type="primary" onClick={this.handleSubmit}>发布</Button>
             </FormItem>
           </Form>
         </Card>
@@ -147,4 +129,4 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 // 把逻辑方法与UI组件连接起来变成新容器组件
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(FormLogin))
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(FormPublish))

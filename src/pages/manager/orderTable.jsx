@@ -64,6 +64,7 @@ export default class adTable extends React.Component {
         Ajax.ajax(
             'get',
             '/v1/ads',
+            {},
             { page: this.page },
             'https://mook.sunlin.fun/mock/9',
         )

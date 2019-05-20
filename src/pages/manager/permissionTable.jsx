@@ -21,6 +21,7 @@ export default class PermissionUser extends React.Component {
         Ajax.ajax(
             'get',
             '/v1/roles',
+            {},
             { page: this.page },
             'https://mook.sunlin.fun/mock/9',
         )
@@ -105,6 +106,7 @@ export default class PermissionUser extends React.Component {
         Ajax.ajax(
             'get',
             '/v1/role/users',
+            {},
             { page: this.page },
             'https://mook.sunlin.fun/mock/9',
         )

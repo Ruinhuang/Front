@@ -48,6 +48,7 @@ export default class adTable extends Component {
     Ajax.ajax(
       'get',
       '/v1/users',
+      {},
       { page: this.page },
       'https://mook.sunlin.fun/mock/9',
     )
