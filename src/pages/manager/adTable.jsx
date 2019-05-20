@@ -64,6 +64,7 @@ export default class adTable extends React.Component {
         Ajax.ajax(
             'get',
             '/ad/page',
+            // '/v1/ads',
             { "X-BM-USER-ID": '1' },
             // {},
             { type: "buy" },

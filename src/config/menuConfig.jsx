@@ -35,5 +35,18 @@ const menuList = [
         title: '游戏',
         key: '/games',
     },
+    {
+        title: '我的信息',
+        key: '/user/info'
+    },
+    {
+        title: '我的广告',
+        key: '/user/ads',
+    },
+    {
+        title: '我的订单',
+        key: '/user/orders',
+
+    },
 ];
 export default menuList;

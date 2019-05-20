@@ -3,6 +3,9 @@ import UserTable from "../../pages/manager/userTable";
 import AdTable from "../../pages/manager/adTable";
 import OrderTable from "../../pages/manager/orderTable";
 import PermissionTable from "../../pages/manager/permissionTable";
+import MyInfo from "../../pages/user/myInfo";
+import MyAds from "../../pages/user/myAds";
+import MyOrders from "../../pages/user/myOrders";
 import adTable from "../../pages/ad/"
 import Home from "../../pages/home";
 import Publish from "../../pages/form/publish";
@@ -41,6 +44,10 @@ const menus = {
             title: '权限管理',
             key: '/manager/permission',
         },
+        {
+            title: '我的信息',
+            key: '/user/info'
+        },
     ],
     2: [
         {
@@ -54,6 +61,19 @@ const menus = {
         {
             title: '发布广告',
             key: '/business/publish',
+        },
+        {
+            title: '我的信息',
+            key: '/user/info'
+        },
+        {
+            title: '我的广告',
+            key: '/user/ads',
+        },
+        {
+            title: '我的订单',
+            key: '/user/orders',
+            
         },
     ],
     0: [
@@ -69,6 +89,15 @@ const menus = {
             title: '游戏',
             key: '/games',
         },
+        {
+            title: '我的信息',
+            key: '/user/info'
+        },
+        {
+            title: '我的订单',
+            key: '/user/orders',
+            
+        },
     ],
 }
 // 菜单列表对应的权限路由规则
@@ -79,7 +108,10 @@ const routeMap = {
     '/manager/orders': <Route key="/manager/orders" path="/manager/orders" component={OrderTable} />,
     '/manager/ads': <Route key="/manager/ads" path="/manager/ads" component={AdTable} />,
     '/manager/permission': <Route key="/manager/permission" path="/manager/permission" component={PermissionTable} />,
-    '/business/publish': <Route key="/business/publish" path="/business/publish" component={Publish} />
+    '/business/publish': <Route key="/business/publish" path="/business/publish" component={Publish} />,
+    '/user/info': <Route key="/user/info" path="/user/info" component={MyInfo} />,
+    '/user/orders': <Route key="/user/orders" path="/user/orders" component={MyOrders} />,
+    '/user/ads': <Route key="/user/ads" path="/user/ads" component={MyAds} />,
 }
 
 export const getMenus = (userType) => menus[userType]

@@ -63,7 +63,6 @@ export default class adTable extends Component {
                 allSource: data.list,
                 dataSource: data.list.filter(this.filterRules),
                 loading: false,
-
                 isInitial: true,
                 pagination: pagination(data, (current) => {
                   this.page = current
