@@ -14,7 +14,7 @@ export default class adTable extends React.Component {
         super(props)
         this.state = {
             visibleModal: null,
-            loading: true,
+            loading: false,
             tableType: "radio",
             dataSource: [],
             allSource: [],
@@ -29,25 +29,21 @@ export default class adTable extends React.Component {
                 type: 'SELECT',
                 label: '订单类型',
                 field: 'type',
-                placeholder: '全部',
-                initialValue: '',
+                placeholder: '买入',
+                initialValue: 'BUY',
                 width: 100,
-                list: [{ id: '', name: '全部' }, { id: '1', name: '买入' }, { id: '2', name: '卖出' }]
+                list: [{ id: 'BUY', name: '买入' }, { id: 'SELL', name: '卖出' }]
             },
             {
                 type: 'SELECT',
                 label: '订单状态',
                 field: 'status',
                 placeholder: '全部',
-                initialValue: '1',
+                initialValue: '0',
                 width: 100,
                 list: [{ id: '0', name: '全部' }, { id: '1', name: '待付款' }, { id: '2', name: '待确认' }, { id: '3', name: '已完成' }, { id: '4', name: '已过期' }]
             },
         ]
-    }
-
-    componentDidMount = () => {
-        this.request()
     }
 
     changeTableType = checked => {
@@ -60,23 +56,25 @@ export default class adTable extends React.Component {
         )
     }
 
-    request = () => {
+    // 从 baseFrom里提交的对象 formField
+    request = (formField) => {
         Ajax.ajax(
             'get',
             '/ad/page',
-            // '/v1/ads',
-            { "X-BM-USER-ID": '1' },
-            // {},
-            { type: "buy" },
-            // 'https://mook.sunlin.fun/mock/9',
-            'http://45.76.14.27',
+            {},
+            {
+                coinId: 1,
+                type:formField.type,
+            },
+            'http://45.76.146.27',
         )
             .then(
                 data => {
+                    console.log(data)
                     this.setState(
                         () => (
                             {
-                                dataSource: data.list,
+                                dataSource: data.data,
                                 loading: false,
                                 pagination: pagination(data, (current) => {
                                     this.page = current
@@ -246,7 +244,8 @@ export default class adTable extends React.Component {
                     />
                 </Modal>
                 <Card>
-                    <BaseForm layout="inline" submitFunc={() => { }} switchFunc={() => { }} formList={this.formList} />
+                    <BaseForm layout="inline" submitFunc={this.request
+                    } switchFunc={() => { }} formList={this.formList} />
                 </Card>
                 <Card>
                     <Button

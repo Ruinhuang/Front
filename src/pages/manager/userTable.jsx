@@ -146,6 +146,7 @@ export default class userTable extends React.Component {
     )
       .then(
         data => {
+          console.log(data.data)
           if (!this.state.globalFilter) {
             this.filterRules = this.state.defaultFilterRules
           }

@@ -131,7 +131,7 @@ class FormMyInfo extends React.Component {
                         <FormItem label="新密码" {...formItemLayout}>
                             {
                                 getFieldDecorator('password', {
-                                    initialValue: '',
+                                    initialValue: this.props.user.password,
                                 })(
                                     <Input placeholder="请输入密码" />
                                 )
@@ -140,6 +140,7 @@ class FormMyInfo extends React.Component {
                         <FormItem label="确认密码" {...formItemLayout}>
                             {
                                 getFieldDecorator('repeat', {
+                                    initialValue: this.props.user.password,
                                     rules: [
                                         {
                                             validator: this.passwordValidator,
