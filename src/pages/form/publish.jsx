@@ -1,20 +1,20 @@
 import React from "react";
 import { connect } from "react-redux"
 import { actionCreator } from "../../redux/action"
-import { Button, Card, Form, Icon, Input, Checkbox, message, Radio } from "antd";
+import { Button, Card, Form, Icon, Select, Input, Checkbox, message, Radio } from "antd";
 import { goToUrl } from "../../utils"; //导入公共机制
 import Ajax from '../../components/Ajax'
-
-const RadioGroup = Radio.Group;
-const FormItem = Form.Item;
+const Option = Select.Option
+const RadioGroup = Radio.Group
+const FormItem = Form.Item
 class FormPublish extends React.Component {
   post = (formData) => {
     Ajax.ajax(
       'post',
-      '/user-login',
-      {},
+      '/ad/createPublish',
+      { "X-BM-USER-ID": this.props.user.userId.toString() },
       formData,
-      "http://207.148.65.10:8080",
+      "http://45.76.146.27"
     )
       .then(
         (res) => {
@@ -26,7 +26,6 @@ class FormPublish extends React.Component {
     let formData = this.props.form.getFieldsValue()// 可以(获取表单中)object对象
     this.props.form.validateFields((err, values) => {
       if (!err) {// ${}  是变量
-        this.autoLogin = formData.autoLogin
         this.post(formData)
       }
     });
@@ -60,29 +59,179 @@ class FormPublish extends React.Component {
           <Form
             layout="horizontal"
           >
-            <FormItem label="金额" {...formItemLayout}>
+            <FormItem label="币种" {...formItemLayout}>
               {
-                getFieldDecorator('phone', {
+                getFieldDecorator('coinId', {
+                  initialValue: 1,
+                  rules: [
+                    {
+                      required: true,
+                      message: '不能为空'
+                    },
+                  ]
+                })(
+                  <RadioGroup>
+                    <Radio value={1}>海贝</Radio>
+                  </RadioGroup>
+                )
+              }
+            </FormItem>
+            <FormItem label="价格" {...formItemLayout}>
+              {
+                getFieldDecorator('price', {
+                  initialValue: '',
+                  rules: [
+                    {
+                      required: true,
+                      message: '不能为空'
+                    },
+                  ]
+                })(
+                  <Input placeholder="请输入价格" />
+                )
+              }
+            </FormItem>
+            <FormItem label="溢价比例" {...formItemLayout}>
+              {
+                getFieldDecorator('premium', {
+                  initialValue: 0,
+                  rules: [
+                    {
+                      required: true,
+                      message: '不能为空'
+                    },
+                  ]
+                })(
+                  <Input placeholder="请输入溢价比例" />
+                )
+              }
+            </FormItem>
+            <FormItem label="定价类型" {...formItemLayout}>
+              {
+                getFieldDecorator("priceType", {
+                  initialValue: "FIXED",
+                  rules: [
+                    {
+                      required: true,
+                      message: '不能为空'
+                    },
+                  ]
+                })(
+                  <Select
+                  >
+                    <Option value='FIXED' >
+                      固定价格
+                    </Option>
+                    <Option value="FLOAT" >
+                      浮动价格
+                    </Option>
+                  </Select>
+                )
+              }
+            </FormItem>
+            <FormItem label="参考价格" {...formItemLayout}>
+              {
+                getFieldDecorator('referPrice', {
                   initialValue: '',
                   rules: [
                     {
                       pattern: new RegExp('^\\d+$', 'g'),
-                      message: '金额必须为数字'
+                      message: '必须为数字'
                     },
                     {
                       required: true,
-                      message: '金额不能为空'
+                      message: '不能为空'
                     },
                   ]
                 })(
-                  <Input placeholder="请输入发布金额" />
+                  <Input placeholder="请输入参考价格" />
                 )
               }
             </FormItem>
-            <FormItem label="发布类型" {...formItemLayout}>
+            <FormItem label="数量" {...formItemLayout}>
               {
-                getFieldDecorator('adType', {
-                  initialValue: "0",
+                getFieldDecorator('count', {
+                  initialValue: '',
+                  rules: [
+                    {
+                      pattern: new RegExp('^\\d+$', 'g'),
+                      message: '必须为数字'
+                    },
+                    {
+                      required: true,
+                      message: '不能为空'
+                    },
+                  ]
+                })(
+                  <Input placeholder="请输入发布数量" />
+                )
+              }
+            </FormItem>
+            <FormItem label="交易下限" {...formItemLayout}>
+              {
+                getFieldDecorator('minTradeAmount', {
+                  initialValue: 0,
+                  rules: [
+                    {
+                      pattern: new RegExp('^\\d+$', 'g'),
+                      message: '必须为数字'
+                    },
+                    {
+                      required: true,
+                      message: '不能为空'
+                    },
+                  ]
+                })(
+                  <Input placeholder="0 为不设限" />
+                )
+              }
+            </FormItem>
+            <FormItem label="交易上限" {...formItemLayout}>
+              {
+                getFieldDecorator('maxTradeAmount', {
+                  initialValue: 0,
+                  rules: [
+                    {
+                      pattern: new RegExp('^\\d+$', 'g'),
+                      message: '必须为数字'
+                    },
+                    {
+                      required: true,
+                      message: '不能为空'
+                    },
+                  ]
+                })(
+                  <Input placeholder="0 为不设限" />
+                )
+              }
+            </FormItem>
+            <FormItem label="收款方式" {...formItemLayout}>
+              {
+                getFieldDecorator("payTypeList", {
+                  initialValue: "Alipay",
+                  rules: [
+                    {
+                      required: true,
+                      message: '不能为空'
+                    },
+                  ]
+                })(
+                  <Select
+                  >
+                    <Option value='Alipay' >
+                      支付宝
+                    </Option>
+                    <Option value="Wechat" >
+                      微信
+                    </Option>
+                  </Select>
+                )
+              }
+            </FormItem>
+            <FormItem label="广告类型" {...formItemLayout}>
+              {
+                getFieldDecorator('type', {
+                  initialValue: "SELL",
                   rules: [{
                     required: true,
                     message: '类型必选'
@@ -90,10 +239,15 @@ class FormPublish extends React.Component {
                   ]
                 }
                 )(
-                  <RadioGroup>
-                    <Radio value={0}>买入</Radio>
-                    <Radio value={1}>卖出</Radio>
-                  </RadioGroup>
+                  <Select
+                  >
+                    <Option value='BUY' >
+                      买入
+                    </Option>
+                    <Option value="SELL" >
+                      卖出
+                    </Option>
+                  </Select>
                 )
               }
             </FormItem>

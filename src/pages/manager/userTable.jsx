@@ -456,7 +456,7 @@ export default class userTable extends React.Component {
                   }))
                 }
               },
-              onMouseEnter: () => { },
+              onMouseEnter: () => {},
               onDoubleClick: () => {
                 Modal.confirm({
                   title: '详细信息',
