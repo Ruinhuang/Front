@@ -84,6 +84,7 @@ class orderTable extends React.Component {
                 }))
             })
     }
+
     paidOrder = () => {
         Ajax.ajax(
             'get',
@@ -102,6 +103,23 @@ class orderTable extends React.Component {
             })
     }
 
+    releaseCoin = () => {
+        Ajax.ajax(
+            'get',
+            '/order/release_coin',
+            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            {
+                orderId: this.state.selectedItems[0].id
+            },
+            'http://45.76.146.27',
+        )
+            .then(() => {
+                this.setState((prevState) => ({
+                    dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
+                    selectedItems: [], selectedRowKeys: []
+                }))
+            })
+    }
     // 从 baseForm里提交的对象 formField
     request = (formField) => {
         if (formField) {
@@ -376,7 +394,7 @@ class orderTable extends React.Component {
                             () => {
                                 if (this.state.selectedItems.length < 1) return
                                 Modal.confirm({
-                                    title: "确认订单",
+                                    title: "确认付款",
                                     // content: JSON.stringify(this.state.selectedItems),
                                     content: "已到账?",
                                     onOk: (() => this.paidOrder()),
@@ -385,7 +403,25 @@ class orderTable extends React.Component {
                             }
                         }
                     >
-                        确认订单
+                        确认付款
+            </Button>
+                    <Button
+                        type="primary"
+                        icon="finish"
+                        onClick={
+                            () => {
+                                if (this.state.selectedItems.length < 1) return
+                                Modal.confirm({
+                                    title: "放币",
+                                    // content: JSON.stringify(this.state.selectedItems),
+                                    content: "确认发货?",
+                                    onOk: (() => this.releaseCoin()),
+                                }
+                                )
+                            }
+                        }
+                    >
+                        放币
             </Button>
                     <Button
                         type="info"
