@@ -17,6 +17,7 @@ export default class StepForm extends Component {
                                         render={() =>
                                             <Info
                                                 selectedItem={this.props.selectedItem}
+                                                submitFunc={this.props.submitFunc}
                                             />
                                         }
                                     />
@@ -40,13 +41,12 @@ export default class StepForm extends Component {
 const FormItem = Form.Item;
 class FormInfo extends React.Component {
     handleSubmit = () => {//绑定提交事件进行校验
-        let userInfo = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
+        let formInfo = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
         // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
         this.props.form.validateFields((err, values) => {
-            if (!err) {// ${}  是变量
-                message.success("正在下单")
-                // 前端验证完毕, 向后端发起调用
-                goToUrl('/ads/confirm')
+            if (!err) {
+                formInfo.amount = formInfo.count * this.props.selectedItem.price
+                this.props.submitFunc(formInfo)
             }
         });
     };
@@ -65,29 +65,61 @@ class FormInfo extends React.Component {
         };
         return (
             <div>
-                <Card title="下单"
+                <Card title={this.props.selectedItem.type}
                 >
                     <Form
                         layout="horizontal"
                     >
-                        <FormItem>
-                            <p>{JSON.stringify(this.props.selectedItem)}</p>
+                        <FormItem label="广告ID" {...formItemLayout} >
+                            {
+                                getFieldDecorator('adId', {
+                                    initialValue: this.props.selectedItem.id,
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '不能为空'
+                                        },
+                                    ]
+                                })(<Input disabled={true} />)
+                            }
+                        </FormItem>
+                        <FormItem label="商户ID" {...formItemLayout} >
+                            {
+                                getFieldDecorator('uid', {
+                                    initialValue: this.props.selectedItem.merchantUid,
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '不能为空'
+                                        },
+                                    ]
+                                })(<Input disabled={true} />)
+                            }
+                        </FormItem>
+                        <FormItem label="价格" {...formItemLayout} >
+                            {
+                                getFieldDecorator('price', {
+                                    initialValue: this.props.selectedItem.price,
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '不能为空'
+                                        },
+                                    ]
+                                })(<Input disabled={true} />)
+                            }
                         </FormItem>
                         <FormItem
                             label="交易量"
                             {...formItemLayout}
                         >
                             {
-                                getFieldDecorator('userName', {
+                                getFieldDecorator('count', {
                                     initialValue: '',
                                     rules: [
                                         {
                                             required: true,
-                                            message: '金额不能为空'
-                                        },
-                                        {
-                                            min: 1, max: 8,
-                                            message: '长度不在范围内'
+                                            message: '不能为空'
                                         },
                                         {
                                             pattern: new RegExp('^\\d+$', 'g'),
@@ -95,7 +127,7 @@ class FormInfo extends React.Component {
                                         },
                                     ]
                                 })(
-                                    <Input prefix={<Icon type="money-collect" />} placeholder="请输入交易金额" />
+                                    <Input prefix={<Icon type="money-collect" />} placeholder="请输入交易数量" />
                                 )
                             }
                         </FormItem>
@@ -129,7 +161,7 @@ class FormConfirm extends React.Component {
     handleSubmit = () => {
         goToUrl('/ads/index')
         Modal.success({
-            title:"请等待商户确认"
+            title: "请等待商户确认"
         })
         this.props.refreshData()
     }

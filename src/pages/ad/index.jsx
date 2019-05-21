@@ -1,39 +1,63 @@
-import React, { Component } from 'react';
-import {Card, Table, Modal, Button, message, Badge, } from 'antd';
-import Ajax from '../../components/Ajax'
+import React from 'react';
 import { pagination, selectTag, goToUrl } from '../../utils'
 import { NavLink } from 'react-router-dom'
-import '../../style/common.scss'
+import { connect } from "react-redux"
+import { Card, Input, Radio, Table, Form, Modal, Button, message, Badge, Select } from 'antd';
+import BaseForm from '../../components/BaseForm'
 import StepForm from '../../components/StepForm'
+import Ajax from '../../components/Ajax'
+import '../../style/common.scss'
 
-export default class adTable extends Component {
+const FormItem = Form.Item
+const Option = Select.Option
+const RadioGroup = Radio.Group
+
+class Ads extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      loading: true,
-      tableType: 'radio',
+      visibleModal: null,
+      loading: false,
+      tableType: "radio",
       dataSource: [],
       allSource: [],
       selectedRowKeys: [],
       selectedItems: [],
       pagination: {},
       sortOrder: false,
-      isInitial: false,
-      globalFilter: false,
       formKey: Math.random().toString(18).substr(2),
-      defaultFilterRules: () => true,
     }
     this.page = 1
-    this.userForm = undefined
-    this.filterRules = this.state.defaultFilterRules
+    this.adType = null
+    this.adStatus = null
+    this.formList = [
+      {
+        type: 'SELECT',
+        label: '订单类型',
+        field: 'type',
+        placeholder: '买入',
+        initialValue: 'BUY',
+        width: 100,
+        list: [{ id: 'BUY', name: '买入' }, { id: 'SELL', name: '卖出' }]
+      },
+      {
+        type: 'SELECT',
+        label: '订单状态',
+        field: 'status',
+        placeholder: '已发布',
+        initialValue: 'PUBLISH',
+        width: 100,
+        list: [{ id: 'PUBLISH', name: '已发布' }, { id: 'UNPUBLISH', name: '未发布' },]
+      },
+    ]
   }
+
   componentWillMount = () => {
     //  初始化载入ads页面时， 将路由跳转到ads/index
     goToUrl('/ads/index')
   }
 
   componentDidMount = () => {
-    this.request()
   }
 
   changeFormKey = () => {
@@ -44,92 +68,258 @@ export default class adTable extends Component {
     )
   }
 
-  request = () => {
+  changeTableType = checked => {
+    this.setState(
+      () => ({
+        selectedRowKeys: [],
+        selectedItems: [],
+        tableType: checked ? "checkbox" : "radio",
+      })
+    )
+  }
+
+  // 从 baseForm里提交的对象 formField
+  request = (formField) => {
+    if (formField) {
+      this.adType = formField.type
+      this.adStatus = formField.status
+    }
+    this.setState(
+      () => ({
+        loading: true,
+      })
+    )
     Ajax.ajax(
       'get',
-      '/v1/users',
-      {},
-      { page: this.page },
-      'https://mook.sunlin.fun/mock/9',
+      '/ad/page',
+      { "X-BM-USER-ID": this.props.user.userId.toString() },
+      {
+        coinId: 1,
+        type: this.adType,
+        status: this.adStatus,
+        currentPage: this.page
+
+      },
+      'http://45.76.146.27',
     )
       .then(
         data => {
-          if (!this.state.globalFilter) {
-            this.filterRules = this.state.defaultFilterRules
-          }
+          //自己为每条数据制造唯一的key
+          data.data.data.forEach((item) => (item.key = item.id))
           this.setState(
             () => (
               {
-                allSource: data.list,
-                dataSource: data.list.filter(this.filterRules),
+                dataSource: data.data.data,
                 loading: false,
-                isInitial: true,
-                pagination: pagination(data, (current) => {
+                pagination: pagination(data.data, (current) => {
                   this.page = current
                   this.request()
-                })
-              }))
-        }).catch(() => message.error("数据渲染失败")
-        )
+                }),
+              }
+            )
+          )
+        })
+      .catch(
+        () => message.error("数据渲染失败")
+      )
   }
 
+  formInfoSubmit = (formInfo) => {
+    let orderPath = this.state.selectedItems[0].type === "SELL" ? "/order/buy_order" : "/order/sell_order"
+    Ajax.ajax(
+      'post',
+      orderPath,
+      { "X-BM-USER-ID": this.props.user.userId.toString() },
+      formInfo,
+      'http://45.76.146.27',
+    )
+      .then(
+        data => {
 
-  render() {
-    const roleMap = {
-      3: "管理员",
-      2: "商户",
-      1: "普通用户",
-    }
+          goToUrl("/ads/confirm")
+        }
+      )
+      .catch(
+        () => goToUrl("/ads/index")
+      )
+  }
 
+  render = () => {
     const statusMap = {
-      1: <Badge status="success" text="已审批" />,
-      2: <Badge status="default" text="未审批" />,
-      3: <Badge status="error" text="冻结中" />,
+      'PUBLISH': <Badge status="success" text="发布中" />,
+      'UNPUBLISH': <Badge status="error" text="未发布" />,
     }
-
-    const columns = [{
-      title: 'id',
-      key: 'id',
-      width: 80,
-      dataIndex: 'id',
-      sorter: (a, b) => a.id - b.id,
-      SortOrder: this.state.sortOrder,
-      // 横向滚动头部锁定
-      // fixed: 'left',
-    },
-    {
-      title: '用户名',
-      key: 'name',
-      width: 80,
-      dataIndex: 'name',
-      // fixed: 'left',
-    },
-    {
-      title: '邮箱',
-      key: 'email',
-      width: 80,
-      dataIndex: 'email'
-    },
-    {
-      title: '角色',
-      key: 'role',
-      width: 80,
-      dataIndex: 'role',
-      render: (text) => {
-        return roleMap[text]
+    const adTypeMap = {
+      'BUY': <Badge status="success" text="用户买入" />,
+      'SELL': <Badge status="default" text="用户卖出" />,
+    }
+    const columns = [
+      {
+        title: '商户',
+        key: 'merchantInfoVO',
+        width: 60,
+        dataIndex: 'merchantInfoVO.uid',
       },
-    },
-    {
-      title: '状态',
-      key: 'status',
-      width: 80,
-      dataIndex: 'status',
-      render: (text) => statusMap[text],
-    },
-    ]
+      {
+        title: 'count',
+        key: 'count',
+        width: 60,
+        dataIndex: 'count',
+      },
+      {
+        title: 'maxTradeAmount',
+        key: 'maxTradeAmount',
+        width: 60,
+        dataIndex: 'maxTradeAmount',
+      },
+      {
+        title: 'finishCount',
+        key: 'finishCount',
+        width: 60,
+        dataIndex: 'finishCount',
+      },
+      {
+        title: 'frozenCount',
+        key: 'frozenCount',
+        width: 60,
+        dataIndex: 'frozenCount',
+      },
+      {
+        title: 'price',
+        key: 'price',
+        width: 60,
+        dataIndex: 'price',
+      },
+      {
+        title: '广告类型',
+        key: 'type',
+        width: 60,
+        dataIndex: 'type',
+        render: (text) => {
+          return adTypeMap[text]
+        },
+      },
+      {
+        title: '状态',
+        key: 'status',
+        width: 60,
+        dataIndex: 'status',
+        render: (text) => {
+          return statusMap[text]
+        },
+        // sorter: (a, b) => {
+        //     return a.status - b.status
+        // },
+        // sortOrder: this.state.sortOrder,
+      },
+      // 行内操作按钮
+      // {
+      //   title: 'operation',
+      //   key: 'operation',
+      //   width: 80,
+      //   render: (text, item, index, ) => {
+      //     return (
+      //       <div>
+      //         <Button
+      //           className="link-button"
+      //           icon='edit'
+      //           type="primary"
+      //           onClick={
+      //             () => {
+      //               Modal.confirm({
+      //                 title: 'edit',
+      //                 content: JSON.stringify(item),
+      //                 onOk: (callback = () => {
+      //                   message.info('修改成功')
+      //                 },
+      //                 ) => {
+      //                   message.warning('这里改写成向后端发送验证的流程// TODO')
+      //                   callback()
+      //                   if (this.state.tableType === "checkbox") {
+      //                     this.setState((prevState) => ({
+      //                       selectedItems: selectTag([...prevState.selectedItems], [item]),
+      //                       selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+      //                     }))
+      //                   }
+      //                 },
+      //                 onCancel: () => {
+      //                   if (this.state.tableType === "checkbox") {
+      //                     this.setState((prevState) => ({
+      //                       selectedItems: selectTag([...prevState.selectedItems], [item]),
+      //                       selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+      //                     }))
+      //                   }
+      //                 }
+      //               },
+      //               )
+      //             }
+      //           }
+      //         >
+      //           编辑
+      //         </Button>
+      //         <Button
+      //           className="link-button"
+      //           type="danger"
+      //           icon='delete'
+      //           onClick={
+      //             () => {
+      //               Modal.confirm({
+      //                 title: 'delete',
+      //                 content: JSON.stringify(item),
+      //                 onOk: (callback = () => {
+      //                   message.info('删除成功')
+      //                   this.setState((prevState) => ({
+      //                     dataSource: removeFromArray([...prevState.dataSource], [item]),
+      //                     selectedItems: removeFromArray([...prevState.selectedItems], [item]),
+      //                     selectedRowKeys: removeFromArray([...prevState.selectedRowKeys], [item.key])
+      //                   }))
+      //                 },
+      //                 ) => {
+      //                   message.warning('这里改写成向后端发送验证的流程// TODO')
+      //                   callback()
+      //                 },
+      //                 onCancel: () => {
+      //                   if (this.state.tableType === "checkbox") {
+      //                     this.setState((prevState) => ({
+      //                       selectedItems: selectTag([...prevState.selectedItems], [item]),
+      //                       selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+      //                     }))
+      //                   }
+      //                 }
+      //               }
+      //               )
+      //             }
+      //           }
+      //         >
+      //           删除
+      //         </Button>
 
+      //       </div>
+      //     )
+      //   }
+      // },
+    ];
+
+    this.formInfosubmit = (formInfo) => { console.log('submit') }
     return (
-      <div className="content-wrap">
+      <div>
+        <Modal
+          visibleModal={this.state.visibleModal}
+          title={this.state.visibleModal}
+          visible={this.state.visibleModal !== null}
+          onCancel={() => {
+            this.setState(() => ({ visibleModal: null }))
+          }}
+          footer={null}
+        >
+          <AdForm
+            adInfo={this.state.selectedItems}
+            wrappedComponentRef={(inst) => this.userForm = inst}
+          />
+        </Modal>
+        <Card>
+          <BaseForm layout="inline" submitFunc={this.request} switchFunc={() => { }} formList={this.formList} />
+        </Card>
         <Modal
           visible={
             this.state.selectedItems.length > 0
@@ -143,7 +333,7 @@ export default class adTable extends Component {
           // 退出下单界面， 广告信息需要更新
           onCancel={
             () => {
-              message.warning('下单中断')
+              message.warning('下单取消，如有未付款订单，请到 我的订单页 操作')
               goToUrl('/ads/index')
               this.request()
             }
@@ -155,86 +345,155 @@ export default class adTable extends Component {
             key={this.state.formKey}
             selectedItem={this.state.selectedItems[0]}
             refreshData={this.request}
-            changeModalKey={this.changeMormKey} />
+            changeModalKey={this.changeMormKey}
+            submitFunc={this.formInfoSubmit}
+          />
         </Modal >
         <Card>
+          <Button
+            type="info"
+            icon="info"
+            onClick={
+              () => {
+                if (this.state.selectedItems.length < 1) return
+                Modal.confirm({
+                  title: "查看详情",
+                  content: JSON.stringify(this.state.selectedItems),
+                }
+                )
+              }
+            }
+          >
+            广告详情
+            </Button>
           <Button
             type="primary"
           >
             <NavLink to="/ads/info">下单</NavLink>
           </Button>
         </Card>
-        <Table
-          size="small"
-          bordered
-          loading={this.state.loading}
-          columns={columns}
-          // 关闭列表 滚动
-          // scroll={{ 
-          //   x: 1440,
-          //   y: 580 
-          // }}  
-          dataSource={this.state.dataSource}
-          //若没有pagination属性，会根据antd中table的默认样式，每页显示10个数据，将这一次请求获得的数据进行纯前端样式的静态的分页，*点击切换页面按钮不会发送请求
-          // 若 有 pagination={false}的 设定，tab le不会分页， 此次请求获得的所有数据会全部显示出来
-          pagination={this.state.pagination}
-          // pagination={false}
-          // onChange 事件会自动传入这三个参数
-          onChange={(pagination, filters, sorter) => {
-            this.setState(() => ({
-              sortOrder: sorter.order
-            }))
-          }}
-          rowSelection={
-            {
-              type: this.state.tableType,
-              selectedRowKeys: this.state.selectedRowKeys,
-              // 点击行首小圆圈才能触发onChange事件
-              onChange: (selectedRowKeys, selectedItems) => {
-                this.setState(() => ({
-                  selectedRowKeys,
-                  selectedItems,
-                }),
-                )
+        <div className="content-wrap">
+          <Table
+            size="small"
+            bordered
+            loading={this.state.loading}
+            columns={columns}
+            // 关闭列表 滚动
+            // scroll={{ 
+            //   x: 1440,
+            //   y: 580 
+            // }}  
+            dataSource={this.state.dataSource}
+            //若没有pagination属性，会根据antd中table的默认样式，每页显示10个数据，将这一次请求获得的数据进行纯前端样式的静态的分页，*点击切换页面按钮不会发送请求
+            // 若 有 pagination={false}的 设定，table不会分页， 此次请求获得的所有数据会全部显示出来
+            pagination={this.state.pagination}
+            // pagination={false}
+            // onChange 事件会自动传入这三个参数
+            onChange={(pagination, filters, sorter) => {
+              this.setState(() => ({
+                sortOrder: sorter.order
+              }))
+            }}
+            rowSelection={
+              {
+                type: this.state.tableType,
+                selectedRowKeys: this.state.selectedRowKeys,
+                // 点击行首小圆圈才能触发onChange事件
+                onChange: (selectedRowKeys, selectedItems) => {
+                  this.setState(() => ({
+                    selectedRowKeys,
+                    selectedItems,
+                  }),
+                  )
+                }
               }
             }
-          }
-          onRow={(selectedItem) => ({
-            onClick: () => {
-              if (this.state.tableType === 'checkbox') {
-                let selectedItems = selectTag([...this.state.selectedItems], [selectedItem])
-                let selectedRowKeys = selectTag([...this.state.selectedRowKeys], [selectedItem.key])
-                this.setState(() => ({
-                  selectedRowKeys,
-                  selectedItems,
-                }))
-              }
-              if (this.state.tableType === 'radio') {
-                let selectedItems = [selectedItem]
-                let selectedRowKeys = [selectedItem.key]
-                this.setState(() => ({
-                  selectedRowKeys,
-                  selectedItems,
-                }))
-              }
-            },
-            onMouseEnter: () => { },
-            onDoubleClick: () => {
-              Modal.confirm({
-                title: '详细信息',
-                content: `
+            onRow={(selectedItem) => ({
+              onClick: () => {
+                if (this.state.tableType === 'checkbox') {
+                  let selectedItems = selectTag([...this.state.selectedItems], [selectedItem])
+                  let selectedRowKeys = selectTag([...this.state.selectedRowKeys], [selectedItem.key])
+                  this.setState(() => ({
+                    selectedRowKeys,
+                    selectedItems,
+                  }))
+                }
+                if (this.state.tableType === 'radio') {
+                  let selectedItems = [selectedItem]
+                  let selectedRowKeys = [selectedItem.key]
+                  this.setState(() => ({
+                    selectedRowKeys,
+                    selectedItems,
+                  }))
+                }
+              },
+              onMouseEnter: () => { },
+              onDoubleClick: () => {
+                Modal.confirm({
+                  title: '详细信息',
+                  content: `
                   ${selectedItem.name}
-                  ${roleMap[selectedItem.role]}
                   ${selectedItem.email}
                 `,
-                onCancel: () => { },
-                onOk: () => { },
-              })
-            },
-          }
-          )}
-        />
-      </div>
+                  onCancel: () => { },
+                  onOk: () => { },
+                })
+              },
+            }
+            )}
+          />
+        </div>
+      </div >
     )
   }
 }
+
+class AdForm extends React.Component {
+
+  render() {
+    let adInfo = this.props.adInfo[0] || {};
+    const formItemLayout = {
+      labelCol: {
+        span: 5
+      },
+      wrapperCol: {
+        span: 19
+      }
+    };
+
+    const { getFieldDecorator } = this.props.form;
+    return (
+      <Form layout="horizontal">
+        <FormItem label="状态" {...formItemLayout}>
+          {
+            getFieldDecorator('status', {
+              initialValue: adInfo.status
+            })(
+              <Select>
+                <Option value='PUBLISH'>已发布</Option>
+                <Option value='UNPUBLISH'>未发布</Option>
+              </Select>
+            )
+          }
+        </FormItem>
+        <FormItem>
+          <Button
+            onClick={() => { message.warning('这里改写成向后端发送验证的流程// TODO') }}
+          >
+            提交
+          </Button>
+        </FormItem>
+      </Form>
+    );
+  }
+}
+
+Ads = Form.create({})(Ads);
+// props 属性
+const mapStateToProps = (state) => ({
+  isLogin: state.isLogin,
+  user: state.user
+})
+
+// 把逻辑方法与UI组件连接起来变成新容器组件
+export default connect(mapStateToProps)(Ads)

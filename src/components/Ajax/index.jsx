@@ -51,22 +51,26 @@ export default class Ajax {
 							return resolve(res)
 							// console.log('如果没有return 这行会被执行')
 						} else {
-							return message.info(res.message)
+							// return message.error(res.data.msg)
+							if (response.data.msg) return message.error(response.data.msg)
+							if (response.data.message) return message.error(response.data.message)
 						}
 					}
-					// else {
-					// 如果没有使用catch方法指定错误处理的回调函数，Promise 对象抛出的错误不会传递到外层，在外层不会退出进程、终止脚本执行
-					// 不推荐使用reject捕获异常， 建议使用catch 
-					// return reject(response.data)
-					// }
 				}
+				// else {
+				// 如果没有使用catch方法指定错误处理的回调函数，Promise 对象抛出的错误不会传递到外层，在外层不会退出进程、终止脚本执行
+				// 不推荐使用reject捕获异常， 建议使用catch 
+				// return reject(response.data)
+				// }
 				// Promise 对象的错误具有“冒泡”性质，会一直向后传递，错误总是会被下一个catch语句捕获。
 				// Promise对象的异步操作抛出错误，状态会变为rejected，会调用catch指定的回调函数处理异常
 				// then方法指定的回调函数，如果运行中抛出错误，也会被catch方法捕获。
 				// catch方法返回的还是一个 Promise 对象，后面可以接着调用then方法
 			).catch(error => {
 				let errorInfo = `
-				${error.response.data.status} ${error.response.data.error}: ${error.response.data.message} 
+				${error.response.data.status} 
+				${error.response.data.error}
+				${error.response.data.message} 
 				`
 				message.error(errorInfo)
 			}
