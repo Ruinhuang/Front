@@ -31,7 +31,7 @@ class adTable extends React.Component {
         this.formList = [
             {
                 type: 'SELECT',
-                label: '订单类型',
+                label: '广告类型',
                 field: 'type',
                 placeholder: '买入',
                 initialValue: 'BUY',
@@ -40,7 +40,7 @@ class adTable extends React.Component {
             },
             {
                 type: 'SELECT',
-                label: '订单状态',
+                label: '广告状态',
                 field: 'status',
                 placeholder: '已发布',
                 initialValue: 'PUBLISH',

@@ -30,24 +30,16 @@ class Ads extends React.Component {
     this.page = 1
     this.adType = null
     this.adStatus = null
+    this.receivedOrderInfo = {}
     this.formList = [
       {
         type: 'SELECT',
-        label: '订单类型',
+        label: '广告类型',
         field: 'type',
         placeholder: '买入',
         initialValue: 'BUY',
         width: 100,
         list: [{ id: 'BUY', name: '买入' }, { id: 'SELL', name: '卖出' }]
-      },
-      {
-        type: 'SELECT',
-        label: '订单状态',
-        field: 'status',
-        placeholder: '已发布',
-        initialValue: 'PUBLISH',
-        width: 100,
-        list: [{ id: 'PUBLISH', name: '已发布' }, { id: 'UNPUBLISH', name: '未发布' },]
       },
     ]
   }
@@ -123,6 +115,34 @@ class Ads extends React.Component {
         () => message.error("数据渲染失败")
       )
   }
+  formConfirmSubmit = (formConfirm) => {
+    const payInfo = {
+      orderId: this.receivedOrderInfo.id,
+      // payTypeId, 付款人付款方式ID, int64
+      payTypeId: formConfirm.payTypeId,
+      // payeeTypeId, 收款人收款方式ID, int64
+      // orderId: this.receivedOrderInfo.uid,
+      payeeTypeId: formConfirm.payTypeId,
+    }
+    Ajax.ajax(
+      'post',
+      '/order/paying',
+      { "X-BM-USER-ID": this.props.user.userId.toString() },
+      payInfo,
+      'http://45.76.146.27',
+    )
+      .then(
+        data => {
+          Modal.success({
+            title: "请等待商户确认"
+          })
+          goToUrl('/ads/index')
+        }
+      )
+      .catch(
+        () => goToUrl("/ads/index")
+      )
+  }
 
   formInfoSubmit = (formInfo) => {
     let orderPath = this.state.selectedItems[0].type === "SELL" ? "/order/buy_order" : "/order/sell_order"
@@ -135,7 +155,7 @@ class Ads extends React.Component {
     )
       .then(
         data => {
-
+          this.receivedOrderInfo = data.data
           goToUrl("/ads/confirm")
         }
       )
@@ -293,7 +313,6 @@ class Ads extends React.Component {
       //         >
       //           删除
       //         </Button>
-
       //       </div>
       //     )
       //   }
@@ -346,7 +365,8 @@ class Ads extends React.Component {
             selectedItem={this.state.selectedItems[0]}
             refreshData={this.request}
             changeModalKey={this.changeMormKey}
-            submitFunc={this.formInfoSubmit}
+            infoSubmitFunc={this.formInfoSubmit}
+            confirmSubmitFunc={this.formConfirmSubmit}
           />
         </Modal >
         <Card>

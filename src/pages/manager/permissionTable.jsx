@@ -132,7 +132,6 @@ export default class PermissionUser extends React.Component {
                     role: dataSource[i].role
                 };
 
-                console.log(data.role, this.state.selectedItems[0])
                 if (data.role === this.state.selectedItems[0].role) {
                     // 如果role相同，说明是目标用户,加到targetKeys数组
                     targetKeys.push(data.key);

@@ -1,411 +1,536 @@
-import React from "react";
+import React from 'react';
 import { connect } from "react-redux"
 import { actionCreator } from "../../redux/action"
-import { Button, Card, Form, Icon, Select, Input, Checkbox, message, Radio } from "antd";
-import { goToUrl } from "../../utils"; //导入公共机制
+import { Card, Input, Radio, Table, Form, Modal, Button, message, Badge, Select } from 'antd';
 import Ajax from '../../components/Ajax'
+import { pagination, selectTag } from '../../utils/index'
+import '../../style/common.scss'
+import BaseForm from '../../components/BaseForm'
+
+const FormItem = Form.Item
 const Option = Select.Option
 const RadioGroup = Radio.Group
-const FormItem = Form.Item
-class FormMyInfo extends React.Component {
-    post = (formData) => {
+
+class orderTable extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            visibleModal: null,
+            loading: false,
+            tableType: "radio",
+            dataSource: [],
+            allSource: [],
+            selectedRowKeys: [],
+            selectedItems: [],
+            pagination: {},
+            sortOrder: false,
+        }
+        this.page = 1
+        this.orderType = null
+        this.orderStatus = null
+        this.formList = [
+            {
+                type: 'SELECT',
+                label: '订单类型',
+                field: 'type',
+                placeholder: '买入',
+                initialValue: 'BUY',
+                width: 100,
+                list: [{ id: 'BUY', name: '买入' }, { id: 'SELL', name: '卖出' }]
+            },
+            {
+                type: 'SELECT',
+                label: '订单状态',
+                field: 'status',
+                placeholder: '等待支付',
+                initialValue: 'WAIT_PAY',
+                width: 100,
+                list: [
+                    { id: 'NEW', name: "新建" },
+                    { id: 'WAIT_PAY', name: "等待支付" },
+                    { id: 'WAIT_RELEASE', name: "等待放币" },
+                    { id: 'FINISH', name: "订单完成" },
+                    { id: 'CANCEL', name: "订单取消" },
+                    { id: 'HOLD', name: "订单挂起" },
+                    { id: 'INIT_FAIL', name: "下单失败" },
+                ]
+            },
+        ]
+    }
+
+    changeTableType = checked => {
+        this.setState(
+            () => ({
+                selectedRowKeys: [],
+                selectedItems: [],
+                tableType: checked ? "checkbox" : "radio",
+            })
+        )
+    }
+    cancelOrder = () => {
         Ajax.ajax(
-            'post',
-            '/user-login',
-            { "X-BM-USER-ID": this.props.user.token },
-            formData,
-            "https://mook.sunlin.fun/mock/9/"
+            'get',
+            '/order/cancel_order',
+            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            {
+                orderId: this.state.selectedItems[0].id
+            },
+            'http://45.76.146.27',
+        )
+            .then(() => {
+                this.setState((prevState) => ({
+                    dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
+                    selectedItems: [], selectedRowKeys: []
+                }))
+            })
+    }
+    paidOrder = () => {
+        Ajax.ajax(
+            'get',
+            '/order/paid',
+            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            {
+                orderId: this.state.selectedItems[0].id
+            },
+            'http://45.76.146.27',
+        )
+            .then(() => {
+                this.setState((prevState) => ({
+                    dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
+                    selectedItems: [], selectedRowKeys: []
+                }))
+            })
+    }
+
+    // 从 baseForm里提交的对象 formField
+    request = (formField) => {
+        if (formField) {
+            this.orderType = formField.type
+            this.orderStatus = formField.status
+        }
+        this.setState(
+            () => ({
+                loading: true,
+            })
+        )
+        Ajax.ajax(
+            'get',
+            '/order/query_order_conditions',
+            {},
+            {
+                coinId: 1,
+                type: this.orderType,
+                status: this.orderStatus,
+                currentPage: this.page
+
+            },
+            'http://45.76.146.27',
         )
             .then(
-                (res) => {
-                }
-            ).catch(() => { })
+                data => {
+                    //自己为每条数据制造唯一的key
+                    data.data.data.forEach((item) => (item.key = item.id))
+                    this.setState(
+                        () => (
+                            {
+                                dataSource: data.data.data,
+                                loading: false,
+                                pagination: pagination(data.data, (current) => {
+                                    this.page = current
+                                    this.request()
+                                }),
+                            }
+                        )
+                    )
+                })
     }
 
-    handleSubmit = () => {//绑定提交事件进行校验
-        let formData = this.props.form.getFieldsValue()// 可以(获取表单中)object对象
-        this.props.form.validateFields((err, values) => {
-            if (!err) {// ${}  是变量
-                this.post(formData)
-            }
-        });
-    };
-    passwordValidator = (rule, value, callback) => {
-        let password = this.props.form.getFieldsValue().password
-        console.log(rule, value, password)
-        if (value && value !== password) {
-            callback('密码输入不一致！')
+    render = () => {
+        const statusMap = {
+            'NEW': "新建",
+            'WAIT_PAY': "等待支付",
+            'WAIT_RELEASE': "等待放币",
+            'FINISH': "订单完成",
+            'CANCEL': "订单取消",
+            'HOLD': "订单挂起",
+            'INIT_FAIL': "下单失败",
         }
-        callback()
-    }
-
-    render() {
-        const { getFieldDecorator } = this.props.form;
-        const offsetLayout = {
-            wrapperCol: {
-                xs: 24,
-                sm: {
-                    span: 12,
-                    offset: 4
-                }
-            }
-        };
-        const formItemLayout = {
-            labelCol: {
-                xs: 24,
-                sm: 4
+        const orderTypeMap = {
+            'BUY': <Badge status="success" text="买入" />,
+            'SELL': <Badge status="default" text="卖出" />,
+        }
+        const columns = [
+            {
+                title: '订单ID',
+                key: 'id',
+                width: 30,
+                dataIndex: 'id',
             },
-            wrapperCol: {
-                xs: 24,
-                sm: 12
-            }
-        };
+            {
+                title: '用户ID',
+                key: 'uid',
+                width: 30,
+                dataIndex: 'uid',
+            },
+            {
+                title: '商户ID',
+                key: 'merchantId',
+                width: 30,
+                dataIndex: 'merchantId',
+            },
+            {
+                title: '广告ID',
+                key: 'adId',
+                width: 30,
+                dataIndex: 'adId',
+            },
+            {
+                title: '订单编号',
+                key: 'orderNo',
+                width: 30,
+                dataIndex: 'orderNo',
+            },
+
+            {
+                title: '下单时间',
+                key: 'orderTime',
+                width: 30,
+                dataIndex: 'orderTime',
+            },
+            {
+                title: '支付时间',
+                key: 'payTime',
+                width: 60,
+                dataIndex: 'payTime',
+            },
+            {
+                title: '放币时间',
+                key: 'releaseTime',
+                width: 60,
+                dataIndex: 'releaseTime',
+            },
+            {
+                title: '数量',
+                key: 'count',
+                width: 60,
+                dataIndex: 'count',
+            },
+            {
+                title: '单价',
+                key: 'price',
+                width: 60,
+                dataIndex: 'price',
+            },
+            {
+                title: '订单类型',
+                key: 'type',
+                width: 60,
+                dataIndex: 'type',
+                render: (text) => {
+                    return orderTypeMap[text]
+                },
+            },
+            {
+                title: '订单状态',
+                key: 'status',
+                width: 60,
+                dataIndex: 'status',
+                render: (text) => {
+                    return statusMap[text]
+                },
+                // sorter: (a, b) => {
+                //     return a.status - b.status
+                // },
+                // sortOrder: this.state.sortOrder,
+            },
+            // 行内操作按钮
+            // {
+            //   title: 'operation',
+            //   key: 'operation',
+            //   width: 80,
+            //   render: (text, item, index, ) => {
+            //     return (
+            //       <div>
+            //         <Button
+            //           className="link-button"
+            //           icon='edit'
+            //           type="primary"
+            //           onClick={
+            //             () => {
+            //               Modal.confirm({
+            //                 title: 'edit',
+            //                 content: JSON.stringify(item),
+            //                 onOk: (callback = () => {
+            //                   message.info('修改成功')
+            //                 },
+            //                 ) => {
+            //                   message.warning('这里改写成向后端发送验证的流程// TODO')
+            //                   callback()
+            //                   if (this.state.tableType === "checkbox") {
+            //                     this.setState((prevState) => ({
+            //                       selectedItems: selectTag([...prevState.selectedItems], [item]),
+            //                       selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+            //                     }))
+            //                   }
+            //                 },
+            //                 onCancel: () => {
+            //                   if (this.state.tableType === "checkbox") {
+            //                     this.setState((prevState) => ({
+            //                       selectedItems: selectTag([...prevState.selectedItems], [item]),
+            //                       selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+            //                     }))
+            //                   }
+            //                 }
+            //               },
+            //               )
+            //             }
+            //           }
+            //         >
+            //           编辑
+            //         </Button>
+            //         <Button
+            //           className="link-button"
+            //           type="danger"
+            //           icon='delete'
+            //           onClick={
+            //             () => {
+            //               Modal.confirm({
+            //                 title: 'delete',
+            //                 content: JSON.stringify(item),
+            //                 onOk: (callback = () => {
+            //                   message.info('删除成功')
+            //                   this.setState((prevState) => ({
+            //                     dataSource: removeFromArray([...prevState.dataSource], [item]),
+            //                     selectedItems: removeFromArray([...prevState.selectedItems], [item]),
+            //                     selectedRowKeys: removeFromArray([...prevState.selectedRowKeys], [item.key])
+            //                   }))
+            //                 },
+            //                 ) => {
+            //                   message.warning('这里改写成向后端发送验证的流程// TODO')
+            //                   callback()
+            //                 },
+            //                 onCancel: () => {
+            //                   if (this.state.tableType === "checkbox") {
+            //                     this.setState((prevState) => ({
+            //                       selectedItems: selectTag([...prevState.selectedItems], [item]),
+            //                       selectedRowKeys: selectTag([...prevState.selectedRowKeys], [item.key])
+            //                     }))
+            //                   }
+            //                 }
+            //               }
+            //               )
+            //             }
+            //           }
+            //         >
+            //           删除
+            //         </Button>
+
+            //       </div>
+            //     )
+            //   }
+            // },
+        ];
 
         return (
             <div>
-                <Card title="我的信息"
+                <Modal
+                    visibleModal={this.state.visibleModal}
+                    title={this.state.visibleModal}
+                    visible={this.state.visibleModal !== null}
+                    onCancel={() => {
+                        this.setState(() => ({ visibleModal: null }))
+                    }}
+                    footer={null}
                 >
-                    <Form
-                        layout="horizontal"
-                    >
-                        <FormItem label="用户名" {...formItemLayout}>
-                            {
-                                getFieldDecorator('userName', {
-                                    initialValue: '',
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '用户名不能为空'
-                                        },
-                                        {
-                                            min: 1, max: 16,
-                                            message: '长度不在范围内'
-                                        },
-                                        {
-                                            pattern: new RegExp('^\\w+$', 'g'),
-                                            message: '用户名必须为字母或数字'
-                                        }
-                                    ]
-                                })(
-                                    <Input placeholder="请输入用户名" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="密码" {...formItemLayout}>
-                            {
-                                getFieldDecorator('password', {
-                                    initialValue: '',
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '密码不能为空'
-                                        },
-                                    ]
-
-                                })(
-                                    <Input placeholder="请输入密码" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="确认密码" {...formItemLayout}>
-                            {
-                                getFieldDecorator('repeat', {
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '请再次输入密码',
-                                        },
-                                        {
-                                            validator: this.passwordValidator,
-                                        }
-                                    ],
-                                },
-                                )(
-                                    <Input placeholder="请输入密码" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="用户角色" {...formItemLayout}>
-                            {
-                                getFieldDecorator('userType', {
-                                    initialValue: "0",
-                                    rules: [{
-                                        required: true,
-                                        message: '用户角色必选'
-                                    },
-                                    ]
-                                }
-                                )(
-                                    <RadioGroup>
-                                        <Radio value="1">普通用户</Radio>
-                                        <Radio value="2">商户</Radio>
-                                        <Radio value="3">管理员</Radio>
-                                    </RadioGroup>
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="手机号" {...formItemLayout}>
-                            {
-                                getFieldDecorator('phone', {
-                                    initialValue: '',
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '手机号不能为空'
-                                        },
-                                        {
-                                            pattern: new RegExp('^\\d+$', 'g'),
-                                            message: '手机号码必须为数字'
-                                        }
-                                    ]
-                                })(
-                                    <Input placeholder="请输入手机号码" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="邮箱地址" {...formItemLayout}>
-                            {
-                                getFieldDecorator('email', {
-                                    initialValue: '',
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '邮箱地址不能为空'
-                                        },
-                                        {
-                                            pattern: new RegExp(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/),
-                                            message: '请输入正确的邮箱地址'
-                                        }
-                                    ]
-                                })(
-                                    <Input placeholder="请输入邮箱地址" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="身份证号" {...formItemLayout}>
-                            {
-                                getFieldDecorator('idcard', {
-                                    initialValue: '',
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '需填写身份证'
-                                        },
-                                        {
-                                            pattern: new RegExp(/^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/),
-                                            message: '请输入正确的身法证号'
-                                        }
-                                    ]
-                                })(
-                                    <Input placeholder="请输入身份证号" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="" {...formItemLayout}>
-                            {
-                                getFieldDecorator('price', {
-                                    initialValue: '',
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '不能为空'
-                                        },
-                                    ]
-                                })(
-                                    <Input placeholder="请输入价格" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="溢价比例" {...formItemLayout}>
-                            {
-                                getFieldDecorator('premium', {
-                                    initialValue: 0,
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '不能为空'
-                                        },
-                                    ]
-                                })(
-                                    <Input placeholder="请输入溢价比例" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="定价类型" {...formItemLayout}>
-                            {
-                                getFieldDecorator("priceType", {
-                                    initialValue: "FIXED",
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '不能为空'
-                                        },
-                                    ]
-                                })(
-                                    <Select
-                                    >
-                                        <Option value='FIXED' >
-                                            固定价格
-                    </Option>
-                                        <Option value="FLOAT" >
-                                            浮动价格
-                    </Option>
-                                    </Select>
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="参考价格" {...formItemLayout}>
-                            {
-                                getFieldDecorator('referPrice', {
-                                    initialValue: '',
-                                    rules: [
-                                        {
-                                            pattern: new RegExp('^\\d+$', 'g'),
-                                            message: '必须为数字'
-                                        },
-                                        {
-                                            required: true,
-                                            message: '不能为空'
-                                        },
-                                    ]
-                                })(
-                                    <Input placeholder="请输入参考价格" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="数量" {...formItemLayout}>
-                            {
-                                getFieldDecorator('count', {
-                                    initialValue: '',
-                                    rules: [
-                                        {
-                                            pattern: new RegExp('^\\d+$', 'g'),
-                                            message: '必须为数字'
-                                        },
-                                        {
-                                            required: true,
-                                            message: '不能为空'
-                                        },
-                                    ]
-                                })(
-                                    <Input placeholder="请输入发布数量" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="交易下限" {...formItemLayout}>
-                            {
-                                getFieldDecorator('minTradeAmount', {
-                                    initialValue: 0,
-                                    rules: [
-                                        {
-                                            pattern: new RegExp('^\\d+$', 'g'),
-                                            message: '必须为数字'
-                                        },
-                                        {
-                                            required: true,
-                                            message: '不能为空'
-                                        },
-                                    ]
-                                })(
-                                    <Input placeholder="0 为不设限" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="交易上限" {...formItemLayout}>
-                            {
-                                getFieldDecorator('maxTradeAmount', {
-                                    initialValue: 0,
-                                    rules: [
-                                        {
-                                            pattern: new RegExp('^\\d+$', 'g'),
-                                            message: '必须为数字'
-                                        },
-                                        {
-                                            required: true,
-                                            message: '不能为空'
-                                        },
-                                    ]
-                                })(
-                                    <Input placeholder="0 为不设限" />
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="收款方式" {...formItemLayout}>
-                            {
-                                getFieldDecorator("payTypeList", {
-                                    initialValue: "Alipay",
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '不能为空'
-                                        },
-                                    ]
-                                })(
-                                    <Select
-                                    >
-                                        <Option value='Alipay' >
-                                            支付宝
-                    </Option>
-                                        <Option value="Wechat" >
-                                            微信
-                    </Option>
-                                    </Select>
-                                )
-                            }
-                        </FormItem>
-                        <FormItem label="广告类型" {...formItemLayout}>
-                            {
-                                getFieldDecorator('type', {
-                                    initialValue: "SELL",
-                                    rules: [{
-                                        required: true,
-                                        message: '类型必选'
-                                    },
-                                    ]
-                                }
-                                )(
-                                    <Select
-                                    >
-                                        <Option value='BUY' >
-                                            买入
-                    </Option>
-                                        <Option value="SELL" >
-                                            卖出
-                    </Option>
-                                    </Select>
-                                )
-                            }
-                        </FormItem>
-                        <FormItem
-                            style={{
-                                marginLeft: 'auto',
-                                marginRight: 'auto',
-                                width: 200,
-                            }}
-                        >
-                            <Button type="primary" onClick={this.handleSubmit}>发布</Button>
-                        </FormItem>
-                    </Form>
+                    <OrderForm
+                        orderInfo={this.state.selectedItems}
+                        wrappedComponentRef={(inst) => this.userForm = inst}
+                    />
+                </Modal>
+                <Card>
+                    <BaseForm layout="inline" submitFunc={this.request} switchFunc={() => { }} formList={this.formList} />
                 </Card>
+                <Card>
+                    <Button
+                        type="danger"
+                        icon="delete"
+                        onClick={
+                            () => {
+                                if (this.state.selectedItems.length < 1) return
+                                Modal.confirm({
+                                    title: "取消订单",
+                                    // content: JSON.stringify(this.state.selectedItems),
+                                    content: "取消订单？",
+                                    onOk: (() => this.cancelOrder()),
+                                }
+                                )
+                            }
+                        }
+                    >
+                        取消订单
+            </Button>
+                    <Button
+                        type="primary"
+                        icon="delete"
+                        onClick={
+                            () => {
+                                if (this.state.selectedItems.length < 1) return
+                                Modal.confirm({
+                                    title: "确认订单",
+                                    // content: JSON.stringify(this.state.selectedItems),
+                                    content: "已到账?",
+                                    onOk: (() => this.paidOrder()),
+                                }
+                                )
+                            }
+                        }
+                    >
+                        确认订单
+            </Button>
+                    <Button
+                        type="info"
+                        icon="info"
+                        onClick={
+                            () => {
+                                if (this.state.selectedItems.length < 1) return
+                                Modal.confirm({
+                                    title: "查看详情",
+                                    content: JSON.stringify(this.state.selectedItems),
+                                }
+                                )
+                            }
+                        }
+                    >
+                        订单详情
+            </Button>
+                </Card>
+                <div className="content-wrap">
+                    <Table
+                        size="small"
+                        bordered
+                        loading={this.state.loading}
+                        columns={columns}
+                        // 关闭列表 滚动
+                        // scroll={{ 
+                        //   x: 1440,
+                        //   y: 580 
+                        // }}  
+                        dataSource={this.state.dataSource}
+                        //若没有pagination属性，会根据antd中table的默认样式，每页显示10个数据，将这一次请求获得的数据进行纯前端样式的静态的分页，*点击切换页面按钮不会发送请求
+                        // 若 有 pagination={false}的 设定，table不会分页， 此次请求获得的所有数据会全部显示出来
+                        pagination={this.state.pagination}
+                        // pagination={false}
+                        // onChange 事件会自动传入这三个参数
+                        onChange={(pagination, filters, sorter) => {
+                            this.setState(() => ({
+                                sortOrder: sorter.order
+                            }))
+                        }}
+                        rowSelection={
+                            {
+                                type: this.state.tableType,
+                                selectedRowKeys: this.state.selectedRowKeys,
+                                // 点击行首小圆圈才能触发onChange事件
+                                onChange: (selectedRowKeys, selectedItems) => {
+                                    this.setState(() => ({
+                                        selectedRowKeys,
+                                        selectedItems,
+                                    }),
+                                    )
+                                }
+                            }
+                        }
+                        onRow={(selectedItem) => ({
+                            onClick: () => {
+                                if (this.state.tableType === 'checkbox') {
+                                    let selectedItems = selectTag([...this.state.selectedItems], [selectedItem])
+                                    let selectedRowKeys = selectTag([...this.state.selectedRowKeys], [selectedItem.key])
+                                    this.setState(() => ({
+                                        selectedRowKeys,
+                                        selectedItems,
+                                    }))
+                                }
+                                if (this.state.tableType === 'radio') {
+                                    let selectedItems = [selectedItem]
+                                    let selectedRowKeys = [selectedItem.key]
+                                    this.setState(() => ({
+                                        selectedRowKeys,
+                                        selectedItems,
+                                    }))
+                                }
+                            },
+                            onMouseEnter: () => { },
+                            onDoubleClick: () => {
+                                Modal.confirm({
+                                    title: '详细信息',
+                                    content: `
+                  ${selectedItem.name}
+                  ${selectedItem.email}
+                `,
+                                    onCancel: () => { },
+                                    onOk: () => { },
+                                })
+                            },
+                        }
+                        )}
+                    />
+                </div>
             </div >
         )
     }
 }
 
+class OrderForm extends React.Component {
+
+    render() {
+        let orderInfo = this.props.orderInfo[0] || {};
+        const formItemLayout = {
+            labelCol: {
+                span: 5
+            },
+            wrapperCol: {
+                span: 19
+            }
+        };
+
+        const { getFieldDecorator } = this.props.form;
+        return (
+            <Form layout="horizontal">
+                <FormItem label="状态" {...formItemLayout}>
+                    {
+                        getFieldDecorator('status', {
+                            initialValue: orderInfo.status
+                        })(
+                            <Select>
+                                <Option value='NEW'> "新建"</Option>
+                                <Option value='WAIT_PAY'> "等待支付"</Option>
+                                <Option value='WAIT_RELEASE'> "等待放币"</Option>
+                                <Option value='FINISH'> "订单完成"</Option>
+                                <Option value='CANCEL'> "订单取消"</Option>
+                                <Option value='HOLD'> "订单挂起"</Option>
+                                <Option value='INIT_FAIL'> "下单失败"</Option>
+                            </Select>
+                        )
+                    }
+                </FormItem>
+                <FormItem>
+                    <Button
+                        onClick={() => { message.warning('这里改写成向后端发送验证的流程// TODO') }}
+                    >
+                        提交
+          </Button>
+                </FormItem>
+            </Form>
+        );
+    }
+}
+
+orderTable = Form.create({})(orderTable);
 // props 属性
 const mapStateToProps = (state) => ({
     isLogin: state.isLogin,
     user: state.user
 })
 
-// props 方法
-const mapDispatchToProps = (dispatch) => {
-    return {
-        saveLoginData(data) {
-            dispatch(actionCreator.saveLoginData(data))
-        },
-    }
-}
-
 // 把逻辑方法与UI组件连接起来变成新容器组件
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(FormMyInfo))
+export default connect(mapStateToProps)(orderTable)

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { goToUrl } from '../../utils'
 import { Route, HashRouter, Switch } from 'react-router-dom'
 import { Modal, Form, Card, Input, Icon, Button, message, } from 'antd';
+import { Radio } from 'antd';
+
 export default class StepForm extends Component {
     render() {
         return (
@@ -17,15 +19,18 @@ export default class StepForm extends Component {
                                         render={() =>
                                             <Info
                                                 selectedItem={this.props.selectedItem}
-                                                submitFunc={this.props.submitFunc}
+                                                infoSubmitFunc={this.props.infoSubmitFunc}
                                             />
                                         }
                                     />
                                     <Route
+                                        exact={true}
                                         path="/ads/confirm"
                                         render={() =>
                                             <Confirm
                                                 refreshData={this.props.refreshData}
+                                                confirmSubmitFunc={this.props.confirmSubmitFunc}
+                                                selectedItem={this.props.selectedItem}
                                             />}
                                     />
                                 </Switch>
@@ -45,8 +50,9 @@ class FormInfo extends React.Component {
         // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
         this.props.form.validateFields((err, values) => {
             if (!err) {
+                formInfo.count = parseInt(formInfo.count)
                 formInfo.amount = formInfo.count * this.props.selectedItem.price
-                this.props.submitFunc(formInfo)
+                this.props.infoSubmitFunc(formInfo)
             }
         });
     };
@@ -158,17 +164,55 @@ class FormInfo extends React.Component {
 const Info = Form.create()(FormInfo)
 
 class FormConfirm extends React.Component {
-    handleSubmit = () => {
-        goToUrl('/ads/index')
-        Modal.success({
-            title: "请等待商户确认"
-        })
-        this.props.refreshData()
+    constructor(props) {
+        super(props)
+        this.payTypes = this.props.selectedItem.paytypeList.map(
+            (item) => ({ label: item.typeName, value: item.id })
+        )
     }
+
+    handleSubmit = () => {
+        let formConfirm = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
+        // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                this.props.confirmSubmitFunc(formConfirm)
+                this.props.refreshData()
+            }
+        }
+        )
+    }
+
     render() {
+        const { getFieldDecorator } = this.props.form;
+        const RadioGroup = Radio.Group;
+        const formItemLayout = {
+            labelCol: {
+                xs: 24,
+                sm: 4
+            },
+            wrapperCol: {
+                xs: 24,
+                sm: 12
+            }
+        }
         return (
-            <Card title="付款码">
+            <Card title="" >
                 <Form>
+                    <FormItem label="收款方式" {...formItemLayout}>
+                        {
+                            getFieldDecorator("payTypeId", {
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: '不能为空'
+                                    },
+                                ]
+                            })(
+                                <RadioGroup options={this.payTypes} />
+                            )
+                        }
+                    </FormItem>
                     <FormItem
                     >
                         <img alt="Cierra.jpg" src="https://img.moegirl.org/common/thumb/a/aa/Cierra01.jpg/260px-Cierra01.jpg" />

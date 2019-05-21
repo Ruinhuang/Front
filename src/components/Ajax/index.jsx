@@ -51,9 +51,10 @@ export default class Ajax {
 							return resolve(res)
 							// console.log('如果没有return 这行会被执行')
 						} else {
-							// return message.error(res.data.msg)
-							if (response.data.msg) return message.error(response.data.msg)
+							//兼容多个后台的错误处理
+							if (response.data.error) return message.error(response.data.error.message)
 							if (response.data.message) return message.error(response.data.message)
+							if (response.data.msg) return message.error(response.data.msg)
 						}
 					}
 				}

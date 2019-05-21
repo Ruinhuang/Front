@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from "react-redux"
+import { actionCreator } from "../../redux/action"
 import { Card, Input, Radio, Table, Form, Modal, Button, message, Badge, Select } from 'antd';
 import Ajax from '../../components/Ajax'
 import { pagination, selectTag } from '../../utils/index'
@@ -9,12 +11,12 @@ const FormItem = Form.Item
 const Option = Select.Option
 const RadioGroup = Radio.Group
 
-export default class adTable extends React.Component {
+class orderTable extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             visibleModal: null,
-            loading: true,
+            loading: false,
             tableType: "radio",
             dataSource: [],
             allSource: [],
@@ -24,30 +26,36 @@ export default class adTable extends React.Component {
             sortOrder: false,
         }
         this.page = 1
+        this.orderType = null
+        this.orderStatus = null
         this.formList = [
             {
                 type: 'SELECT',
                 label: '订单类型',
                 field: 'type',
-                placeholder: '全部',
-                initialValue: '',
+                placeholder: '买入',
+                initialValue: 'BUY',
                 width: 100,
-                list: [{ id: '', name: '全部' }, { id: '1', name: '买入' }, { id: '2', name: '卖出' }]
+                list: [{ id: 'BUY', name: '买入' }, { id: 'SELL', name: '卖出' }]
             },
             {
                 type: 'SELECT',
                 label: '订单状态',
                 field: 'status',
-                placeholder: '全部',
-                initialValue: '1',
+                placeholder: '等待支付',
+                initialValue: 'WAIT_PAY',
                 width: 100,
-                list: [{ id: '0', name: '全部' }, { id: '1', name: '待付款' }, { id: '2', name: '待确认' }, { id: '3', name: '已完成' }, { id: '4', name: '已过期' }]
+                list: [
+                    { id: 'NEW', name: "新建" },
+                    { id: 'WAIT_PAY', name: "等待支付" },
+                    { id: 'WAIT_RELEASE', name: "等待放币" },
+                    { id: 'FINISH', name: "订单完成" },
+                    { id: 'CANCEL', name: "订单取消" },
+                    { id: 'HOLD', name: "订单挂起" },
+                    { id: 'INIT_FAIL', name: "下单失败" },
+                ]
             },
         ]
-    }
-
-    componentDidMount = () => {
-        this.request()
     }
 
     changeTableType = checked => {
@@ -59,23 +67,62 @@ export default class adTable extends React.Component {
             })
         )
     }
-
-    request = () => {
+    unpublish = () => {
         Ajax.ajax(
             'get',
-            '/v1/ads',
+            '/ad/close',
             {},
-            { page: this.page },
-            'https://mook.sunlin.fun/mock/9',
+            {
+                adId: this.state.selectedItems[0].id
+            },
+            'http://45.76.146.27',
+        )
+            .then(() => {
+                this.setState((prevState) => ({
+                    dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
+                    selectedItems: [], selectedRowKeys: []
+                }))
+            })
+            .catch(
+                () => message.error("下架失败")
+            )
+    }
+
+    // 从 baseForm里提交的对象 formField
+    request = (formField) => {
+        if (formField) {
+            this.orderType = formField.type
+            this.orderStatus = formField.status
+        }
+        this.setState(
+            () => ({
+                loading: true,
+            })
+        )
+        Ajax.ajax(
+            'get',
+            '/order/query_order_conditions',
+            {},
+            {
+                coinId: 1,
+                type: this.orderType,
+                status: this.orderStatus,
+                currentPage: this.page
+
+            },
+            'http://45.76.146.27',
         )
             .then(
                 data => {
+                    //自己为每条数据制造唯一的key
+                    data.data.data.forEach((item) => (item.key = item.id))
+                    console.log(data.data.data)
                     this.setState(
                         () => (
                             {
-                                dataSource: data.list,
+                                dataSource: data.data.data,
                                 loading: false,
-                                pagination: pagination(data, (current) => {
+                                pagination: pagination(data.data, (current) => {
                                     this.page = current
                                     this.request()
                                 }),
@@ -90,53 +137,101 @@ export default class adTable extends React.Component {
 
     render = () => {
         const statusMap = {
-            1: <Badge status="success" text="展示中" />,
-            2: <Badge status="error" text="未展示" />,
+            'NEW': "新建",
+            'WAIT_PAY': "等待支付",
+            'WAIT_RELEASE': "等待放币",
+            'FINISH': "订单完成",
+            'CANCEL': "订单取消",
+            'HOLD': "订单挂起",
+            'INIT_FAIL': "下单失败",
         }
-        const adTypeMap = {
-            1: <Badge status="success" text="买入积分" />,
-            2: <Badge status="default" text="卖出积分" />,
+        const orderTypeMap = {
+            'BUY': <Badge status="success" text="买入" />,
+            'SELL': <Badge status="default" text="卖出" />,
         }
         const columns = [
             {
-                title: 'adID',
-                key: 'key',
-                width: 80,
-                dataIndex: 'key',
+                title: '订单ID',
+                key: 'id',
+                width: 30,
+                dataIndex: 'id',
             },
             {
-                title: '商户',
-                key: 'name',
-                width: 80,
-                dataIndex: 'name',
+                title: '用户ID',
+                key: 'uid',
+                width: 30,
+                dataIndex: 'uid',
             },
             {
-                title: 'price',
+                title: '商户ID',
+                key: 'merchantId',
+                width: 30,
+                dataIndex: 'merchantId',
+            },
+            {
+                title: '广告ID',
+                key: 'adId',
+                width: 30,
+                dataIndex: 'adId',
+            },
+            {
+                title: '订单编号',
+                key: 'orderNo',
+                width: 30,
+                dataIndex: 'orderNo',
+            },
+
+            {
+                title: '下单时间',
+                key: 'orderTime',
+                width: 30,
+                dataIndex: 'orderTime',
+            },
+            {
+                title: '支付时间',
+                key: 'payTime',
+                width: 60,
+                dataIndex: 'payTime',
+            },
+            {
+                title: '放币时间',
+                key: 'releaseTime',
+                width: 60,
+                dataIndex: 'releaseTime',
+            },
+            {
+                title: '数量',
+                key: 'count',
+                width: 60,
+                dataIndex: 'count',
+            },
+            {
+                title: '单价',
                 key: 'price',
-                width: 80,
+                width: 60,
                 dataIndex: 'price',
             },
             {
-                title: '商户广告类型',
-                key: 'adType',
-                width: 80,
-                dataIndex: 'adType',
+                title: '订单类型',
+                key: 'type',
+                width: 60,
+                dataIndex: 'type',
                 render: (text) => {
-                    return adTypeMap[text]
+                    return orderTypeMap[text]
                 },
             },
             {
-                title: '状态',
+                title: '订单状态',
                 key: 'status',
-                width: 80,
+                width: 60,
                 dataIndex: 'status',
                 render: (text) => {
                     return statusMap[text]
                 },
-                sorter: (a, b) => {
-                    return a.status - b.status
-                },
-                sortOrder: this.state.sortOrder,
+                // sorter: (a, b) => {
+                //     return a.status - b.status
+                // },
+                // sortOrder: this.state.sortOrder,
             },
             // 行内操作按钮
             // {
@@ -237,16 +332,13 @@ export default class adTable extends React.Component {
                     }}
                     footer={null}
                 >
-                    <UserForm
-                        userInfo={this.state.selectedItems}
+                    <OrderForm
+                        orderInfo={this.state.selectedItems}
                         wrappedComponentRef={(inst) => this.userForm = inst}
                     />
                 </Modal>
-                <Card>
-                    <BaseForm layout="inline" submitFunc={() => { }} switchFunc={() => { }} formList={this.formList} />
-                </Card>
-                <Card>
-                    <Button
+                {/* <Card> */}
+                    {/* <Button
                         icon='edit'
                         type="primary"
                         disabled={this.state.selectedItems.length > 1}
@@ -258,36 +350,30 @@ export default class adTable extends React.Component {
                         }
                     >
                         编辑
-              </Button>
-                    <Button
-                        type="danger"
-                        icon="delete"
-                        onClick={
-                            () => {
-                                if (this.state.selectedItems.length < 1) return
-                                Modal.confirm({
-                                    title: 'delete',
-                                    content: JSON.stringify(this.state.selectedItems),
-                                    onOk: (callback = () => {
-                                        message.info('删除成功')
-                                        this.setState((prevState) => ({
-                                            dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
-                                            selectedItems: [], selectedRowKeys: []
-                                        }))
-                                    },
-                                    ) => {
-                                        message.warning('这里改写成向后端发送验证的流程// TODO')
-                                        callback()
-                                    },
-                                }
-                                )
-                            }
-                        }
-                    >
-                        删除
-            </Button>
+              </Button> */}
+                {/* </Card> */}
+                <Card>
+                    <BaseForm layout="inline" submitFunc={this.request} switchFunc={() => { }} formList={this.formList} />
                 </Card>
                 <div className="content-wrap">
+                    <Card>
+                        <Button
+                            type="info"
+                            icon="info"
+                            onClick={
+                                () => {
+                                    if (this.state.selectedItems.length < 1) return
+                                    Modal.confirm({
+                                        title: "查看详情",
+                                        content: JSON.stringify(this.state.selectedItems),
+                                    }
+                                    )
+                                }
+                            }
+                        >
+                            订单详情
+            </Button>
+                    </Card>
                     <Table
                         size="small"
                         bordered
@@ -363,10 +449,10 @@ export default class adTable extends React.Component {
     }
 }
 
-class UserForm extends React.Component {
+class OrderForm extends React.Component {
 
     render() {
-        let userInfo = this.props.userInfo[0] || {};
+        let orderInfo = this.props.orderInfo[0] || {};
         const formItemLayout = {
             labelCol: {
                 span: 5
@@ -379,36 +465,19 @@ class UserForm extends React.Component {
         const { getFieldDecorator } = this.props.form;
         return (
             <Form layout="horizontal">
-                <FormItem label="用户" {...formItemLayout}>
-                    {
-                        getFieldDecorator('name', {
-                            initialValue: userInfo.name
-                        })(
-                            <Input type="text" placeholder="请输入用户名" />
-                        )
-                    }
-                </FormItem>
-                <FormItem label="商户" {...formItemLayout}>
-                    {
-                        getFieldDecorator('names', {
-                            initialValue: userInfo.role
-                        })(
-                            <RadioGroup>
-                                <Radio value="1">用户</Radio>
-                                <Radio value="2">商户</Radio>
-                            </RadioGroup>
-                        )
-                    }
-                </FormItem>
                 <FormItem label="状态" {...formItemLayout}>
                     {
                         getFieldDecorator('status', {
-                            initialValue: userInfo.status
+                            initialValue: orderInfo.status
                         })(
                             <Select>
-                                <Option value={1}>已审核</Option>
-                                <Option value={2}>未审核</Option>
-                                <Option value={3}>已冻结</Option>
+                                <Option value='NEW'> "新建"</Option>
+                                <Option value='WAIT_PAY'> "等待支付"</Option>
+                                <Option value='WAIT_RELEASE'> "等待放币"</Option>
+                                <Option value='FINISH'> "订单完成"</Option>
+                                <Option value='CANCEL'> "订单取消"</Option>
+                                <Option value='HOLD'> "订单挂起"</Option>
+                                <Option value='INIT_FAIL'> "下单失败"</Option>
                             </Select>
                         )
                     }
@@ -425,69 +494,12 @@ class UserForm extends React.Component {
     }
 }
 
-UserForm = Form.create({})(UserForm);
+orderTable = Form.create({})(orderTable);
+// props 属性
+const mapStateToProps = (state) => ({
+    isLogin: state.isLogin,
+    user: state.user
+})
 
-// 
-class userTable extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-        }
-        this.formList = [
-            {
-                type: 'SELECT',
-                label: '订单类型',
-                field: 'type',
-                placeholder: '全部',
-                initialValue: '',
-                width: 100,
-                list: [{ id: '', name: '全部' }, { id: '1', name: '买入' }, { id: '2', name: '卖出' }]
-            },
-            {
-                type: 'SELECT',
-                label: '订单状态',
-                field: 'status',
-                placeholder: '全部',
-                initialValue: '1',
-                width: 100,
-                list: [{ id: '0', name: '全部' }, { id: '1', name: '待付款' }, { id: '2', name: '待确认' }, { id: '3', name: '已完成' }, { id: '4', name: '已过期' }]
-            },
-        ];
-    }
-
-
-    render = () => {
-        const columns = [
-            {
-                title: 'id',
-                dataIndex: 'id'
-            }, {
-                title: '用户名',
-                dataIndex: 'username'
-            }, {
-                title: '性别',
-                dataIndex: 'sex',
-                render(sex) {
-                    return sex === 1 ? '男' : '女';
-                }
-            }, {
-                title: '状态',
-                dataIndex: 'state',
-                render(state) {
-                    let config = {
-                        '1': "咸🐟一条",
-                    };
-                    return config[state];
-                }
-            },
-            {
-                title: '生日',
-                dataIndex: 'birthday'
-            }, {
-                title: '联系地址',
-                dataIndex: 'address'
-            },
-        ];
-
-    }
-}
+// 把逻辑方法与UI组件连接起来变成新容器组件
+export default connect(mapStateToProps)(orderTable)
