@@ -24,6 +24,8 @@ export default class adTable extends React.Component {
             sortOrder: false,
         }
         this.page = 1
+        this.adType = null
+        this.adStatus = null
         this.formList = [
             {
                 type: 'SELECT',
@@ -38,10 +40,10 @@ export default class adTable extends React.Component {
                 type: 'SELECT',
                 label: '订单状态',
                 field: 'status',
-                placeholder: '全部',
-                initialValue: '0',
+                placeholder: '已发布',
+                initialValue: 'PUBLISH',
                 width: 100,
-                list: [{ id: '0', name: '全部' }, { id: '1', name: '待付款' }, { id: '2', name: '待确认' }, { id: '3', name: '已完成' }, { id: '4', name: '已过期' }]
+                list: [{ id: 'PUBLISH', name: '已发布' }, { id: 'UNPUBLISH', name: '未发布' },]
             },
         ]
     }
@@ -56,27 +58,40 @@ export default class adTable extends React.Component {
         )
     }
 
-    // 从 baseFrom里提交的对象 formField
+    // 从 baseForm里提交的对象 formField
     request = (formField) => {
+        if (formField) {
+            this.adType = formField.type
+            this.adStatus = formField.status
+        }
+        this.setState(
+            () => ({
+                loading: true,
+            })
+        )
         Ajax.ajax(
             'get',
             '/ad/page',
             {},
             {
                 coinId: 1,
-                type:formField.type,
+                type: this.adType,
+                status: this.adStatus,
+                currentPage: this.page
             },
             'http://45.76.146.27',
         )
             .then(
                 data => {
-                    console.log(data)
+                    //自己为每条数据制造唯一的key
+                    data.data.data.forEach((item) => (item.key = item.id))
+                    console.log(data.data.data)
                     this.setState(
                         () => (
                             {
-                                dataSource: data.data,
+                                dataSource: data.data.data,
                                 loading: false,
-                                pagination: pagination(data, (current) => {
+                                pagination: pagination(data.data, (current) => {
                                     this.page = current
                                     this.request()
                                 }),
@@ -91,37 +106,55 @@ export default class adTable extends React.Component {
 
     render = () => {
         const statusMap = {
-            1: <Badge status="success" text="展示中" />,
-            2: <Badge status="error" text="未展示" />,
+            'PUBLISH': <Badge status="success" text="发布中" />,
+            'UNPUBLISH': <Badge status="error" text="未发布" />,
         }
         const adTypeMap = {
-            1: <Badge status="success" text="买入积分" />,
-            2: <Badge status="default" text="卖出积分" />,
+            'BUY': <Badge status="success" text="买入" />,
+            'SELL': <Badge status="default" text="卖出" />,
         }
         const columns = [
             {
-                title: 'adID',
-                key: 'key',
-                width: 80,
-                dataIndex: 'key',
+                title: '商户',
+                key: 'merchantInfoVO',
+                width: 60,
+                dataIndex: 'merchantInfoVO.uid',
             },
             {
-                title: '商户',
-                key: 'name',
-                width: 80,
-                dataIndex: 'name',
+                title: 'count',
+                key: 'count',
+                width: 60,
+                dataIndex: 'count',
+            },
+            {
+                title: 'maxTradeAmount',
+                key: 'maxTradeAmount',
+                width: 60,
+                dataIndex: 'maxTradeAmount',
+            },
+            {
+                title: 'finishCount',
+                key: 'finishCount',
+                width: 60,
+                dataIndex: 'finishCount',
+            },
+            {
+                title: 'frozenCount',
+                key: 'frozenCount',
+                width: 60,
+                dataIndex: 'frozenCount',
             },
             {
                 title: 'price',
                 key: 'price',
-                width: 80,
+                width: 60,
                 dataIndex: 'price',
             },
             {
-                title: '商户广告类型',
-                key: 'adType',
-                width: 80,
-                dataIndex: 'adType',
+                title: '广告类型',
+                key: 'type',
+                width: 60,
+                dataIndex: 'type',
                 render: (text) => {
                     return adTypeMap[text]
                 },
@@ -129,15 +162,15 @@ export default class adTable extends React.Component {
             {
                 title: '状态',
                 key: 'status',
-                width: 80,
+                width: 60,
                 dataIndex: 'status',
                 render: (text) => {
                     return statusMap[text]
                 },
-                sorter: (a, b) => {
-                    return a.status - b.status
-                },
-                sortOrder: this.state.sortOrder,
+                // sorter: (a, b) => {
+                //     return a.status - b.status
+                // },
+                // sortOrder: this.state.sortOrder,
             },
             // 行内操作按钮
             // {
@@ -229,7 +262,7 @@ export default class adTable extends React.Component {
 
         return (
             <div>
-                <Modal
+                {/* <Modal
                     visibleModal={this.state.visibleModal}
                     title={this.state.visibleModal}
                     visible={this.state.visibleModal !== null}
@@ -238,15 +271,11 @@ export default class adTable extends React.Component {
                     }}
                     footer={null}
                 >
-                    <UserForm
-                        userInfo={this.state.selectedItems}
+                    <AdForm
+                        adInfo={this.state.selectedItems}
                         wrappedComponentRef={(inst) => this.userForm = inst}
                     />
                 </Modal>
-                <Card>
-                    <BaseForm layout="inline" submitFunc={this.request
-                    } switchFunc={() => { }} formList={this.formList} />
-                </Card>
                 <Card>
                     <Button
                         icon='edit'
@@ -288,6 +317,9 @@ export default class adTable extends React.Component {
                     >
                         删除
             </Button>
+                </Card> */}
+                <Card>
+                    <BaseForm layout="inline" submitFunc={this.request} switchFunc={() => { }} formList={this.formList} />
                 </Card>
                 <div className="content-wrap">
                     <Table
@@ -365,10 +397,10 @@ export default class adTable extends React.Component {
     }
 }
 
-class UserForm extends React.Component {
+class AdForm extends React.Component {
 
     render() {
-        let userInfo = this.props.userInfo[0] || {};
+        let adInfo = this.props.adInfo[0] || {};
         const formItemLayout = {
             labelCol: {
                 span: 5
@@ -381,36 +413,14 @@ class UserForm extends React.Component {
         const { getFieldDecorator } = this.props.form;
         return (
             <Form layout="horizontal">
-                <FormItem label="用户" {...formItemLayout}>
-                    {
-                        getFieldDecorator('name', {
-                            initialValue: userInfo.name
-                        })(
-                            <Input type="text" placeholder="请输入用户名" />
-                        )
-                    }
-                </FormItem>
-                <FormItem label="商户" {...formItemLayout}>
-                    {
-                        getFieldDecorator('names', {
-                            initialValue: userInfo.role
-                        })(
-                            <RadioGroup>
-                                <Radio value={1}>用户</Radio>
-                                <Radio value={2}>商户</Radio>
-                            </RadioGroup>
-                        )
-                    }
-                </FormItem>
                 <FormItem label="状态" {...formItemLayout}>
                     {
                         getFieldDecorator('status', {
-                            initialValue: userInfo.status
+                            initialValue: adInfo.status
                         })(
                             <Select>
-                                <Option value={1}>已审核</Option>
-                                <Option value={2}>未审核</Option>
-                                <Option value={3}>已冻结</Option>
+                                <Option value='PUBLISH'>已发布</Option>
+                                <Option value='UNPUBLISH'>未发布</Option>
                             </Select>
                         )
                     }
@@ -427,4 +437,4 @@ class UserForm extends React.Component {
     }
 }
 
-UserForm = Form.create({})(UserForm);
+AdForm = Form.create({})(AdForm);

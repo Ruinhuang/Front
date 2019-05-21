@@ -42,10 +42,10 @@ export const removeFromArray = (arr, items) => {
 
 export const pagination = (data, callback) => ({
   onChange: current => callback(current),
-  current: parseInt(data.page),
-  pageSize: parseInt(data.page_size),
-  total: parseInt(data.total),
-  showTotal: () => (`共${data.total}条数据`),
+  current: parseInt(data.currentPage),
+  pageSize: parseInt(data.sizePage),
+  total: parseInt(data.totalPage),
+  showTotal: () => (`共${data.totalPage}条数据`),
 })
 
 

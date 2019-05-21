@@ -118,7 +118,6 @@ class BaseForm extends Component {
 
     handleSubmit = () => {
         let fieldsValue = this.props.form.getFieldsValue()
-        console.log(fieldsValue)
         // 由父组件传入的函数处理表单提交的数据
         this.props.submitFunc(fieldsValue)
     }
@@ -128,7 +127,7 @@ class BaseForm extends Component {
             <Form layout={this.props.layout}>
                 {this.initFormList()}
                 <Button type="primary" onClick={() => this.handleSubmit()}>
-                    Done
+                    查找
                 </Button>
             </Form>
         )
