@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from "react-redux"
+import { actionCreator } from "../../redux/action"
 import { Card, Input, Radio, Table, Form, Modal, Button, message, Badge, Select } from 'antd';
 import Ajax from '../../components/Ajax'
 import { pagination, selectTag } from '../../utils/index'
@@ -9,7 +11,7 @@ const FormItem = Form.Item
 const Option = Select.Option
 const RadioGroup = Radio.Group
 
-export default class adTable extends React.Component {
+class adTable extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -57,6 +59,26 @@ export default class adTable extends React.Component {
             })
         )
     }
+    unpublish = () => {
+        Ajax.ajax(
+            'get',
+            '/ad/close',
+            {},
+            {
+                adId: this.state.selectedItems[0].id
+            },
+            'http://45.76.146.27',
+        )
+            .then(() => {
+                this.setState((prevState) => ({
+                    dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
+                    selectedItems: [], selectedRowKeys: []
+                }))
+            })
+            .catch(
+                () => message.error("下架失败")
+            )
+    }
 
     // 从 baseForm里提交的对象 formField
     request = (formField) => {
@@ -78,6 +100,7 @@ export default class adTable extends React.Component {
                 type: this.adType,
                 status: this.adStatus,
                 currentPage: this.page
+
             },
             'http://45.76.146.27',
         )
@@ -262,7 +285,7 @@ export default class adTable extends React.Component {
 
         return (
             <div>
-                {/* <Modal
+                <Modal
                     visibleModal={this.state.visibleModal}
                     title={this.state.visibleModal}
                     visible={this.state.visibleModal !== null}
@@ -277,7 +300,7 @@ export default class adTable extends React.Component {
                     />
                 </Modal>
                 <Card>
-                    <Button
+                    {/* <Button
                         icon='edit'
                         type="primary"
                         disabled={this.state.selectedItems.length > 1}
@@ -289,7 +312,7 @@ export default class adTable extends React.Component {
                         }
                     >
                         编辑
-              </Button>
+              </Button> */}
                     <Button
                         type="danger"
                         icon="delete"
@@ -297,27 +320,34 @@ export default class adTable extends React.Component {
                             () => {
                                 if (this.state.selectedItems.length < 1) return
                                 Modal.confirm({
-                                    title: 'delete',
-                                    content: JSON.stringify(this.state.selectedItems),
-                                    onOk: (callback = () => {
-                                        message.info('删除成功')
-                                        this.setState((prevState) => ({
-                                            dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
-                                            selectedItems: [], selectedRowKeys: []
-                                        }))
-                                    },
-                                    ) => {
-                                        message.warning('这里改写成向后端发送验证的流程// TODO')
-                                        callback()
-                                    },
+                                    title: "下架广告",
+                                    // content: JSON.stringify(this.state.selectedItems),
+                                    content: "确认要下架此条广告吗？",
+                                    onOk: (() => this.unpublish()),
                                 }
                                 )
                             }
                         }
                     >
-                        删除
+                        下架广告
             </Button>
-                </Card> */}
+                    <Button
+                        type="info"
+                        icon="info"
+                        onClick={
+                            () => {
+                                if (this.state.selectedItems.length < 1) return
+                                Modal.confirm({
+                                    title: "查看详情",
+                                    content: JSON.stringify(this.state.selectedItems),
+                                }
+                                )
+                            }
+                        }
+                    >
+                        广告详情
+            </Button>
+                </Card>
                 <Card>
                     <BaseForm layout="inline" submitFunc={this.request} switchFunc={() => { }} formList={this.formList} />
                 </Card>
@@ -437,4 +467,12 @@ class AdForm extends React.Component {
     }
 }
 
-AdForm = Form.create({})(AdForm);
+adTable = Form.create({})(adTable);
+// props 属性
+const mapStateToProps = (state) => ({
+    isLogin: state.isLogin,
+    user: state.user
+})
+
+// 把逻辑方法与UI组件连接起来变成新容器组件
+export default connect(mapStateToProps)(adTable)

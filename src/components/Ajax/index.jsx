@@ -7,7 +7,7 @@ export default class Ajax {
 		headers,
 		data,
 		baseURL,
-		timeout = 5000,
+		timeout = 10000,
 	) => new Promise(
 		(resolve, reject) => {
 			// Promise是一个包裹者异步操作的对象，它有三个状态:未完成， 已完成， 已失败

@@ -7,25 +7,53 @@ import Ajax from '../../components/Ajax'
 const Option = Select.Option
 const RadioGroup = Radio.Group
 const FormItem = Form.Item
+const CheckboxGroup = Checkbox.Group;
 class FormPublish extends React.Component {
+  state = {
+    payTypes: [],
+  }
+
   post = (formData) => {
     Ajax.ajax(
       'post',
       '/ad/createPublish',
-      { "X-BM-USER-ID": this.props.user.userId.toString() },
+      // { "X-BM-USER-ID": this.props.user.userId.toString()},
+      { "X-BM-USER-ID": 214567311070 },
       formData,
       "http://45.76.146.27"
     )
       .then(
-        (res) => {
+        () => {
+          message.success("发布成功")
         }
       ).catch(() => { })
+  }
+
+  componentWillMount = () => {
+    Ajax.ajax(
+      'get',
+      '/user/paytype/list',
+      { "X-BM-USER-ID": 214567311070 },
+      {},
+      "http://45.76.146.27",
+    ).then(
+      (data) => {
+        const list = data.data.map(
+          (item) => ({ label: item.typeName, value: item.id })
+        )
+        this.setState(() => {
+          return { payTypes: list }
+        })
+      }
+    ).catch()
   }
 
   handleSubmit = () => {//绑定提交事件进行校验
     let formData = this.props.form.getFieldsValue()// 可以(获取表单中)object对象
     this.props.form.validateFields((err, values) => {
-      if (!err) {// ${}  是变量
+      if (!err) {
+        //payTypeList required string like "[43,45]"  
+        formData.payTypeList = `[${formData.payTypeList.toString()}]`
         this.post(formData)
       }
     });
@@ -208,7 +236,6 @@ class FormPublish extends React.Component {
             <FormItem label="收款方式" {...formItemLayout}>
               {
                 getFieldDecorator("payTypeList", {
-                  initialValue: "Alipay",
                   rules: [
                     {
                       required: true,
@@ -216,15 +243,8 @@ class FormPublish extends React.Component {
                     },
                   ]
                 })(
-                  <Select
-                  >
-                    <Option value='Alipay' >
-                      支付宝
-                    </Option>
-                    <Option value="Wechat" >
-                      微信
-                    </Option>
-                  </Select>
+                  <CheckboxGroup options={this.state.payTypes} />
+
                 )
               }
             </FormItem>
