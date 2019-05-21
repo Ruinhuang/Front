@@ -146,6 +146,7 @@ export default class userTable extends React.Component {
     )
       .then(
         data => {
+          console.log(data)
           if (!this.state.globalFilter) {
             this.filterRules = this.state.defaultFilterRules
           }
@@ -178,8 +179,8 @@ export default class userTable extends React.Component {
     const ButtonGroup = Button.Group
     const roleMap = {
       1: "普通用户",
-      2: "管理员",
-      3: "商户",
+      2: "商户",
+      3: "管理员",
     }
     const statusMap = {
       "1": <Badge status="success" text="已审批" />,

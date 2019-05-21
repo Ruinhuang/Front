@@ -17,8 +17,7 @@ class FormPublish extends React.Component {
     Ajax.ajax(
       'post',
       '/ad/createPublish',
-      // { "X-BM-USER-ID": this.props.user.userId.toString()},
-      { "X-BM-USER-ID": 214567311070 },
+      { "X-BM-USER-ID": this.props.user.userId.toString() },
       formData,
       "http://45.76.146.27"
     )
@@ -33,7 +32,7 @@ class FormPublish extends React.Component {
     Ajax.ajax(
       'get',
       '/user/paytype/list',
-      { "X-BM-USER-ID": 214567311070 },
+      { "X-BM-USER-ID": this.props.user.userId.toString()},
       {},
       "http://45.76.146.27",
     ).then(

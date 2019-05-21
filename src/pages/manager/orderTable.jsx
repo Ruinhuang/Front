@@ -394,8 +394,8 @@ class UserForm extends React.Component {
                             initialValue: userInfo.role
                         })(
                             <RadioGroup>
-                                <Radio value={1}>用户</Radio>
-                                <Radio value={2}>商户</Radio>
+                                <Radio value="1">用户</Radio>
+                                <Radio value="2">商户</Radio>
                             </RadioGroup>
                         )
                     }

@@ -76,9 +76,9 @@ export default class adTable extends Component {
 
   render() {
     const roleMap = {
-      1: "管理员",
+      3: "管理员",
       2: "商户",
-      3: "普通用户",
+      1: "普通用户",
     }
 
     const statusMap = {

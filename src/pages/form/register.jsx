@@ -155,7 +155,7 @@ class FormRegister extends React.Component {
             <FormItem label="用户角色" {...formItemLayout}>
               {
                 getFieldDecorator('userType', {
-                  initialValue: "0",
+                  initialValue: "1",
                   rules: [{
                     required: true,
                     message: '用户角色必选'
@@ -164,9 +164,9 @@ class FormRegister extends React.Component {
                 }
                 )(
                   <RadioGroup>
-                    <Radio value={0}>普通用户</Radio>
-                    <Radio value={1}>管理员</Radio>
-                    <Radio value={2}>商户</Radio>
+                    <Radio value="1">普通用户</Radio>
+                    <Radio value="2">商户</Radio>
+                    <Radio value="3">管理员</Radio>
                   </RadioGroup>
                 )
               }

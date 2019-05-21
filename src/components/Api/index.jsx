@@ -23,7 +23,7 @@ const menus = {
             // }]
         },
     ],
-    1: [
+    3: [
         {
             title: '首页',
             key: '/home',
@@ -76,7 +76,7 @@ const menus = {
             
         },
     ],
-    0: [
+    1: [
         {
             title: '首页',
             key: '/home'

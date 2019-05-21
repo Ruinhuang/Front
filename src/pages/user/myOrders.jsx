@@ -137,9 +137,9 @@ class FormMyInfo extends React.Component {
                                 }
                                 )(
                                     <RadioGroup>
-                                        <Radio value={0}>普通用户</Radio>
-                                        <Radio value={1}>管理员</Radio>
-                                        <Radio value={2}>商户</Radio>
+                                        <Radio value="1">普通用户</Radio>
+                                        <Radio value="2">商户</Radio>
+                                        <Radio value="3">管理员</Radio>
                                     </RadioGroup>
                                 )
                             }
