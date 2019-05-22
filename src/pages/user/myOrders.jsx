@@ -91,24 +91,10 @@ class orderTable extends React.Component {
     }
 
     handlePayingButtonClick = () => {
-        // const payInfo = {
-        //         orderId: this.selectedItems[0].id,
-        //         // payTypeId, 付款人付款方式ID, int64
-        //         // payTypeId: form.payTypeId,
-        //         // payeeTypeId, 收款人收款方式ID, int64
-        //         // payeeTypeId: form.payTypeId,
-        // }
-        // Ajax.ajax(
-        //     'post',
-        //     '/order/paying',
-        //     { "X-BM-USER-ID": this.props.user.userId() },
-        //     payInfo,
-        //     'http://45.76.146.27',
-        // 先获取订单详情
         Ajax.ajax(
             'get',
             '/order/order_detail',
-            { "X-BM-USER-ID": this.props.user.userId() },
+            { "X-BM-USER-ID": this.props.user.userId },
             {
                 orderId: this.state.selectedItems[0].id
             },
@@ -584,17 +570,53 @@ class PayingForm extends React.Component {
             payeeTypeList: [],
         }
     }
+
     handleSubmit = () => {//绑定提交事件进行校验
         let formInfo = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
         // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
         this.props.form.validateFields((err, values) => {
-            if (!err) { return formInfo }
+            if (!err) {
+                // const payInfo = {
+                //         orderId: this.selectedItems[0].id,
+                //         // payTypeId, 付款人付款方式ID, int64
+                //         // payTypeId: form.payTypeId,
+                //         // payeeTypeId, 收款人收款方式ID, int64
+                //         // payeeTypeId: form.payTypeId,
+                // }
+                // Ajax.ajax(
+                //     'post',
+                //     '/order/paying',
+                //     { "X-BM-USER-ID": this.props.user.userId() },
+                //     payInfo,
+                //     'http://45.76.146.27',
+                // 先获取订单详情
+                console.log(formInfo)
+
+            }
         })
     }
+
     componentDidMount = () => {
-        this.payeeTypeList = this.state.payeeTypeList.map((item) => ({ label: item.typeName, value: item.id }))
+        // 獲得廣告的支付方式列表
         this.adPayTypeList = this.props.orderDetail.adPayType.map((item) => ({ label: item.typeName, value: item.id }))
-        console.log(this.adPayTypeList)
+        // 獲得廣告的支付方式列表
+        Ajax.ajax(
+            'get',
+            '/user/paytype/list',
+            { "X-BM-USER-ID": this.props.orderDetail.orderVO.uid },
+            {},
+            "http://45.76.146.27",
+        ).then(
+            (data) => {
+                const list = data.data.map(
+                    (item) => ({ label: item.typeName, value: item.id })
+                )
+                this.setState(() => {
+                    return {
+                        payeeTypeList: list,
+                    }
+                })
+            })
 
     }
     render = () => {
@@ -621,13 +643,22 @@ class PayingForm extends React.Component {
             <FormItem>
                 <img alt="Cierra.jpg" src="https://img.moegirl.org/common/thumb/a/aa/Cierra01.jpg/260px-Cierra01.jpg" />
             </FormItem>
-            <FormItem label="我的支付方式">
+            <FormItem label="我的收付方式">
                 {
                     getFieldDecorator('payTypeId', {
                         initialValue: this.props.orderDetail.adPayType[0].id,
                         rules: [{ required: true, message: '支付方式必选' },]
                     })(
                         <RadioGroup options={this.adPayTypeList} />,
+                    )
+                }
+            </FormItem>
+            <FormItem label="對方的收付方式">
+                {
+                    getFieldDecorator('payeeTypeId', {
+                        rules: [{ required: true, message: '支付方式必选' },]
+                    })(
+                        <RadioGroup options={this.state.payeeTypeList} />,
                     )
                 }
             </FormItem>
