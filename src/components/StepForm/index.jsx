@@ -205,7 +205,7 @@ class FormConfirm extends React.Component {
                                 rules: [
                                     {
                                         required: true,
-                                        message: '不能为空'
+                                        message: '选择商户的收款账户'
                                     },
                                 ]
                             })(

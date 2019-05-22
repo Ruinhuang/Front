@@ -27,7 +27,7 @@ class FormMyInfo extends React.Component {
         Ajax.ajax(
             'post',
             '/user-login',
-            { "X-BM-USER-ID": this.props.user.token },
+            { "X-BM-USER-ID": this.props.token },
             formData,
             "https://mook.sunlin.fun/mock/9/"
         )
@@ -79,13 +79,6 @@ class FormMyInfo extends React.Component {
 
     render() {
         const { getFieldDecorator } = this.props.form;
-        const { previewVisible, previewImage, fileList } = this.state;
-        const uploadButton = (
-            <div>
-                <Icon type="plus" />
-                <div className="ant-upload-text">Upload</div>
-            </div>
-        );
         const offsetLayout = {
             wrapperCol: {
                 xs: 24,
@@ -300,7 +293,8 @@ class FormMyInfo extends React.Component {
 // props 属性
 const mapStateToProps = (state) => ({
     isLogin: state.isLogin,
-    user: state.user
+    user: state.user,
+    token: state.token,
 })
 
 // props 方法

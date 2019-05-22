@@ -174,11 +174,14 @@ class Ads extends React.Component {
       .then(
         data => {
           this.receivedOrderInfo = data.data
-          goToUrl("/ads/confirm")
+          if (this.state.selectedItems[0].type === "SELL") return goToUrl("/ads/confirm")
+          else {
+            Modal.success({
+              title: "请等待商户确认"
+            })
+            return goToUrl("/ads/index")
+          }
         }
-      )
-      .catch(
-        () => goToUrl("/ads/index")
       )
   }
 

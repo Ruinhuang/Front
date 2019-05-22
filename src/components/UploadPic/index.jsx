@@ -65,3 +65,117 @@ export default class Avatar extends React.Component {
         );
     }
 }
+
+// import React from 'react'
+// import { Upload, Icon, message } from 'antd';
+// import oss from 'ali-oss';
+// import moment from 'moment';
+// function getBase64(img, callback) {
+//   const reader = new FileReader();
+//   reader.addEventListener('load', () => callback(reader.result));
+//   reader.readAsDataURL(img);
+// }
+
+// const client = (self) => {
+//   const {token} = self.state
+//   console.log(token);
+//   // 当时使用的插件版本为5.2
+//   /*
+//   return new oss.Wrapper({
+//     accessKeyId: token.access_key_id,
+//     accessKeySecret: token.access_key_secret,
+//     region: '', //
+//     bucket: '',//
+//   });
+//   */
+//   // 2018-12-29更新
+//   // ali-oss v6.x版本的写法
+//   return new oss({
+//     accessKeyId: token.access_key_id,
+//     accessKeySecret: token.access_key_secret,
+//     region: '', //
+//     bucket: '',//
+//   });
+// }
+
+// const uploadPath = (path, file) => {
+//   // 上传文件的路径，使用日期命名文件目录
+//   return `${moment().format('YYYYMMDD')}/${file.name.split(".")[0]}-${file.uid}.${file.type.split("/")[1]}`
+// }
+// const UploadToOss = (self, path, file) => {
+//   const url = uploadPath(path, file)
+//   return new Promise((resolve, reject) => {
+//     client(self).multipartUpload(url, file).then(data => {
+//       resolve(data);
+//     }).catch(error => {
+//       reject(error)
+//     })
+//   })
+// }
+
+// class Example extends React.Component {
+//   state = {
+//     loading: false,
+//     token: {
+//       access_key_id: '', // oss的key_id
+//       access_key_secret: '', // oss的secret
+//       OSS_ENDPOINT: '',  // 自己oss服务器的配置信息
+//       OSS_BUCKET: '', // 自己oss服务器的配置信息
+//     }
+//   };
+//   handleChange = (info) => {
+//     if (info.file.status === 'uploading') {
+//       this.setState({ loading: true });
+//       return;
+//     }
+//     if (info.file.status === 'done') {
+//       // Get this url from response in real world.
+//       getBase64(info.file.originFileObj, imageUrl => this.setState({
+//         imageUrl,
+//         loading: false,
+//       }));
+//     }
+//   }
+//   beforeUpload = (file) => {
+//     const isJPG = file.type === 'image/jpeg';
+//     if (!isJPG) {
+//       message.error('You can only upload JPG file!');
+//     }
+//     const isLt2M = file.size / 1024 / 1024 < 2;
+//     if (!isLt2M) {
+//       message.error('Image must smaller than 2MB!');
+//     }
+//     let reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onloadend = () => {
+//       // 使用ossupload覆盖默认的上传方法
+//       UploadToOss(this, '上传路径oss配置信息', file).then(data => {
+//         console.log(data.res.requestUrls)
+
+//         this.setState({ imageUrl: data.res.requestUrls });
+//       })
+//     }
+//     return false; // 不调用默认的上传方法
+//   }
+//   render() {
+//     const uploadButton = (
+//       <div>
+//         <Icon type={this.state.loading ? 'loading' : 'plus'} />
+//         <div className="ant-upload-text">Upload</div>
+//       </div>
+//     );
+//     const imageUrl = this.state.imageUrl;
+//     return (
+//       <Upload
+//         name="avatar"
+//         listType="picture-card"
+//         className="avatar-uploader"
+//         showUploadList={false}
+//         beforeUpload={this.beforeUpload}
+//         onChange={this.handleChange}
+//       >
+//         {imageUrl ? <img src={imageUrl} alt="" /> : uploadButton}
+//       </Upload>
+//     );
+//   }
+// }

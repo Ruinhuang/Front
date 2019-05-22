@@ -35,6 +35,8 @@ class MainPage extends React.Component {
       )
         .then(
           (res) => {
+            //后端的返回的用户数据里没有token
+            res.data.token = token
             this.props.saveLoginData(res.data)
             return resolve(res.data)
           }

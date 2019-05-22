@@ -24,6 +24,7 @@ class orderTable extends React.Component {
             selectedItems: [],
             pagination: {},
             sortOrder: false,
+            selectedOrderDetail: {},
         }
         this.page = 1
         this.orderType = null
@@ -67,6 +68,24 @@ class orderTable extends React.Component {
             })
         )
     }
+    getOrderDetail = () => {
+        Ajax.ajax(
+            'get',
+            '/order/order_detail',
+            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            {
+                orderId: this.state.selectedItems[0].id
+            },
+            'http://45.76.146.27',
+        ).then(
+            (res) => {
+                this.setState(
+                    () => ({ selectedOrderDetail: res.data })
+                )
+            }
+        )
+    }
+
     cancelOrder = () => {
         Ajax.ajax(
             'get',
@@ -101,6 +120,30 @@ class orderTable extends React.Component {
                     selectedItems: [], selectedRowKeys: []
                 }))
             })
+    }
+
+    paying = () => {
+        const payInfo = {
+            orderId: this.selectedItems[0].id,
+            // payTypeId, 付款人付款方式ID, int64
+            // payTypeId: form.payTypeId,
+            // payeeTypeId, 收款人收款方式ID, int64
+            // payeeTypeId: form.payTypeId,
+        }
+        Ajax.ajax(
+            'post',
+            '/order/paying',
+            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            payInfo,
+            'http://45.76.146.27',
+        ).then(
+            data => {
+                Modal.success({
+                    title: "请等待对方确认"
+                })
+                // goToUrl('/ads/index')
+            }
+        )
     }
 
     releaseCoin = () => {
@@ -394,6 +437,24 @@ class orderTable extends React.Component {
                             () => {
                                 if (this.state.selectedItems.length < 1) return
                                 Modal.confirm({
+                                    title: "去付款",
+                                    // content: JSON.stringify(this.state.selectedItems),
+                                    content: <Button>i</Button>,
+                                    onOk: (() => this.paying()),
+                                }
+                                )
+                            }
+                        }
+                    >
+                        去付款
+            </Button>
+                    <Button
+                        type="primary"
+                        icon="delete"
+                        onClick={
+                            () => {
+                                if (this.state.selectedItems.length < 1) return
+                                Modal.confirm({
                                     title: "确认付款",
                                     // content: JSON.stringify(this.state.selectedItems),
                                     content: "已到账?",
@@ -431,7 +492,7 @@ class orderTable extends React.Component {
                                 if (this.state.selectedItems.length < 1) return
                                 Modal.confirm({
                                     title: "查看详情",
-                                    content: JSON.stringify(this.state.selectedItems),
+                                    content: JSON.stringify(this.state.selectedOrderDetail),
                                 }
                                 )
                             }
@@ -496,17 +557,6 @@ class orderTable extends React.Component {
                                 }
                             },
                             onMouseEnter: () => { },
-                            onDoubleClick: () => {
-                                Modal.confirm({
-                                    title: '详细信息',
-                                    content: `
-                  ${selectedItem.name}
-                  ${selectedItem.email}
-                `,
-                                    onCancel: () => { },
-                                    onOk: () => { },
-                                })
-                            },
                         }
                         )}
                     />
@@ -515,7 +565,6 @@ class orderTable extends React.Component {
         )
     }
 }
-
 class OrderForm extends React.Component {
 
     render() {
