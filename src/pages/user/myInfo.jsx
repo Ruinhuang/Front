@@ -2,25 +2,15 @@ import React from "react";
 import { connect } from "react-redux"
 import { actionCreator } from "../../redux/action"
 import { Button, Card, Form, Select, Input, Checkbox, message, Radio, Upload, Icon, Modal } from "antd";
-import { goToUrl } from "../../utils"; //导入公共机制
+import UploadPic from '../../components/UploadPic'
+import { goToUrl } from "../../utils";
 import Ajax from '../../components/Ajax'
-import { blockParams } from "handlebars";
+import '../../style/common.scss'
 const Option = Select.Option
 const RadioGroup = Radio.Group
 const FormItem = Form.Item
 class FormMyInfo extends React.Component {
-    state = {
-        previewVisible: false,
-        previewImage: '',
-        fileList: [
-            {
-                uid: '-1',
-                name: 'xxx.png',
-                status: 'done',
-                url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-            },
-        ],
-    };
+    state = {}
 
     handleCancel = () => this.setState({ previewVisible: false });
 
@@ -261,7 +251,6 @@ class FormMyInfo extends React.Component {
                             <Button type="primary" onClick={this.handleSubmit}>更新</Button>
                         </FormItem>
                     </Form>
-
                 </Card>
                 <Card title="我的钱包"
                     style={{
@@ -277,18 +266,7 @@ class FormMyInfo extends React.Component {
                                 margin: 50,
                             }}
                         >
-                            <Upload
-                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                                listType="picture-card"
-                                fileList={fileList}
-                                onPreview={this.handlePreview}
-                                onChange={this.handleChange}
-                            >
-                                {fileList.length >= 1 ? null : uploadButton}
-                            </Upload>
-                            <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                                <img alt="Wechat" style={{ width: '100%' }} src={previewImage} />
-                            </Modal>
+                            <UploadPic />
                         </Card>
                         <Card title="支付宝二维码"
                             style={{
@@ -296,18 +274,7 @@ class FormMyInfo extends React.Component {
                                 margin: 50,
                             }}
                         >
-                            <Upload
-                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                                listType="picture-card"
-                                fileList={fileList}
-                                onPreview={this.handlePreview}
-                                onChange={this.handleChange}
-                            >
-                                {fileList.length >= 1 ? null : uploadButton}
-                            </Upload>
-                            <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                                <img alt="Alipay" style={{ width: '100%' }} src={previewImage} />
-                            </Modal>
+                            <UploadPic />
                         </Card>
                         <Card title="积分"
                             style={{
