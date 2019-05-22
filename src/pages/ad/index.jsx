@@ -84,7 +84,7 @@ class Ads extends React.Component {
     Ajax.ajax(
       'get',
       '/ad/page',
-      { "X-BM-USER-ID": this.props.user.userId.toString() },
+      { "X-BM-USER-ID": this.props.user.userId },
       {
         coinId: 1,
         type: this.adType,
@@ -120,7 +120,7 @@ class Ads extends React.Component {
     Ajax.ajax(
       'get',
       '/order/cancel_order',
-      { "X-BM-USER-ID": this.props.user.userId.toString() },
+      { "X-BM-USER-ID": this.props.user.userId },
       {
         orderId: this.receivedOrderInfo.id
       },
@@ -145,7 +145,7 @@ class Ads extends React.Component {
     Ajax.ajax(
       'post',
       '/order/paying',
-      { "X-BM-USER-ID": this.props.user.userId.toString() },
+      { "X-BM-USER-ID": this.props.user.userId },
       payInfo,
       'http://45.76.146.27',
     )
@@ -167,7 +167,7 @@ class Ads extends React.Component {
     Ajax.ajax(
       'post',
       orderPath,
-      { "X-BM-USER-ID": this.props.user.userId.toString() },
+      { "X-BM-USER-ID": this.props.user.userId },
       formInfo,
       'http://45.76.146.27',
     )

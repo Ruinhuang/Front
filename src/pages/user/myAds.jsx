@@ -63,7 +63,7 @@ class MyAds extends React.Component {
         Ajax.ajax(
             'get',
             '/ad/close',
-            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            { "X-BM-USER-ID": this.props.user.userId },
             {
                 adId: this.state.selectedItems[0].id
             },
@@ -94,7 +94,7 @@ class MyAds extends React.Component {
         Ajax.ajax(
             'get',
             '/ad/page',
-            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            { "X-BM-USER-ID": this.props.user.userId },
             {
                 coinId: 1,
                 type: this.adType,

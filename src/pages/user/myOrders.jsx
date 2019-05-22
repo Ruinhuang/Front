@@ -74,7 +74,7 @@ class orderTable extends React.Component {
         Ajax.ajax(
             'get',
             '/order/order_detail',
-            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            { "X-BM-USER-ID": this.props.user.userId },
             {
                 orderId: this.state.selectedItems[0].id
             },
@@ -101,14 +101,14 @@ class orderTable extends React.Component {
         // Ajax.ajax(
         //     'post',
         //     '/order/paying',
-        //     { "X-BM-USER-ID": this.props.user.userId.toString() },
+        //     { "X-BM-USER-ID": this.props.user.userId() },
         //     payInfo,
         //     'http://45.76.146.27',
         // 先获取订单详情
         Ajax.ajax(
             'get',
             '/order/order_detail',
-            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            { "X-BM-USER-ID": this.props.user.userId() },
             {
                 orderId: this.state.selectedItems[0].id
             },
@@ -130,7 +130,7 @@ class orderTable extends React.Component {
         Ajax.ajax(
             'get',
             '/order/cancel_order',
-            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            { "X-BM-USER-ID": this.props.user.userId() },
             {
                 orderId: this.state.selectedItems[0].id
             },
@@ -148,7 +148,7 @@ class orderTable extends React.Component {
         Ajax.ajax(
             'get',
             '/order/paid',
-            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            { "X-BM-USER-ID": this.props.user.userId() },
             {
                 orderId: this.state.selectedItems[0].id
             },
@@ -167,7 +167,7 @@ class orderTable extends React.Component {
         Ajax.ajax(
             'get',
             '/order/release_coin',
-            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            { "X-BM-USER-ID": this.props.user.userId() },
             {
                 orderId: this.state.selectedItems[0].id
             },
