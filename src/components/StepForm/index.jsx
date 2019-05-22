@@ -213,8 +213,7 @@ class FormConfirm extends React.Component {
                             )
                         }
                     </FormItem>
-                    <FormItem
-                    >
+                    <FormItem>
                         <img alt="Cierra.jpg" src="https://img.moegirl.org/common/thumb/a/aa/Cierra01.jpg/260px-Cierra01.jpg" />
                     </FormItem>
                     <FormItem

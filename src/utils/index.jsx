@@ -44,8 +44,8 @@ export const pagination = (data, callback) => ({
   onChange: current => callback(current),
   current: parseInt(data.currentPage),
   pageSize: parseInt(data.sizePage),
-  total: parseInt(data.totalPage),
-  showTotal: () => (`共${data.totalPage}条数据`),
+  total: parseInt(data.totalCount),
+  showTotal: () => (`共${data.totalPage}页 ${data.totalCount}条数据`),
 })
 
 

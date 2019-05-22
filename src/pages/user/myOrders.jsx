@@ -9,7 +9,6 @@ import BaseForm from '../../components/BaseForm'
 
 const FormItem = Form.Item
 const Option = Select.Option
-const RadioGroup = Radio.Group
 
 class orderTable extends React.Component {
     constructor(props) {
@@ -17,6 +16,7 @@ class orderTable extends React.Component {
         this.state = {
             visibleModal: null,
             loading: false,
+            cardLoading: true,
             tableType: "radio",
             dataSource: [],
             allSource: [],
@@ -25,6 +25,7 @@ class orderTable extends React.Component {
             pagination: {},
             sortOrder: false,
             selectedOrderDetail: {},
+            modalContent: undefined,
         }
         this.page = 1
         this.orderType = null
@@ -68,7 +69,8 @@ class orderTable extends React.Component {
             })
         )
     }
-    getOrderDetail = () => {
+
+    handleDetailButtonClick = () => {
         Ajax.ajax(
             'get',
             '/order/order_detail',
@@ -80,11 +82,49 @@ class orderTable extends React.Component {
         ).then(
             (res) => {
                 this.setState(
-                    () => ({ selectedOrderDetail: res.data })
-                )
-            }
-        )
+                    () => ({
+                        selectedOrderDetail: res.data,
+                        cardLoading: false,
+                        modalContent: JSON.stringify(res.data)
+                    }))
+            })
     }
+
+    handlePayingButtonClick = () => {
+        // const payInfo = {
+        //         orderId: this.selectedItems[0].id,
+        //         // payTypeId, 付款人付款方式ID, int64
+        //         // payTypeId: form.payTypeId,
+        //         // payeeTypeId, 收款人收款方式ID, int64
+        //         // payeeTypeId: form.payTypeId,
+        // }
+        // Ajax.ajax(
+        //     'post',
+        //     '/order/paying',
+        //     { "X-BM-USER-ID": this.props.user.userId.toString() },
+        //     payInfo,
+        //     'http://45.76.146.27',
+        // 先获取订单详情
+        Ajax.ajax(
+            'get',
+            '/order/order_detail',
+            { "X-BM-USER-ID": this.props.user.userId.toString() },
+            {
+                orderId: this.state.selectedItems[0].id
+            },
+            'http://45.76.146.27',
+        ).then(
+            (res) => {
+                this.setState(
+                    () => ({
+                        selectedOrderDetail: res.data,
+                        cardLoading: false,
+                        modalContent: <PayingForm orderDetail={res.data} />
+                    }))
+            })
+    }
+
+
 
     cancelOrder = () => {
         Ajax.ajax(
@@ -122,29 +162,6 @@ class orderTable extends React.Component {
             })
     }
 
-    paying = () => {
-        const payInfo = {
-            orderId: this.selectedItems[0].id,
-            // payTypeId, 付款人付款方式ID, int64
-            // payTypeId: form.payTypeId,
-            // payeeTypeId, 收款人收款方式ID, int64
-            // payeeTypeId: form.payTypeId,
-        }
-        Ajax.ajax(
-            'post',
-            '/order/paying',
-            { "X-BM-USER-ID": this.props.user.userId.toString() },
-            payInfo,
-            'http://45.76.146.27',
-        ).then(
-            data => {
-                Modal.success({
-                    title: "请等待对方确认"
-                })
-                // goToUrl('/ads/index')
-            }
-        )
-    }
 
     releaseCoin = () => {
         Ajax.ajax(
@@ -403,10 +420,9 @@ class orderTable extends React.Component {
                     }}
                     footer={null}
                 >
-                    <OrderForm
-                        orderInfo={this.state.selectedItems}
-                        wrappedComponentRef={(inst) => this.userForm = inst}
-                    />
+                    <Card loading={this.state.cardLoading}>
+                        {this.state.modalContent}
+                    </Card>
                 </Modal>
                 <Card>
                     <BaseForm layout="inline" submitFunc={this.request} switchFunc={() => { }} formList={this.formList} />
@@ -436,13 +452,10 @@ class orderTable extends React.Component {
                         onClick={
                             () => {
                                 if (this.state.selectedItems.length < 1) return
-                                Modal.confirm({
-                                    title: "去付款",
-                                    // content: JSON.stringify(this.state.selectedItems),
-                                    content: <Button>i</Button>,
-                                    onOk: (() => this.paying()),
-                                }
-                                )
+                                this.setState(
+                                    () => ({
+                                        visibleModal: "付款",
+                                    }), () => this.handlePayingButtonClick())
                             }
                         }
                     >
@@ -456,7 +469,6 @@ class orderTable extends React.Component {
                                 if (this.state.selectedItems.length < 1) return
                                 Modal.confirm({
                                     title: "确认付款",
-                                    // content: JSON.stringify(this.state.selectedItems),
                                     content: "已到账?",
                                     onOk: (() => this.paidOrder()),
                                 }
@@ -490,11 +502,10 @@ class orderTable extends React.Component {
                         onClick={
                             () => {
                                 if (this.state.selectedItems.length < 1) return
-                                Modal.confirm({
-                                    title: "查看详情",
-                                    content: JSON.stringify(this.state.selectedOrderDetail),
-                                }
-                                )
+                                this.setState(
+                                    () => ({
+                                        visibleModal: "Detail",
+                                    }), () => this.handleDetailButtonClick())
                             }
                         }
                     >
@@ -565,52 +576,70 @@ class orderTable extends React.Component {
         )
     }
 }
-class OrderForm extends React.Component {
+orderTable = Form.create({})(orderTable);
+class PayingForm extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            payeeTypeList: [],
+        }
+    }
+    handleSubmit = () => {//绑定提交事件进行校验
+        let formInfo = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
+        // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
+        this.props.form.validateFields((err, values) => {
+            if (!err) { return formInfo }
+        })
+    }
+    componentDidMount = () => {
+        this.payeeTypeList = this.state.payeeTypeList.map((item) => ({ label: item.typeName, value: item.id }))
+        this.adPayTypeList = this.props.orderDetail.adPayType.map((item) => ({ label: item.typeName, value: item.id }))
+        console.log(this.adPayTypeList)
 
-    render() {
-        let orderInfo = this.props.orderInfo[0] || {};
+    }
+    render = () => {
+        const RadioGroup = Radio.Group
         const formItemLayout = {
             labelCol: {
-                span: 5
+                xs: 24,
+                sm: 4
             },
             wrapperCol: {
-                span: 19
+                xs: 24,
+                sm: 12
             }
-        };
-
+        }
         const { getFieldDecorator } = this.props.form;
-        return (
-            <Form layout="horizontal">
-                <FormItem label="状态" {...formItemLayout}>
-                    {
-                        getFieldDecorator('status', {
-                            initialValue: orderInfo.status
-                        })(
-                            <Select>
-                                <Option value='NEW'> "新建"</Option>
-                                <Option value='WAIT_PAY'> "等待支付"</Option>
-                                <Option value='WAIT_RELEASE'> "等待放币"</Option>
-                                <Option value='FINISH'> "订单完成"</Option>
-                                <Option value='CANCEL'> "订单取消"</Option>
-                                <Option value='HOLD'> "订单挂起"</Option>
-                                <Option value='INIT_FAIL'> "下单失败"</Option>
-                            </Select>
-                        )
-                    }
-                </FormItem>
-                <FormItem>
-                    <Button
-                        onClick={() => { message.warning('这里改写成向后端发送验证的流程// TODO') }}
-                    >
-                        提交
-          </Button>
-                </FormItem>
-            </Form>
-        );
+        return (<Form
+            layout="horizontal"
+        >
+            <FormItem label="订单Id" {...formItemLayout}>
+                {getFieldDecorator('orderId', {
+                    initialValue: this.props.orderDetail.orderVO.id,
+                })(<Input disabled={true} />)}
+            </FormItem>
+            <FormItem>
+                <img alt="Cierra.jpg" src="https://img.moegirl.org/common/thumb/a/aa/Cierra01.jpg/260px-Cierra01.jpg" />
+            </FormItem>
+            <FormItem label="我的支付方式">
+                {
+                    getFieldDecorator('payTypeId', {
+                        initialValue: this.props.orderDetail.adPayType[0].id,
+                        rules: [{ required: true, message: '支付方式必选' },]
+                    })(
+                        <RadioGroup options={this.adPayTypeList} />,
+                    )
+                }
+            </FormItem>
+            <FormItem
+                style={{ marginLeft: 'auto', marginRight: 'auto', width: 200, }} >
+                <Button type="primary" onClick={() => { }}>确认付款</Button>
+            </FormItem>
+        </Form>
+        )
     }
 }
-
-orderTable = Form.create({})(orderTable);
+PayingForm = Form.create()(PayingForm)
 // props 属性
 const mapStateToProps = (state) => ({
     isLogin: state.isLogin,
