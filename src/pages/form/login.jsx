@@ -17,13 +17,14 @@ class FormLogin extends React.Component {
     )
       .then(
         (res) => {
-          this.props.saveLoginData(res.data)
+          // 先清除之前残留的token缓存
+          localStorage.removeItem("token");
+          sessionStorage.removeItem("token");
+          this.props.saveLoginData(res.data) // token, userName, userType => redux store
           sessionStorage.setItem("token", res.data.token);
           if (this.autoLogin) {
             //将token存入localStorage
             localStorage.setItem("token", res.data.token);
-          } else {
-            localStorage.removeItem("token");
           }
           goToUrl('/home')
         }
@@ -122,7 +123,7 @@ class FormLogin extends React.Component {
               }}
             >
               <Button type="primary" onClick={this.handleSubmit}>登录</Button>
-              <Button type="primary" onClick={()=>goToUrl('/register')}>去注册</Button>
+              <Button type="primary" onClick={() => goToUrl('/register')}>去注册</Button>
             </FormItem>
           </Form>
         </Card>

@@ -46,7 +46,29 @@ class FormMyInfo extends React.Component {
                 }
             ).catch(() => { })
     }
+    getWallentInfo = () => {
+        Ajax.ajax(
+            'get',
+            '/user/point/query/',
+            {},
+            {
+                token: sessionStorage.getItem('token')
+            },
+            "http://207.148.65.10:8080",
+        )
+            .then(
+                (res) => {
+                    this.setState(() => ({
+                        count: res.data.point,
+                        frozenAmount: res.data.frozenPoint,
+                    }))
+                }
+            ).catch(() => { })
+    }
 
+    componentDidMount = () => {
+        this.getWallentInfo()
+    }
     handleSubmit = () => {//绑定提交事件进行校验
         let formData = this.props.form.getFieldsValue()// 可以(获取表单中)object对象
         this.props.form.validateFields((err, values) => {
@@ -63,6 +85,7 @@ class FormMyInfo extends React.Component {
         }
         callback()
     }
+
 
     render() {
         const { getFieldDecorator } = this.props.form;
@@ -240,7 +263,7 @@ class FormMyInfo extends React.Component {
                     </Form>
 
                 </Card>
-                <Card
+                <Card title="我的钱包"
                     style={{
                         display: "-webkit - flex",
                         display: "flex",
@@ -248,7 +271,7 @@ class FormMyInfo extends React.Component {
                     }}
                 >
                     <Form>
-                        <Card
+                        <Card title="微信二维码"
                             style={{
                                 display: "inline-block",
                                 margin: 50,
@@ -266,9 +289,8 @@ class FormMyInfo extends React.Component {
                             <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
                                 <img alt="Wechat" style={{ width: '100%' }} src={previewImage} />
                             </Modal>
-                            <Button type="primary" style={{ display: 'block' }} onClick={this.updateWechat}>更新微信付款码</Button>
                         </Card>
-                        <Card
+                        <Card title="支付宝二维码"
                             style={{
                                 display: "inline-block",
                                 margin: 50,
@@ -286,7 +308,20 @@ class FormMyInfo extends React.Component {
                             <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
                                 <img alt="Alipay" style={{ width: '100%' }} src={previewImage} />
                             </Modal>
-                            <Button type="primary" style={{ display: 'block' }} onClick={this.updateAlipay}>更新支付宝付款码</Button>
+                        </Card>
+                        <Card title="积分"
+                            style={{
+                                display: "inline-block",
+                                margin: 50,
+                            }}
+                        >
+                            <p>总积分：{this.state.count}</p>
+                            <p>冻结积分：{this.state.frozenAmount}</p>
+                            <Button
+                                onClick={this.getWallentInfo}
+                            >
+                                刷新积分
+                            </Button>
                         </Card>
                     </Form>
                 </Card>

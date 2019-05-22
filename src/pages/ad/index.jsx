@@ -115,6 +115,24 @@ class Ads extends React.Component {
         () => message.error("数据渲染失败")
       )
   }
+  // 取消下单
+  cancelOrder = () => {
+    Ajax.ajax(
+      'get',
+      '/order/cancel_order',
+      { "X-BM-USER-ID": this.props.user.userId.toString() },
+      {
+        orderId: this.receivedOrderInfo.id
+      },
+      'http://45.76.146.27',
+    )
+      .then(() => {
+        this.setState((prevState) => ({
+          dataSource: selectTag([...prevState.dataSource], prevState.selectedItems),
+          selectedItems: [], selectedRowKeys: []
+        }))
+      })
+  }
   formConfirmSubmit = (formConfirm) => {
     const payInfo = {
       orderId: this.receivedOrderInfo.id,
@@ -170,8 +188,8 @@ class Ads extends React.Component {
       'UNPUBLISH': <Badge status="error" text="未发布" />,
     }
     const adTypeMap = {
-      'BUY': <Badge status="success" text="用户买入" />,
-      'SELL': <Badge status="default" text="用户卖出" />,
+      'BUY': <Badge status="success" text="商户买入" />,
+      'SELL': <Badge status="default" text="商户卖出" />,
     }
     const columns = [
       {
@@ -352,7 +370,12 @@ class Ads extends React.Component {
           // 退出下单界面， 广告信息需要更新
           onCancel={
             () => {
-              message.warning('下单取消，如有未付款订单，请到 我的订单页 操作')
+              //根据当前所在路由判断进入的付款流程
+              if (window.location.href.split('#')[1].includes('confirm')) {
+                // 取消下单
+                message.loading('正在取消订单...')
+                this.cancelOrder()
+              }
               goToUrl('/ads/index')
               this.request()
             }

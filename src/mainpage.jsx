@@ -14,6 +14,7 @@ class MainPage extends React.Component {
     if (!this.props.isLogin) {
       if (localStorage.getItem('token')) {
         let token = localStorage.getItem('token')
+        sessionStorage.setItem('token', token)
         this.autoLoginByToken(token)
       } else if (sessionStorage.getItem('token')) {
         let token = sessionStorage.getItem('token')
@@ -35,7 +36,6 @@ class MainPage extends React.Component {
         .then(
           (res) => {
             this.props.saveLoginData(res.data)
-            sessionStorage.setItem("token", res.data.token);
             return resolve(res.data)
           }
         ).catch((error) => {
