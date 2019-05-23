@@ -55,9 +55,7 @@ class Ads extends React.Component {
   changeFormKey = () => {
     this.setState(() => ({
       formKey: Math.random().toString(18).substr(2),
-    }
-    )
-    )
+    }))
   }
 
   changeTableType = checked => {
@@ -66,7 +64,8 @@ class Ads extends React.Component {
         selectedRowKeys: [],
         selectedItems: [],
         tableType: checked ? "checkbox" : "radio",
-      })
+      }
+      )
     )
   }
 
@@ -135,12 +134,11 @@ class Ads extends React.Component {
   }
   formConfirmSubmit = (formConfirm) => {
     const payInfo = {
-      orderId: this.receivedOrderInfo.id,
       // payTypeId, 付款人付款方式ID, int64
       payTypeId: formConfirm.payTypeId,
       // payeeTypeId, 收款人收款方式ID, int64
-      // orderId: this.receivedOrderInfo.uid,
-      payeeTypeId: formConfirm.payTypeId,
+      payeeTypeId: formConfirm.payeeTypeId,
+      orderId: this.receivedOrderInfo.id,
     }
     Ajax.ajax(
       'post',
@@ -164,6 +162,7 @@ class Ads extends React.Component {
 
   formInfoSubmit = (formInfo) => {
     let orderPath = this.state.selectedItems[0].type === "SELL" ? "/order/buy_order" : "/order/sell_order"
+    console.log(formInfo)
     Ajax.ajax(
       'post',
       orderPath,

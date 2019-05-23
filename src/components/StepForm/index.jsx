@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux"
+import Ajax from '../Ajax'
 import { goToUrl } from '../../utils'
 import { Route, HashRouter, Switch } from 'react-router-dom'
 import { Modal, Form, Card, Input, Icon, Button, message, } from 'antd';
 import { Radio } from 'antd';
 
-export default class StepForm extends Component {
+class StepForm extends Component {
     render() {
         return (
             <HashRouter>
@@ -30,6 +32,7 @@ export default class StepForm extends Component {
                                             <Confirm
                                                 refreshData={this.props.refreshData}
                                                 confirmSubmitFunc={this.props.confirmSubmitFunc}
+                                                currentUserId={this.props.user.userId}
                                                 selectedItem={this.props.selectedItem}
                                             />}
                                     />
@@ -51,6 +54,7 @@ class FormInfo extends React.Component {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 formInfo.count = parseInt(formInfo.count)
+                // formInfo.count = parseFloat(formInfo.count)
                 formInfo.amount = formInfo.count * this.props.selectedItem.price
                 this.props.infoSubmitFunc(formInfo)
             }
@@ -166,6 +170,9 @@ const Info = Form.create()(FormInfo)
 class FormConfirm extends React.Component {
     constructor(props) {
         super(props)
+        this.state = {
+            payeeTypes: []
+        }
         this.payTypes = this.props.selectedItem.paytypeList.map(
             (item) => ({ label: item.typeName, value: item.id })
         )
@@ -181,6 +188,27 @@ class FormConfirm extends React.Component {
             }
         }
         )
+    }
+    componentDidMount = () => {
+        // 獲得當前登登錄用戶的收付款方式
+        Ajax.ajax(
+            'get',
+            '/user/paytype/list',
+            { "X-BM-USER-ID": this.props.currentUserId },
+            {},
+            "http://45.76.146.27",
+        ).then(
+            (data) => {
+                const list = data.data.map(
+                    (item) => ({ label: item.typeName, value: item.id })
+                )
+                this.setState(() => {
+                    return {
+                        payeeTypes: list,
+                    }
+                })
+            })
+
     }
 
     render() {
@@ -199,7 +227,7 @@ class FormConfirm extends React.Component {
         return (
             <Card title="" >
                 <Form>
-                    <FormItem label="收款方式" {...formItemLayout}>
+                    <FormItem label="商戶收款方式" >
                         {
                             getFieldDecorator("payTypeId", {
                                 rules: [
@@ -210,6 +238,20 @@ class FormConfirm extends React.Component {
                                 ]
                             })(
                                 <RadioGroup options={this.payTypes} />
+                            )
+                        }
+                    </FormItem>
+                    <FormItem label="用戶支付渠道" >
+                        {
+                            getFieldDecorator("payeeTypeId", {
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: '選擇支付方式'
+                                    },
+                                ]
+                            })(
+                                <RadioGroup options={this.state.payeeTypes} />
                             )
                         }
                     </FormItem>
@@ -240,3 +282,11 @@ class FormConfirm extends React.Component {
 }
 
 const Confirm = Form.create()(FormConfirm)
+// props 属性
+const mapStateToProps = (state) => ({
+    isLogin: state.isLogin,
+    user: state.user
+})
+
+// 把逻辑方法与UI组件连接起来变成新容器组件
+export default connect(mapStateToProps)(StepForm)

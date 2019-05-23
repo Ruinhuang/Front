@@ -105,7 +105,7 @@ class orderTable extends React.Component {
                     () => ({
                         selectedOrderDetail: res.data,
                         cardLoading: false,
-                        modalContent: <PayingForm orderDetail={res.data} />
+                        modalContent: <PayingForm user={this.props.user} orderDetail={res.data} />
                     }))
             })
     }
@@ -116,7 +116,7 @@ class orderTable extends React.Component {
         Ajax.ajax(
             'get',
             '/order/cancel_order',
-            { "X-BM-USER-ID": this.props.user.userId() },
+            { "X-BM-USER-ID": this.props.user.userId },
             {
                 orderId: this.state.selectedItems[0].id
             },
@@ -134,7 +134,7 @@ class orderTable extends React.Component {
         Ajax.ajax(
             'get',
             '/order/paid',
-            { "X-BM-USER-ID": this.props.user.userId() },
+            { "X-BM-USER-ID": this.props.user.userId },
             {
                 orderId: this.state.selectedItems[0].id
             },
@@ -153,7 +153,7 @@ class orderTable extends React.Component {
         Ajax.ajax(
             'get',
             '/order/release_coin',
-            { "X-BM-USER-ID": this.props.user.userId() },
+            { "X-BM-USER-ID": this.props.user.userId },
             {
                 orderId: this.state.selectedItems[0].id
             },
@@ -576,22 +576,16 @@ class PayingForm extends React.Component {
         // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                // const payInfo = {
-                //         orderId: this.selectedItems[0].id,
-                //         // payTypeId, 付款人付款方式ID, int64
-                //         // payTypeId: form.payTypeId,
-                //         // payeeTypeId, 收款人收款方式ID, int64
-                //         // payeeTypeId: form.payTypeId,
-                // }
-                // Ajax.ajax(
-                //     'post',
-                //     '/order/paying',
-                //     { "X-BM-USER-ID": this.props.user.userId() },
-                //     payInfo,
-                //     'http://45.76.146.27',
-                // 先获取订单详情
-                console.log(formInfo)
-
+                Ajax.ajax(
+                    'post',
+                    '/order/paying',
+                    { "X-BM-USER-ID": this.props.user.userId },
+                    formInfo,
+                    'http://45.76.146.27',
+                )
+                    .then(data => {
+                        Modal.success({ title: "请等待收款方确认" })
+                    })
             }
         })
     }
@@ -611,13 +605,10 @@ class PayingForm extends React.Component {
                 const list = data.data.map(
                     (item) => ({ label: item.typeName, value: item.id })
                 )
-                this.setState(() => {
-                    return {
-                        payeeTypeList: list,
-                    }
-                })
+                this.setState(() => ({
+                    payeeTypeList: list,
+                }))
             })
-
     }
     render = () => {
         const RadioGroup = Radio.Group
@@ -664,7 +655,7 @@ class PayingForm extends React.Component {
             </FormItem>
             <FormItem
                 style={{ marginLeft: 'auto', marginRight: 'auto', width: 200, }} >
-                <Button type="primary" onClick={() => { }}>确认付款</Button>
+                <Button type="primary" onClick={this.handleSubmit}>确认付款</Button>
             </FormItem>
         </Form>
         )
