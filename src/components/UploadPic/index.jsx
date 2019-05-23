@@ -1,12 +1,20 @@
 import React from 'react'
+import { connect } from "react-redux"
 import { Upload, Icon, message } from 'antd';
+import Ajax from '../Ajax'
 import './../../style/common.scss'
 
-export default class Avatar extends React.Component {
+class UploadPic extends React.Component {
+    componentDidMount = () => {
+        if (this.props.payType === "WechatPay") this.payPath = '/user/paytype/addWechatPayAccount'
+        if (this.props.payType === "AliPay") this.payPath = '/user/paytype/addAliPayAccount'
+    }
+
+
     state = {
         loading: false,
     };
-    
+
     getBase64 = (img, callback) => {
         const reader = new FileReader();
         reader.addEventListener('load', () => callback(reader.result));
@@ -34,10 +42,28 @@ export default class Avatar extends React.Component {
         if (info.file.status === 'done') {
             // Get this url from response in real world.
             this.getBase64(info.file.originFileObj, imageUrl =>
-                this.setState({
+                this.setState(() => ({
                     imageUrl,
                     loading: false,
                 }),
+                    // 這裏需要一個回調函數
+                    () => Ajax.ajax(
+                        'post',
+                        this.payPath,
+                        { "X-BM-USER-ID": this.props.user.userId },
+                        {
+                            "accountName": this.props.payType,
+                            "accountNo": this.props.payType,
+                            "address": this.props.payType,
+                            "bank": this.props.payType,
+                            "branch": this.props.payType,
+                            "id": 0,
+                            "qrCodeUrl": this.props.payType,
+                            "subBranch": this.props.payType
+                        },
+                        'http://45.76.146.27',
+                    )
+                ),
             );
         }
     };
@@ -179,3 +205,11 @@ export default class Avatar extends React.Component {
 //     );
 //   }
 // }
+const mapStateToProps = (state) => ({
+    isLogin: state.isLogin,
+    user: state.user
+})
+
+
+// 把逻辑方法与UI组件连接起来变成新容器组件
+export default connect(mapStateToProps)(UploadPic)

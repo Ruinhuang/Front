@@ -259,7 +259,7 @@ class FormMyInfo extends React.Component {
                                 margin: 50,
                             }}
                         >
-                            <UploadPic />
+                            <UploadPic payType="WechatPay" />
                         </Card>
                         <Card title="支付宝二维码"
                             style={{
@@ -267,7 +267,7 @@ class FormMyInfo extends React.Component {
                                 margin: 50,
                             }}
                         >
-                            <UploadPic />
+                            <UploadPic payType="AliPay" />
                         </Card>
                         <Card title="积分"
                             style={{
