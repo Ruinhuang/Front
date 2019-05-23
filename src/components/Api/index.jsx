@@ -1,5 +1,6 @@
 import React from 'react'
 import UserTable from "../../pages/manager/userTable";
+import CoinTable from "../../pages/manager/coinTable";
 import AdTable from "../../pages/manager/adTable";
 import OrderTable from "../../pages/manager/orderTable";
 import PermissionTable from "../../pages/manager/permissionTable";
@@ -31,6 +32,10 @@ const menus = {
         {
             title: '用户管理',
             key: '/manager/users',
+        },
+        {
+            title: 'COIN管理',
+            key: '/manager/coins',
         },
         {
             title: '订单管理',
@@ -105,6 +110,7 @@ const routeMap = {
     '/home': <Route key="/home" path="/home" component={Home} />,
     '/ads/index': <Route key="/ads/:page" path="/ads/:page" component={adTable} />,
     '/manager/users': <Route key="/manager/users" path="/manager/users" component={UserTable} />,
+    '/manager/coins': <Route key="/manager/coins" path="/manager/coins" component={CoinTable} />,
     '/manager/orders': <Route key="/manager/orders" path="/manager/orders" component={OrderTable} />,
     '/manager/ads': <Route key="/manager/ads" path="/manager/ads" component={AdTable} />,
     '/manager/permission': <Route key="/manager/permission" path="/manager/permission" component={PermissionTable} />,

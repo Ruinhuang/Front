@@ -16,6 +16,10 @@ const menuList = [
         key: '/manager/orders',
     },
     {
+        title: 'COIN管理',
+        key: '/manager/coins',
+    },
+    {
         title: '广告管理',
         key: '/manager/ads',
     },
