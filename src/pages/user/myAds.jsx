@@ -93,7 +93,7 @@ class MyAds extends React.Component {
         )
         Ajax.ajax(
             'get',
-            '/ad/page',
+            '/ad/user/page',
             { "X-BM-USER-ID": this.props.user.userId },
             {
                 coinId: 1,
