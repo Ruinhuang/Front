@@ -118,7 +118,9 @@ class FormPublish extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="溢价比例" {...formItemLayout}>
+            <FormItem label="溢价比例" {...formItemLayout} 
+	    style={{display:"none"}}
+	    >
               {
                 getFieldDecorator('premium', {
                   initialValue: 0,
@@ -133,7 +135,9 @@ class FormPublish extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="定价类型" {...formItemLayout}>
+            <FormItem label="定价类型" {...formItemLayout}
+	    style={{display:"none"}}
+	    >
               {
                 getFieldDecorator("priceType", {
                   initialValue: "FIXED",
@@ -156,10 +160,12 @@ class FormPublish extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="参考价格" {...formItemLayout}>
+            <FormItem label="参考价格" {...formItemLayout}
+	    style={{display:"none"}}
+	    >
               {
                 getFieldDecorator('referPrice', {
-                  initialValue: '',
+                  initialValue: 0,
                   rules: [
                     {
                       pattern: new RegExp('^\\d+$', 'g'),

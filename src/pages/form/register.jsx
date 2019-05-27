@@ -25,7 +25,9 @@ class FormRegister extends React.Component {
       formData,
       "http://207.148.65.10:8080",
     )
-      .then(() => {message.info("注册成功")})
+      .then(() => {message.info("注册成功")
+	      goToUrl('/login')
+      })
       // .catch(() => { })
   }
 

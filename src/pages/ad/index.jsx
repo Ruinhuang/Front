@@ -28,7 +28,7 @@ class Ads extends React.Component {
       formKey: Math.random().toString(18).substr(2),
     }
     this.page = 1
-    this.adType = null
+    this.adType = 'SELL'
     this.adStatus = null
     this.receivedOrderInfo = {}
     this.formList = [
@@ -36,8 +36,8 @@ class Ads extends React.Component {
         type: 'SELECT',
         label: '广告类型',
         field: 'type',
-        placeholder: '买入',
-        initialValue: 'BUY',
+        placeholder: '卖出',
+        initialValue: 'SELL',
         width: 100,
         list: [{ id: 'BUY', name: '买入' }, { id: 'SELL', name: '卖出' }]
       },
@@ -50,6 +50,7 @@ class Ads extends React.Component {
   }
 
   componentDidMount = () => {
+	  this.request()
   }
 
   changeFormKey = () => {

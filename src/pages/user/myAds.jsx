@@ -138,10 +138,10 @@ class MyAds extends React.Component {
         }
         const columns = [
             {
-                title: '商户',
+                title: 'firstTraeTime',
                 key: 'merchantInfoVO',
                 width: 60,
-                dataIndex: 'merchantInfoVO.uid',
+                dataIndex: 'merchantInfoVO.firstTradeTime',
             },
             {
                 title: 'count',

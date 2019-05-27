@@ -109,7 +109,7 @@ class FormLogin extends React.Component {
               {
                 getFieldDecorator('autoLogin', {
                   valuePropName: 'checked',
-                  initialValue: true,
+                  initialValue: false,
                 })(
                   <Checkbox>自动登录</Checkbox>
                 )
