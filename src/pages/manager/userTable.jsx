@@ -101,7 +101,29 @@ export default class userTable extends React.Component {
       defaultFilterRules: () => true,
     }
     this.page = 1
+    this.point = 0
     this.filterRules = this.state.defaultFilterRules
+  }
+
+  handleChangePointButtonClick = () => {
+    if (this.state.selectedItems.length < 1) return
+    Ajax.ajax(
+      'get',
+      '/wallet/account/',
+      {},
+      {
+        uid: this.state.selectedItems[0].userId,
+        coinId: 1,
+      },
+      "http://207.148.65.10:8080",
+    )
+      .then(
+        (res) => {
+          this.point = res.data.count
+          this.setState(() => ({
+            visibleModal: 'changePoint',
+          }))
+        })
   }
 
   componentDidMount = () => {
@@ -136,6 +158,7 @@ export default class userTable extends React.Component {
     )
   }
 
+
   request = () => {
     Ajax.ajax(
       'get',
@@ -146,7 +169,7 @@ export default class userTable extends React.Component {
     )
       .then(
         data => {
-          console.log(data)
+          data.data.forEach(item => item.key = item.userId)
           if (!this.state.globalFilter) {
             this.filterRules = this.state.defaultFilterRules
           }
@@ -338,8 +361,10 @@ export default class userTable extends React.Component {
           footer={null}
         >
           <UserForm
-            userInfo={this.state.selectedItems}
+            userInfo={this.state.selectedItems[0]}
             wrappedComponentRef={(inst) => this.userForm = inst}
+            point={this.point}
+            closeModal={() => this.setState(() => ({ visibleModal: null }))}
           />
         </Modal>
         <Card>
@@ -361,7 +386,7 @@ export default class userTable extends React.Component {
             defaultChecked={this.state.tableType === "checkbox"}
             onClick={(checked) => this.changeTableType(checked)}
           />
-          <Button
+          {/* <Button
             icon='edit'
             type="primary"
             disabled={this.state.selectedItems.length > 1}
@@ -373,6 +398,14 @@ export default class userTable extends React.Component {
             }
           >
             编辑
+              </Button> */}
+          <Button
+            icon='edit'
+            type="primary"
+            disabled={this.state.selectedItems.length > 1}
+            onClick={this.handleChangePointButtonClick}
+          >
+            充值积分
               </Button>
           <Button
             type="danger"
@@ -457,7 +490,7 @@ export default class userTable extends React.Component {
                   }))
                 }
               },
-              onMouseEnter: () => {},
+              onMouseEnter: () => { },
               onDoubleClick: () => {
                 Modal.confirm({
                   title: '详细信息',
@@ -480,10 +513,92 @@ export default class userTable extends React.Component {
   }
 }
 
+// class UserForm extends React.Component {
+//   render() {
+//     let userInfo = this.props.userInfo[0] || {};
+//     const formItemLayout = {
+//       labelCol: {
+//         span: 5
+//       },
+//       wrapperCol: {
+//         span: 19
+//       }
+//     };
+//     const { getFieldDecorator } = this.props.form;
+//     return (
+//       <Form layout="horizontal">
+//         <FormItem label="用户名" {...formItemLayout}>
+//           {
+//             getFieldDecorator('userName', {
+//               initialValue: userInfo.userName
+//             })(
+//               <Input type="text" placeholder="请输入用户名" />
+//             )
+//           }
+//         </FormItem>
+//         <FormItem label="角色" {...formItemLayout}>
+//           {
+//             getFieldDecorator('userType', {
+//               initialValue: userInfo.userType
+//             })(
+//               <RadioGroup>
+//                 <Radio value="1">用户</Radio>
+//                 <Radio value="2">商户</Radio>
+//               </RadioGroup>
+//             )
+//           }
+//         </FormItem>
+//         <FormItem label="状态" {...formItemLayout}>
+//           {
+//             getFieldDecorator('status', {
+//               initialValue: userInfo.status
+//             })(
+//               <Select>
+//                 <Option value="1">已审核</Option>
+//                 <Option value="2">未审核</Option>
+//                 <Option value="3">已冻结</Option>
+//               </Select>
+//             )
+//           }
+//         </FormItem>
+//         <FormItem>
+//           <Button
+//             onClick={() => { message.warning('这里改写成向后端发送验证的流程// TODO') }}
+//           >
+//             提交
+//           </Button>
+//         </FormItem>
+//       </Form>
+//     );
+//   }
+// }
 class UserForm extends React.Component {
+  handleButtonClick = () => {
+    let formInfo = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
+    // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        Ajax.ajax(
+          'post',
+          '/user-point-modify',
+          {},
+          {
+            phone: this.props.userInfo.phone,
+            point: formInfo.point,
+            token: sessionStorage.getItem('token'),
+          },
+          "http://207.148.65.10:8080",
+        ).then(
+          () => {
+            message.success('充值成功')
+            this.props.closeModal()
+          }
+        )
+      }
+    })
+  }
 
   render() {
-    let userInfo = this.props.userInfo[0] || {};
     const formItemLayout = {
       labelCol: {
         span: 5
@@ -492,50 +607,30 @@ class UserForm extends React.Component {
         span: 19
       }
     };
-
     const { getFieldDecorator } = this.props.form;
     return (
       <Form layout="horizontal">
-        <FormItem label="用户名" {...formItemLayout}>
+        <FormItem label="当前积分" {...formItemLayout}>
           {
-            getFieldDecorator('userName', {
-              initialValue: userInfo.userName
+            getFieldDecorator('oldPoint', {
+              initialValue: this.props.point
             })(
-              <Input type="text" placeholder="请输入用户名" />
+              <Input type="number" disabled={true} />
             )
           }
         </FormItem>
-        <FormItem label="角色" {...formItemLayout}>
+        <FormItem label="充值积分" {...formItemLayout}>
           {
-            getFieldDecorator('userType', {
-              initialValue: userInfo.userType
+            getFieldDecorator('point', {
+              initialValue: 0
             })(
-              <RadioGroup>
-                <Radio value="1">用户</Radio>
-                <Radio value="2">商户</Radio>
-              </RadioGroup>
+              <Input type="number" />
             )
           }
         </FormItem>
-        <FormItem label="状态" {...formItemLayout}>
-          {
-            getFieldDecorator('status', {
-              initialValue: userInfo.status
-            })(
-              <Select>
-                <Option value="1">已审核</Option>
-                <Option value="2">未审核</Option>
-                <Option value="3">已冻结</Option>
-              </Select>
-            )
-          }
-        </FormItem>
-        <FormItem>
-          <Button
-            onClick={() => { message.warning('这里改写成向后端发送验证的流程// TODO') }}
-          >
-            提交
-          </Button>
+        <FormItem
+          style={{ marginLeft: 'auto', marginRight: 'auto', width: 200, }} >
+          <Button type="primary" onClick={this.handleButtonClick}> 确认充值 </Button>
         </FormItem>
       </Form>
     );

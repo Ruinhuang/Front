@@ -62,8 +62,8 @@ class CoinTable extends React.Component {
             () => ({
                 visibleModal: "Detail",
                 modalContent: JSON.stringify(this.state.selectedItems[0]),
-                cardLoading:false,
-                
+                cardLoading: false,
+
             }))
     }
 
@@ -71,18 +71,28 @@ class CoinTable extends React.Component {
         if (this.state.selectedItems.length < 1) return
         this.setState(
             () => ({
-                visibleModal: "修改費率",
+                visibleModal: 'feeRate',
+                modalContent: <RateForm
+                    coinName={this.state.selectedItems[0].coinName}
+                    rateType='feeRate'
+                    closeModal={() => this.setState(() => ({ visibleModal: null }))}
+                />,
+                cardLoading: false,
             }))
-        Ajax.ajax(
-            'get',
-            '/coin/updateFee',
-            { "coinName": "XRB", },
-            {
-                orderId: this.state.selectedItems[0].id
-            },
-            'http://45.76.146.27',
-        ).then(
-            (res) => { })
+    }
+
+    handleUpdateExchangeRateButtonClick = () => {
+        if (this.state.selectedItems.length < 1) return
+        this.setState(
+            () => ({
+                visibleModal: 'exchangeRate',
+                modalContent: <RateForm
+                    coinName={this.state.selectedItems[0].coinName}
+                    rateType='exchangeRate'
+                    closeModal={() => this.setState(() => ({ visibleModal: null }))}
+                />,
+                cardLoading: false,
+            }))
     }
 
 
@@ -146,6 +156,12 @@ class CoinTable extends React.Component {
                         onClick={this.handleUpdateFeeButtonClick}
                     >
                         修改費率
+        </Button>
+                    <Button
+                        type="primary"
+                        onClick={this.handleUpdateExchangeRateButtonClick}
+                    >
+                        修改汇率
         </Button>
                     <Button
                         type="info"
@@ -213,50 +229,65 @@ class CoinTable extends React.Component {
 }
 CoinTable = Form.create({})(CoinTable);
 
-class PayingForm extends React.Component {
+class RateForm extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            payeeTypeList: [],
+            feeRate: 0,
+            exchangeRate: 0,
         }
     }
 
-    handleSubmit = () => {//绑定提交事件进行校验
+    handleButtonClick = () => {//绑定提交事件进行校验
         let formInfo = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
         // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log(formInfo)
-
+                const path = this.props.rateType === 'feeRate' ? '/coin/updateFee' : '/coin/updateExchangeRate'
+                const data = {
+                    coinName: this.props.coinName,
+                }
+                data[this.props.rateType] = formInfo[this.props.rateType]
+                Ajax.ajax(
+                    'get',
+                    path,
+                    {},
+                    data,
+                    'http://45.76.146.27',
+                ).then(
+                    (res) => {
+                        message.info('修改成功')
+                        this.props.closeModal()
+                    })
             }
         })
     }
 
     componentDidMount = () => {
-        // 獲得廣告的支付方式列表
-        this.adPayTypeList = this.props.orderDetail.adPayType.map((item) => ({ label: item.typeName, value: item.id }))
-        // 獲得廣告的支付方式列表
         Ajax.ajax(
             'get',
-            '/user/paytype/list',
-            { "X-BM-USER-ID": this.props.orderDetail.orderVO.uid },
+            '/coin/query',
             {},
+            { coinName: this.props.coinName },
             "http://45.76.146.27",
-        ).then(
-            (data) => {
-                const list = data.data.map(
-                    (item) => ({ label: item.typeName, value: item.id })
-                )
+        ).then((data) => {
+            if (this.props.rateType === 'feeRate') {
                 this.setState(() => {
                     return {
-                        payeeTypeList: list,
+                        feeRate: data.data.feeRate,
                     }
                 })
-            })
-
+            }
+            if (this.props.rateType === 'exchangeRate') {
+                this.setState(() => {
+                    return {
+                        exchangeRate: data.data.exchangeRate,
+                    }
+                })
+            }
+        })
     }
     render = () => {
-        const RadioGroup = Radio.Group
         const formItemLayout = {
             labelCol: {
                 xs: 24,
@@ -268,45 +299,29 @@ class PayingForm extends React.Component {
             }
         }
         const { getFieldDecorator } = this.props.form;
+        const rateTypeForm = this.props.rateType === 'feeRate' ?
+            <FormItem label='feeRate' {...formItemLayout}>
+                {getFieldDecorator('feeRate', {
+                })(<Input type='number' />)}
+            </FormItem>
+            :
+            <FormItem label='exchangeRate' {...formItemLayout}>
+                {getFieldDecorator('exchangeRate', {
+                })(<Input type='number' />)}
+            </FormItem>
         return (<Form
             layout="horizontal"
         >
-            <FormItem label="订单Id" {...formItemLayout}>
-                {getFieldDecorator('orderId', {
-                    initialValue: this.props.orderDetail.orderVO.id,
-                })(<Input disabled={true} />)}
-            </FormItem>
-            <FormItem>
-                <img alt="Cierra.jpg" src="https://img.moegirl.org/common/thumb/a/aa/Cierra01.jpg/260px-Cierra01.jpg" />
-            </FormItem>
-            <FormItem label="我的收付方式">
-                {
-                    getFieldDecorator('payTypeId', {
-                        initialValue: this.props.orderDetail.adPayType[0].id,
-                        rules: [{ required: true, message: '支付方式必选' },]
-                    })(
-                        <RadioGroup options={this.adPayTypeList} />,
-                    )
-                }
-            </FormItem>
-            <FormItem label="對方的收付方式">
-                {
-                    getFieldDecorator('payeeTypeId', {
-                        rules: [{ required: true, message: '支付方式必选' },]
-                    })(
-                        <RadioGroup options={this.state.payeeTypeList} />,
-                    )
-                }
-            </FormItem>
+            {rateTypeForm}
             <FormItem
                 style={{ marginLeft: 'auto', marginRight: 'auto', width: 200, }} >
-                <Button type="primary" onClick={() => { }}>确认付款</Button>
+                <Button type="primary" onClick={this.handleButtonClick}>确认修改</Button>
             </FormItem>
         </Form>
         )
     }
 }
-PayingForm = Form.create()(PayingForm)
+RateForm = Form.create()(RateForm)
 // props 属性
 const mapStateToProps = (state) => ({
     isLogin: state.isLogin,
@@ -315,4 +330,3 @@ const mapStateToProps = (state) => ({
 
 // 把逻辑方法与UI组件连接起来变成新容器组件
 export default connect(mapStateToProps)(CoinTable)
-

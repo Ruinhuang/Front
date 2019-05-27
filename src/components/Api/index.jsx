@@ -64,6 +64,10 @@ const menus = {
             key: '/ads/index',
         },
         {
+            title: '游戏',
+            key: '/games',
+        },
+        {
             title: '发布广告',
             key: '/business/publish',
         },
