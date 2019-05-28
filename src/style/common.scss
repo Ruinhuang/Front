@@ -6,82 +6,99 @@
 @import "./loading.scss"; //导入loading.scss文件
 
 .home-wrap {
-  background-color: $colorM;
-  height: calc(62vh);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
+    background-color: $colorM;
+    height: calc(62vh);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
 }
 
 // 清除li 标签前面的点点
 ul,
 li {
-  list-style: none;
+    list-style: none;
 }
 
 // 清除左右浮动
 .clearfix {
-  &:after {
-    content: " ";
-    clear: both;
-    display: block;
-    visibility: hidden;
-  }
+    &:after {
+        content: " ";
+        clear: both;
+        display: block;
+        visibility: hidden;
+    }
 }
 
 .container {
-  .nav-left {
-    min-width: 180px;
-    color: #ffffff;
-    // height: calc(25vh);
-    // background-color: #001529;
-  }
+    .nav-left {
+        min-width: 180px;
+        color: #ffffff;
+        // height: calc(25vh);
+        // background-color: #001529;
+    }
 
-  .main {
-    height: calc(100vh);
-    background-color: $colorL;
-    overflow: auto;
-  }
+    .main {
+        height: calc(100vh);
+        background-color: $colorL;
+        overflow: auto;
+    }
 
-  .content {
-    position: relative;
-    padding: 20px;
-  }
+    .content {
+        position: relative;
+        padding: 0;
+        margin: 0;
+        border: 0;
+    }
 }
 
 .content-wrap {
-  background: #ffffff;
-  border: 1px solid #e8e8e8;
-  margin-top: -3px;
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    margin-top: -3px;
 
-  .ant-table-wrapper {
-    margin-left: -1px;
-    margin-right: -2px;
-  }
+    .ant-table-wrapper {
+        margin-left: -1px;
+        margin-right: -2px;
+    }
 }
 
 .operate-wrap {
-  button {
-    margin-right: 10px;
-  }
+    button {
+        margin-right: 10px;
+    }
 }
 
 .link-button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  display: inline;
-  margin: 0;
-  padding: 0;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    display: inline;
+    margin: 0;
+    padding: 0;
 }
 
 .link-button:hover,
 .link-button:focus {
-  text-decoration: none;
+    text-decoration: none;
 }
-.avatar-uploader > .ant-upload {
-  width: 128px;
-  height: 128px;
+
+.avatar-uploader>.ant-upload {
+    width: 128px;
+    height: 128px;
+}
+
+.ant-carousel .slick-slide {
+    text-align: center;
+    height: 460px;
+    line-height: 460px;
+    background: #272b31;
+    overflow: hidden;
+}
+
+.slick-dots {
+    li {
+        background: #364d79;
+    }
 }

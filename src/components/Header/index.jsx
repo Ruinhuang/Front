@@ -23,7 +23,7 @@ class Header extends React.Component {
                                 <span>
                                     <Button>{this.props.user.userName}</Button>
                                     <Button onClick={() => {
-                                        goToUrl('/login')
+                                        goToUrl('/')
                                         // 安全退出 需要清空本地缓存的token
                                         sessionStorage.removeItem("token")
                                         localStorage.removeItem("token")

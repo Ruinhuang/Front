@@ -31,7 +31,7 @@ class NavLeft extends React.Component {
 
   render() {
     return (
-      <Menu mode="horizontal">
+      <Menu mode="horizontal" theme='dark'>
         {/* 依据redux中保存的用户类型返回导航菜单,并进行渲染 */}
         {this.renderMenu(getMenus(this.props.userType))}
       </Menu>
