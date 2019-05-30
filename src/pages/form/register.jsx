@@ -7,13 +7,15 @@ import {
   Radio,
   Checkbox,
   message,
+  Select,
 } from "antd";
 import Ajax from '../../components/Ajax'
 import '../../style/common.scss'
-import {goToUrl} from '../../utils'
+import { goToUrl } from '../../utils'
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
+const Option = Select.Option
 
 class FormRegister extends React.Component {
 
@@ -25,10 +27,11 @@ class FormRegister extends React.Component {
       formData,
       "http://207.148.65.10:8080",
     )
-      .then(() => {message.info("注册成功")
-	      goToUrl('/login')
+      .then(() => {
+        message.info("注册成功")
+        goToUrl('/login')
       })
-      // .catch(() => { })
+    // .catch(() => { })
   }
 
   passwordValidator = (rule, value, callback) => {
@@ -145,7 +148,7 @@ class FormRegister extends React.Component {
                       message: '请再次输入密码',
                     },
                     {
-		      validator: this.passwordValidator,
+                      validator: this.passwordValidator,
                     }
                   ],
                 },
@@ -170,6 +173,33 @@ class FormRegister extends React.Component {
                     <Radio value="2">商户</Radio>
                     <Radio value="3">管理员</Radio>
                   </RadioGroup>
+                )
+              }
+            </FormItem>
+            <FormItem label="选择手机所在地"  {...formItemLayout}>
+              {
+                getFieldDecorator('area', {
+                  initialValue: "0086",
+                  rules: [{
+                    required: true,
+                    message: '必选'
+                  },
+                  ]
+                })(
+                  <Select >
+                    <Option value='0082'>
+                      韩国(0082)
+                    </Option>
+                    <Option value='0086'>
+                      中国大陆(0086)
+                    </Option>
+                    <Option value='0081'>
+                      日本(0081)
+                    </Option>
+                    <Option value='001'>
+                      美国(001)
+                    </Option>
+                  </Select>
                 )
               }
             </FormItem>
@@ -242,7 +272,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem {...offsetLayout}>
               <Button type="primary" onClick={this.handleSubmit}>注册</Button>
-              <Button type="primary" onClick={()=>goToUrl('/login')}>去登录</Button>
+              <Button type="primary" onClick={() => goToUrl('/login')}>去登录</Button>
             </FormItem>
           </Form>
         </Card>
