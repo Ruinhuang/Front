@@ -33,30 +33,37 @@ const menus = {
     undefined: [
         {
             title: '首页',
+            position:'left',
             key: '/home'
         },
         {
             title: '行情',
+            position:'left',
             key: '/trend',
         },
         {
             title: '广告',
+            position:'left',
             key: '/ads/index',
         },
         {
             title: '游戏',
+            position:'left',
             key: '/games',
         },
         {
             title: '兌換海貝',
+            position:'left',
             key: '/exchange',
         },
         {
             title: '登錄',
+            position:'right',
             key: '/login',
         },
         {
             title: '注冊',
+            position:'right',
             key: '/register',
         },
 
@@ -64,116 +71,143 @@ const menus = {
     3: [
         {
             title: '首页',
+            position:'left',
             key: '/home',
         },
         {
             title: '行情',
+            position:'left',
             key: '/trend',
         },
         {
             title: '用户管理',
+            position:'left',
             key: '/manager/users',
         },
         {
             title: 'COIN管理',
+            position:'left',
             key: '/manager/coins',
         },
         {
             title: '订单管理',
+            position:'left',
             key: '/manager/orders',
         },
         {
             title: '广告管理',
+            position:'left',
             key: '/manager/ads',
         },
         {
             title: '权限管理',
+            position:'left',
             key: '/manager/permission',
         },
         {
             title: '我的信息',
+            position:'left',
             key: '/user/info'
         },
         {
             title: '安全退出',
+            position:'right',
             key: '/logout',
         },
     ],
     2: [
         {
             title: '首页',
+            position:'left',
             key: '/home'
         },
         {
             title: '行情',
+            position:'left',
             key: '/trend',
         },
         {
             title: '广告',
+            position:'left',
             key: '/ads/index',
         },
         {
             title: '游戏',
+            position:'left',
             key: '/games',
         },
         {
             title: '发布广告',
+            position:'left',
             key: '/business/publish',
         },
         {
             title: '我的信息',
+            position:'left',
             key: '/user/info'
         },
         {
             title: '我的广告',
+            position:'left',
             key: '/user/ads',
         },
         {
             title: '我的订单',
+            position:'left',
             key: '/user/orders',
 
         },
         {
             title: '兌換海貝',
+            position:'left',
             key: '/exchange',
         },
         {
             title: '安全退出',
+            position:'right',
             key: '/logout',
         },
     ],
     1: [
         {
             title: '首页',
+            position:'left',
             key: '/home'
         },
         {
             title: '行情',
             key: '/trend',
+            position:'left',
         },
         {
             title: '广告',
+            position:'left',
             key: '/ads/index',
         },
         {
             title: '游戏',
+            position:'left',
             key: '/games',
         },
         {
             title: '我的信息',
+            position:'left',
             key: '/user/info'
         },
         {
             title: '我的订单',
+            position:'left',
             key: '/user/orders',
 
         },
         {
             title: '兌換海貝',
+            position:'left',
             key: '/exchange',
         },
         {
             title: '安全退出',
+            position:'right',
             key: '/logout',
         },
     ],

@@ -22,7 +22,7 @@ class NavLeft extends React.Component {
         );
       }
       return (
-        <Menu.Item title={undefined} key={item.key}>
+        <Menu.Item title={undefined} key={item.key} style={{ float: item.position }}>
           <NavLink to={item.key}>{item.title}</NavLink>
         </Menu.Item>
       );
