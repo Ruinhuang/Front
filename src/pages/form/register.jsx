@@ -273,6 +273,12 @@ class FormRegister extends React.Component {
               {
                 getFieldDecorator('inCode', {
                   initialValue: '',
+                  rules: [
+                    {
+                      required: true,
+                      message: '邀请码不能为空'
+                    },
+                  ]
                 })(
                   <Input placeholder="请输入邀请码" />
                 )

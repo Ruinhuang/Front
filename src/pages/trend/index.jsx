@@ -9,10 +9,12 @@ class Trend extends React.Component {
   render = () => (
     <div>
       <Row>
-        <Col span={18} >
+        <Col span={16}>
           <TrendCharts />
+          <p>balbababaalbalbalbalblablalbalblablalblablalbalblalbalblablablalblabla</p>
+          <p>balbababaalbalbalbalblablalbalblablalblablalbalblalbalblablablalblabla</p>
         </Col>
-        <Col span={6}>
+        <Col span={8}>
           <Carousel
             autoplay
           >
@@ -26,14 +28,6 @@ class Trend extends React.Component {
           >
             交易
             </Button>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <Card title="簡介">
-            <p>balbababaalbalbalbalblablalbalblablalblablalbalblalbalblablablalblabla</p>
-            <p>balbababaalbalbalbalblablalbalblablalblablalbalblalbalblablablalblabla</p>
-          </Card>
         </Col>
       </Row>
     </div>

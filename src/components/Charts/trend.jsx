@@ -1,5 +1,4 @@
 import React from "react"
-import { Card } from "antd"
 import '../../style/common.scss'
 import {
   Chart,
@@ -14,7 +13,6 @@ export default class Trend extends React.Component {
     const cols = { value: { min: 0 }, day: { range: [0, 1] } };
     return (
       <div className="content-wrap">
-        <Card title="走势">
           <Chart height={420} data={data} scale={cols} forceFit>
             <Axis name="day" />
             <Axis name="value" />
@@ -35,7 +33,6 @@ export default class Trend extends React.Component {
               }}
             />
           </Chart>
-        </Card>
       </div>
     );
   }
