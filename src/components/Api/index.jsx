@@ -9,6 +9,7 @@ import MyAds from "../../pages/user/myAds";
 import MyOrders from "../../pages/user/myOrders";
 import adTable from "../../pages/ad/"
 import Home from "../../pages/home";
+import Trend from "../../pages/trend";
 import Publish from "../../pages/form/publish";
 import { Route } from 'react-router-dom'
 // 本地缓存了菜单列表
@@ -23,11 +24,19 @@ const menus = {
 
             // }]
         },
+        {
+            title: '行情',
+            key: '/trend',
+        },
     ],
     3: [
         {
             title: '首页',
             key: '/home',
+        },
+        {
+            title: '行情',
+            key: '/trend',
         },
         {
             title: '用户管理',
@@ -58,6 +67,10 @@ const menus = {
         {
             title: '首页',
             key: '/home'
+        },
+        {
+            title: '行情',
+            key: '/trend',
         },
         {
             title: '广告',
@@ -91,6 +104,10 @@ const menus = {
             key: '/home'
         },
         {
+            title: '行情',
+            key: '/trend',
+        },
+        {
             title: '广告',
             key: '/ads/index',
         },
@@ -112,6 +129,7 @@ const menus = {
 // 菜单列表对应的权限路由规则
 const routeMap = {
     '/home': <Route key="/home" path="/home" component={Home} />,
+    '/trend': <Route key="/trend" path="/trend" component={Trend} />,
     '/ads/index': <Route key="/ads/:page" path="/ads/:page" component={adTable} />,
     '/manager/users': <Route key="/manager/users" path="/manager/users" component={UserTable} />,
     '/manager/coins': <Route key="/manager/coins" path="/manager/coins" component={CoinTable} />,

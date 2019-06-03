@@ -8,6 +8,10 @@ const menuList = [
         // }]
     },
     {
+        title: '行情',
+        key: '/trend',
+    },
+    {
         title: '用户管理',
         key: '/manager/users',
     },
