@@ -81,7 +81,7 @@ class FormPublish extends React.Component {
     };
     return (
       <div>
-        <Card title="发表广告"
+        <Card title="发布广告"
         >
           <Form
             layout="horizontal"
@@ -98,7 +98,7 @@ class FormPublish extends React.Component {
                   ]
                 })(
                   <RadioGroup>
-                    <Radio value={1}>海贝</Radio>
+                    <Radio value={1}>XRB</Radio>
                   </RadioGroup>
                 )
               }

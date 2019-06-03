@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux"
-import { Card, Input, Radio, Table, Form, Modal, Button, message, Badge, Select } from 'antd';
+import { InputNumber, Card, Input, Radio, Table, Form, Modal, Button, message, Badge, Select } from 'antd';
 import Ajax from '../../components/Ajax'
 import { pagination, selectTag } from '../../utils/index'
 import '../../style/common.scss'
@@ -20,7 +20,7 @@ class CoinTable extends React.Component {
             selectedItems: [],
             pagination: {},
             sortOrder: false,
-            selectedOrderDetail: {},
+            Fee: null,
             modalContent: undefined,
         }
         this.page = 1
@@ -56,12 +56,12 @@ class CoinTable extends React.Component {
             )
     }
 
-    handleCoinDetailButtonClick = () => {
+    handleFeeButtonClick = () => {
         if (this.state.selectedItems.length < 1) return
         this.setState(
             () => ({
-                visibleModal: "Detail",
-                modalContent: JSON.stringify(this.state.selectedItems[0]),
+                visibleModal: "Fee",
+                modalContent: JSON.stringify(this.state.Fee),
                 cardLoading: false,
 
             }))
@@ -89,6 +89,18 @@ class CoinTable extends React.Component {
                 modalContent: <RateForm
                     coinName={this.state.selectedItems[0].coinName}
                     rateType='exchangeRate'
+                    closeModal={() => this.setState(() => ({ visibleModal: null }))}
+                />,
+                cardLoading: false,
+            }))
+    }
+
+    handleSetTrendValueButtonClick = () => {
+        this.setState(
+            () => ({
+                visibleModal: 'trendValue',
+                modalContent: <TrendForm
+                    rateType='trendValue'
                     closeModal={() => this.setState(() => ({ visibleModal: null }))}
                 />,
                 cardLoading: false,
@@ -153,22 +165,32 @@ class CoinTable extends React.Component {
                 <Card>
                     <Button
                         type="primary"
+                        style={{ margin: 10 }}
                         onClick={this.handleUpdateFeeButtonClick}
                     >
                         修改費率
         </Button>
                     <Button
                         type="primary"
+                        style={{ margin: 10 }}
                         onClick={this.handleUpdateExchangeRateButtonClick}
                     >
                         修改汇率
         </Button>
                     <Button
-                        type="info"
+                        type="primary"
+                        style={{ margin: 10 }}
                         icon="info"
-                        onClick={this.handleCoinDetailButtonClick}
+                        onClick={this.handleFeeButtonClick}
                     >
-                        COIN详情
+                        查看手续费
+        </Button>
+                    <Button
+                        style={{ margin: 10 }}
+                        type="primary"
+                        onClick={this.handleSetTrendValueButtonClick}
+                    >
+                        设定行情比例
         </Button>
                 </Card>
                 <div className="content-wrap">
@@ -300,14 +322,14 @@ class RateForm extends React.Component {
         }
         const { getFieldDecorator } = this.props.form;
         const rateTypeForm = this.props.rateType === 'feeRate' ?
-            <FormItem label='feeRate' {...formItemLayout}>
+            <FormItem label='feeRate' >
                 {getFieldDecorator('feeRate', {
-                })(<Input type='number' />)}
+                })(<InputNumber step="0.01" />)}
             </FormItem>
             :
-            <FormItem label='exchangeRate' {...formItemLayout}>
+            <FormItem label='exchangeRate' >
                 {getFieldDecorator('exchangeRate', {
-                })(<Input type='number' />)}
+                })(<InputNumber step="0.01" />)}
             </FormItem>
         return (<Form
             layout="horizontal"
@@ -322,6 +344,26 @@ class RateForm extends React.Component {
     }
 }
 RateForm = Form.create()(RateForm)
+
+class TrendForm extends React.Component {
+    render = () => {
+        const { getFieldDecorator } = this.props.form;
+        return (<Form
+            layout="horizontal"
+        >
+            <FormItem label='TrendValue' >
+                {getFieldDecorator('TrendValue', {
+                })(<InputNumber step="0.01" />)}
+            </FormItem>
+            <FormItem
+                style={{ marginLeft: 'auto', marginRight: 'auto', width: 200, }} >
+                <Button type="primary" onClick={this.handleButtonClick}>设定</Button>
+            </FormItem>
+        </Form>
+        )
+    }
+}
+TrendForm = Form.create()(TrendForm)
 // props 属性
 const mapStateToProps = (state) => ({
     isLogin: state.isLogin,

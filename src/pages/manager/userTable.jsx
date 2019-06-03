@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Radio, Card, Table, Form, Modal, Button, message, Badge, Select, Switch } from 'antd';
+import { Input, Radio, Card, Table, Form, Modal, Button, message, Badge, Select, Switch, InputNumber } from 'antd';
 import Ajax from '../../components/Ajax'
 import { pagination, selectTag } from '../../utils/index'
 import '../../style/common.scss'
@@ -616,7 +616,7 @@ class UserForm extends React.Component {
             getFieldDecorator('oldPoint', {
               initialValue: this.props.point
             })(
-              <Input type="number" disabled={true} />
+              <InputNumber step='0.01' disabled={true} />
             )
           }
         </FormItem>
@@ -625,7 +625,7 @@ class UserForm extends React.Component {
             getFieldDecorator('point', {
               initialValue: 0
             })(
-              <Input type="number" />
+              <InputNumber step='0.01' />
             )
           }
         </FormItem>

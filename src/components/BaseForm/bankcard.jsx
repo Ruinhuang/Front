@@ -41,36 +41,34 @@ class FormBankCard extends React.Component {
             () => this.request()
         )
 
-    post = (formData) => {
-        Ajax.ajax(
-            'post',
-            this.state.BankInfo.type ? "/user/paytype/updateBankAccount" : "/user/paytype/addBankAccount",
-            { "X-BM-USER-ID": this.props.user.userId },
-            {
-                "accountName": formData.accountName,
-                "accountNo": formData.accountNo,
-                "address": formData.address,
-                "bank": formData.bank,
-                "branch": formData.branch,
-                "id": formData.id,
-                "qrCodeUrl": formData.qrCodeUrl,
-                "subBranch": formData.subBranch,
-            },
-            'http://45.76.146.27',
-        ).then(
-            // 这个页面逻辑不需要再从服务器拿数据更新视图
-            // () => this.request()
-        )
-    }
 
-    handleSubmit = () => {//绑定提交事件进行校验
-        let formData = this.props.form.getFieldsValue()// 可以(获取表单中)object对象
+    handleSubmit = () => {
+        console.log('button')
+        const formData = this.props.form.getFieldsValue()// 可以(获取表单中)object对象
         this.props.form.validateFields((err, values) => {
-            if (!err) {// ${}  是变量
-                this.post(formData)
+            console.log(err)
+            if (!err) {
+                Ajax.ajax(
+                    'post',
+                    this.state.BankInfo.type ? "/user/paytype/updateBankAccount" : "/user/paytype/addBankAccount",
+                    { "X-BM-USER-ID": this.props.user.userId },
+                    {
+                        "accountName": formData.accountName,
+                        "accountNo": formData.accountNo,
+                        "address": formData.address,
+                        "bank": formData.bank,
+                        "branch": formData.branch,
+                        "id": formData.id,
+                        "qrCodeUrl": formData.qrCodeUrl,
+                        "subBranch": formData.subBranch,
+                    },
+                    'http://45.76.146.27',
+                ).then(
+                    () => this.request()
+                )
             }
-        });
-    };
+        })
+    }
 
     render() {
         const { getFieldDecorator } = this.props.form;
@@ -177,12 +175,6 @@ class FormBankCard extends React.Component {
                         {
                             getFieldDecorator('id', {
                                 initialValue: this.state.BankInfo.id,
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '不能为空'
-                                    },
-                                ]
                             })(
                                 <Input placeholder="id" />
                             )
