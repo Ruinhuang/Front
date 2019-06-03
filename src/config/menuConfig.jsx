@@ -12,6 +12,14 @@ const menuList = [
         key: '/trend',
     },
     {
+        title: '登錄',
+        key: '/login',
+    },
+    {
+        title: '注冊',
+        key: '/register',
+    },
+    {
         title: '用户管理',
         key: '/manager/users',
     },

@@ -122,8 +122,8 @@ class FormLogin extends React.Component {
                 width: 200,
               }}
             >
-              <Button type="primary" onClick={this.handleSubmit}>登录</Button>
-              <Button type="primary" onClick={() => goToUrl('/register')}>去注册</Button>
+              <Button type="primary" style={{ margin: 10 }} onClick={this.handleSubmit}>登录</Button>
+              <Button type="primary" style={{ margin: 10 }} onClick={() => goToUrl('/register')}>去注册</Button>
             </FormItem>
           </Form>
         </Card>

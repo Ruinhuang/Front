@@ -8,7 +8,7 @@ import "./index.scss";
 const SubMenu = Menu.SubMenu;
 
 class NavLeft extends React.Component {
-  
+
   //菜单渲染
   //通过递归(遍历)实现菜单(是一个List)的渲染
   renderMenu = data => {

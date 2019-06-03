@@ -48,7 +48,8 @@ class MainPage extends React.Component {
     return (
       <Row className="container" >
         <Row className="main">
-          <Header />
+          {/* 不顯示 header */}
+          {/* <Header /> */}
           <Row className="nav-left">
             <NavLeft />
           </Row>

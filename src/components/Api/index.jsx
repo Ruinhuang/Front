@@ -1,33 +1,65 @@
 import React from 'react'
-import UserTable from "../../pages/manager/userTable";
-import CoinTable from "../../pages/manager/coinTable";
-import AdTable from "../../pages/manager/adTable";
-import OrderTable from "../../pages/manager/orderTable";
-import PermissionTable from "../../pages/manager/permissionTable";
-import MyInfo from "../../pages/user/myInfo";
-import MyAds from "../../pages/user/myAds";
-import MyOrders from "../../pages/user/myOrders";
-import adTable from "../../pages/ad/"
-import Home from "../../pages/home";
-import Trend from "../../pages/trend";
-import Publish from "../../pages/form/publish";
+import Login from "../../pages/form/login"
+import UserTable from "../../pages/manager/userTable"
+import CoinTable from "../../pages/manager/coinTable"
+import AdTable from "../../pages/manager/adTable"
+import OrderTable from "../../pages/manager/orderTable"
+import PermissionTable from "../../pages/manager/permissionTable"
+import MyInfo from "../../pages/user/myInfo"
+import Exchange from "../../pages/exchange"
+import MyAds from "../../pages/user/myAds"
+import MyOrders from "../../pages/user/myOrders"
+import Ads from "../../pages/ad"
+import Logout from "../../pages/logout"
+import Publish from "../../pages/form/publish"
 import { Route } from 'react-router-dom'
 // 本地缓存了菜单列表
 const menus = {
+    // undefined: [
+    //     {
+    //         title: '首页',
+    //         key: '/home',
+    //         // children: [{
+    //         //     title: '子页',
+    //         //     key: '/home/child',
+
+    //         // }]
+    //     },
+    //     {
+    //         title: '行情',
+    //         key: '/trend',
+    //     },
+    // ],
     undefined: [
         {
             title: '首页',
-            key: '/home',
-            // children: [{
-            //     title: '子页',
-            //     key: '/home/child',
-
-            // }]
+            key: '/home'
         },
         {
             title: '行情',
             key: '/trend',
         },
+        {
+            title: '广告',
+            key: '/ads/index',
+        },
+        {
+            title: '游戏',
+            key: '/games',
+        },
+        {
+            title: '兌換海貝',
+            key: '/exchange',
+        },
+        {
+            title: '登錄',
+            key: '/login',
+        },
+        {
+            title: '注冊',
+            key: '/register',
+        },
+
     ],
     3: [
         {
@@ -62,6 +94,10 @@ const menus = {
             title: '我的信息',
             key: '/user/info'
         },
+        {
+            title: '安全退出',
+            key: '/logout',
+        },
     ],
     2: [
         {
@@ -95,7 +131,15 @@ const menus = {
         {
             title: '我的订单',
             key: '/user/orders',
-            
+
+        },
+        {
+            title: '兌換海貝',
+            key: '/exchange',
+        },
+        {
+            title: '安全退出',
+            key: '/logout',
         },
     ],
     1: [
@@ -122,16 +166,23 @@ const menus = {
         {
             title: '我的订单',
             key: '/user/orders',
-            
+
+        },
+        {
+            title: '兌換海貝',
+            key: '/exchange',
+        },
+        {
+            title: '安全退出',
+            key: '/logout',
         },
     ],
 }
 // 菜单列表对应的权限路由规则
 const routeMap = {
-    '/home': <Route key="/home" path="/home" component={Home} />,
-    '/trend': <Route key="/trend" path="/trend" component={Trend} />,
-    '/ads/index': <Route key="/ads/:page" path="/ads/:page" component={adTable} />,
+    '/ads/index': <Route key="/ads/:page" path="/ads/:page" component={Ads} />,
     '/manager/users': <Route key="/manager/users" path="/manager/users" component={UserTable} />,
+    '/exchange': <Route key="/exchange" path="/exchange" component={Exchange} />,
     '/manager/coins': <Route key="/manager/coins" path="/manager/coins" component={CoinTable} />,
     '/manager/orders': <Route key="/manager/orders" path="/manager/orders" component={OrderTable} />,
     '/manager/ads': <Route key="/manager/ads" path="/manager/ads" component={AdTable} />,
@@ -140,7 +191,12 @@ const routeMap = {
     '/user/info': <Route key="/user/info" path="/user/info" component={MyInfo} />,
     '/user/orders': <Route key="/user/orders" path="/user/orders" component={MyOrders} />,
     '/user/ads': <Route key="/user/ads" path="/user/ads" component={MyAds} />,
+    '/logout': <Route key="/logout" path="/logout" component={Logout} />,
+
 }
 
 export const getMenus = (userType) => menus[userType]
-export const getRoutes = (userType) => getMenus(userType).map(item => item.key).map(item => routeMap[item])
+export const getRoleRoutes = (userType) =>
+    userType ? getMenus(userType).map(item => item.key).map(item => routeMap[item])
+        :
+        <Route component={Login} />

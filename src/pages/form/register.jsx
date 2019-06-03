@@ -157,7 +157,7 @@ class FormRegister extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="用户角色" {...formItemLayout}>
+            <FormItem label="用户角色" {...formItemLayout} style={{ display: "none" }}>
               {
                 getFieldDecorator('userType', {
                   initialValue: "1",
@@ -241,13 +241,13 @@ class FormRegister extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="身份证号" {...formItemLayout}>
+            <FormItem label="身份证号" {...formItemLayout} style={{ display: "none" }}>
               {
                 getFieldDecorator('idcard', {
                   initialValue: '',
                   rules: [
                     {
-                      required: true,
+                      required: false,
                       message: '需填写身份证'
                     },
                     {
@@ -271,8 +271,8 @@ class FormRegister extends React.Component {
               }
             </FormItem>
             <FormItem {...offsetLayout}>
-              <Button type="primary" onClick={this.handleSubmit}>注册</Button>
-              <Button type="primary" onClick={() => goToUrl('/login')}>去登录</Button>
+              <Button type="primary" style={{ margin: 10 }} onClick={this.handleSubmit}>注册</Button>
+              <Button type="primary" style={{ margin: 10 }} onClick={() => goToUrl('/login')}>去登录</Button>
             </FormItem>
           </Form>
         </Card>
