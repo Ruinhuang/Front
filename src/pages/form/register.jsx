@@ -18,6 +18,32 @@ const RadioGroup = Radio.Group;
 const Option = Select.Option
 
 class FormRegister extends React.Component {
+  state = {
+    time: 19,
+    captchaLoading: false,
+  }
+
+  handleCaptchaButton = () => {
+    const phone = this.props.form.getFieldsValue().phone
+    if (!isNaN(phone) && phone !== undefined) {
+      this.setState(() => ({ captchaLoading: true }))
+      this.count()
+    } else {
+      message.info("请先输入正确的手机号码")
+    }
+  }
+
+  count = () => {
+    let { time } = this.state;
+    let siv = setInterval(() => {
+      this.setState({ time: (time--) }, () => {
+        if (time <= -1) {
+          clearInterval(siv)　　//倒计时( setInterval() 函数会每秒执行一次函数)，用 clearInterval() 来停止执行:
+          this.setState((prevState) => ({ captchaLoading: false, time: prevState.time }))
+        }
+      });
+    }, 1000);
+  }
 
   post = (formData) => {
     Ajax.ajax(
@@ -48,25 +74,6 @@ class FormRegister extends React.Component {
     this.post(formData)
 
 
-  };
-  getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-  };
-
-  handleChange = (info) => {
-    if (info.file.status === 'uploading') {
-      this.setState({ loading: true });
-      return;
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      this.getBase64(info.file.originFileObj, imageUrl => this.setState({
-        userImg: imageUrl,
-        loading: false,
-      }));
-    }
   };
 
   componentDidMount = () => {
@@ -176,7 +183,7 @@ class FormRegister extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="选择手机所在地"  {...formItemLayout}>
+            <FormItem label="手机所在地"  {...formItemLayout}>
               {
                 getFieldDecorator('area', {
                   initialValue: "0086",
@@ -203,25 +210,6 @@ class FormRegister extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="手机号" {...formItemLayout}>
-              {
-                getFieldDecorator('phone', {
-                  initialValue: '',
-                  rules: [
-                    {
-                      required: true,
-                      message: '手机号不能为空'
-                    },
-                    {
-                      pattern: new RegExp('^\\d+$', 'g'),
-                      message: '手机号码必须为数字'
-                    }
-                  ]
-                })(
-                  <Input placeholder="请输入手机号码" />
-                )
-              }
-            </FormItem>
             <FormItem label="邮箱地址" {...formItemLayout}>
               {
                 getFieldDecorator('email', {
@@ -241,7 +229,56 @@ class FormRegister extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="身份证号" {...formItemLayout} style={{ display: "none" }}>
+            <FormItem label="手机号" {...formItemLayout}>
+              {
+                getFieldDecorator('phone', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '手机号不能为空'
+                    },
+                    {
+                      pattern: new RegExp('^\\d+$', 'g'),
+                      message: '手机号码必须为数字'
+                    }
+                  ]
+                })(
+                  <Input placeholder="请输入手机号码" />
+                )
+              }
+              <Button type="primary"
+                loading={this.state.captchaLoading}
+                onClick={this.handleCaptchaButton}
+              >
+                {this.state.captchaLoading ? this.state.time + '秒后可再次发送' : '发送短信验证'}
+              </Button>
+            </FormItem>
+            <FormItem label="验证码" {...formItemLayout}>
+              {
+                getFieldDecorator('captcha', {
+                  initialValue: '',
+                  rules: [
+                    {
+                      required: true,
+                      message: '验证码不能为空'
+                    },
+                  ]
+                }
+                )(
+                  <Input placeholder="请输入验证码" />
+                )
+              }
+            </FormItem>
+            <FormItem label="邀请码" {...formItemLayout}>
+              {
+                getFieldDecorator('inCode', {
+                  initialValue: '',
+                })(
+                  <Input placeholder="请输入邀请码" />
+                )
+              }
+            </FormItem>
+            <FormItem label="身份证号" {...offsetLayout} style={{ display: "none" }}>
               {
                 getFieldDecorator('idcard', {
                   initialValue: '',
@@ -276,7 +313,7 @@ class FormRegister extends React.Component {
             </FormItem>
           </Form>
         </Card>
-      </div>
+      </div >
     )
   }
 }

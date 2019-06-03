@@ -1,9 +1,9 @@
 @import '../../style/default.scss';//导入预先定义的默认less文件
 .footer{
-  height: 100px;
-  padding: 40px 0;
+  height: 15vh;
+  padding: 5vh;
   text-align: center;
   //color: #d7d7d7;
   color: $colorJ;
-  background: #364d79;
+  background: #001529
 }

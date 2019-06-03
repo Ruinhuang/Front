@@ -1,8 +1,9 @@
 import React from "react";
 import { connect } from "react-redux"
 import { actionCreator } from "../../redux/action"
-import { Button, Card, Form, Select, Input, Checkbox, message, Radio, Upload, Icon, Modal } from "antd";
+import { Row, Col, Button, Card, Form, Select, Input, Checkbox, message, Radio, Upload, Icon, Modal } from "antd";
 import UploadPic from '../../components/UploadPic'
+import BankCard from '../../components/BaseForm/bankcard'
 import { goToUrl } from "../../utils";
 import Ajax from '../../components/Ajax'
 import '../../style/common.scss'
@@ -65,8 +66,16 @@ class FormMyInfo extends React.Component {
             if (!err) {// ${}  是变量
                 this.post(formData)
             }
-        });
-    };
+        })
+    }
+    handleUserUpdateButtonClick = () => {
+        const idcard = this.props.form.getFieldsValue().idcard
+        console.log(idcard)
+        if (isNaN(idcard) || idcard === undefined) {
+            message.info("请先输入正确的身份证号码")
+        }
+    }
+
     passwordValidator = (rule, value, callback) => {
         let password = this.props.form.getFieldsValue().password
         console.log(rule, value, password)
@@ -215,15 +224,11 @@ class FormMyInfo extends React.Component {
                                 )
                             }
                         </FormItem>
-                        {/* <FormItem label="身份证号" {...formItemLayout}>
+                        <FormItem label="身份证号" {...formItemLayout}>
                             {
                                 getFieldDecorator('idcard', {
-                                    initialValue:null,
+                                    initialValue: this.props.user.idcard,
                                     rules: [
-                                        {
-                                            required: true,
-                                            message: '需填写身份证'
-                                        },
                                         {
                                             pattern: new RegExp(/^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/),
                                             message: '请输入正确的身法证号'
@@ -233,7 +238,7 @@ class FormMyInfo extends React.Component {
                                     <Input placeholder="请输入身份证号" />
                                 )
                             }
-                        </FormItem> */}
+                        </FormItem>
                         <FormItem
                             style={{
                                 marginLeft: 'auto',
@@ -241,7 +246,8 @@ class FormMyInfo extends React.Component {
                                 width: 200,
                             }}
                         >
-                            <Button type="primary" onClick={this.handleSubmit}>更新</Button>
+                            <Button type="primary" style={{ margin: 10 }}>更新</Button>
+                            <Button type="primary" style={{ margin: 10 }} onClick={this.handleUserUpdateButtonClick}>申请成为商户</Button>
                         </FormItem>
                     </Form>
                 </Card>
@@ -252,38 +258,52 @@ class FormMyInfo extends React.Component {
                         justifyContent: "center",
                     }}
                 >
-                    <Form>
-                        <Card title="微信二维码"
-                            style={{
-                                display: "inline-block",
-                                margin: 50,
-                            }}
-                        >
-                            <UploadPic payType="WechatPay" />
-                        </Card>
-                        <Card title="支付宝二维码"
-                            style={{
-                                display: "inline-block",
-                                margin: 50,
-                            }}
-                        >
-                            <UploadPic payType="AliPay" />
-                        </Card>
-                        <Card title="积分"
-                            style={{
-                                display: "inline-block",
-                                margin: 50,
-                            }}
-                        >
-                            <p>总积分：{this.state.count}</p>
-                            <p>冻结积分：{this.state.frozenAmount}</p>
-                            <Button
-                                onClick={this.getWallentInfo}
+                    <Row>
+                        <Col span={8}>
+                            <Card title="积分"
+                                style={{
+                                    display: "inline-block",
+                                    margin: 50,
+                                }}
                             >
-                                刷新积分
+                                <p>总积分：{this.state.count}</p>
+                                <p>冻结积分：{this.state.frozenAmount}</p>
+                                <Button
+                                    onClick={this.getWallentInfo}
+                                >
+                                    刷新积分
                             </Button>
-                        </Card>
-                    </Form>
+                            </Card>
+                        </Col>
+                        <Col span={8}>
+                            <Card title="銀行卡"
+                                style={{
+                                    display: "inline-block",
+                                    margin: 50,
+                                }}
+                            >
+                                <BankCard />
+                            </Card>
+                        </Col>
+                        <Col span={8}>
+                            <Card title="微信二维码"
+                                style={{
+                                    display: "inline-block",
+                                    margin: 50,
+                                }}
+                            >
+                                <UploadPic payType="WECHAT_PAY" />
+                            </Card>
+                            <Card title="支付宝二维码"
+                                style={{
+                                    display: "inline-block",
+                                    margin: 50,
+                                }}
+                            >
+                                <UploadPic payType="ALI_PAY" />
+                            </Card>
+                        </Col>
+                    </Row>
                 </Card>
             </div >
         )

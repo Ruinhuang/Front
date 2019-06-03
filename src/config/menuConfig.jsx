@@ -12,11 +12,11 @@ const menuList = [
         key: '/trend',
     },
     {
-        title: '登錄',
+        title: '登录',
         key: '/login',
     },
     {
-        title: '注冊',
+        title: '登录',
         key: '/register',
     },
     {

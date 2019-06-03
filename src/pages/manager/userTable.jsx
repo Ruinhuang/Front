@@ -399,6 +399,7 @@ export default class userTable extends React.Component {
           >
             编辑
               </Button> */}
+          <Button disabled={this.state.selectedItems.length > 1}>确认申请</Button>
           <Button
             icon='edit'
             type="primary"

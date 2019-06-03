@@ -6,8 +6,8 @@ import './../../style/common.scss'
 
 class UploadPic extends React.Component {
     componentDidMount = () => {
-        if (this.props.payType === "WechatPay") this.payPath = '/user/paytype/addWechatPayAccount'
-        if (this.props.payType === "AliPay") this.payPath = '/user/paytype/addAliPayAccount'
+        if (this.props.payType === "WECHAT_PAY") this.payPath = '/user/paytype/addWechatPayAccount'
+        if (this.props.payType === "ALI_PAY") this.payPath = '/user/paytype/addAliPayAccount'
     }
 
 

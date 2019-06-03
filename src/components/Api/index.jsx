@@ -52,17 +52,17 @@ const menus = {
             key: '/games',
         },
         {
-            title: '兌換海貝',
+            title: '兑换海贝',
             position:'left',
             key: '/exchange',
         },
         {
-            title: '登錄',
+            title: '登录',
             position:'right',
             key: '/login',
         },
         {
-            title: '注冊',
+            title: '注册',
             position:'right',
             key: '/register',
         },
@@ -158,7 +158,7 @@ const menus = {
 
         },
         {
-            title: '兌換海貝',
+            title: '兑换海贝',
             position:'left',
             key: '/exchange',
         },
@@ -201,7 +201,7 @@ const menus = {
 
         },
         {
-            title: '兌換海貝',
+            title: '兑换海贝',
             position:'left',
             key: '/exchange',
         },
