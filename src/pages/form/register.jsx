@@ -28,6 +28,7 @@ class FormRegister extends React.Component {
     if (!isNaN(phone) && phone !== undefined) {
       this.setState(() => ({ captchaLoading: true }))
       this.count()
+      this.sendSMS(phone)
     } else {
       message.info("请先输入正确的手机号码")
     }
@@ -43,6 +44,16 @@ class FormRegister extends React.Component {
         }
       });
     }, 1000);
+  }
+  // 这个接口为啥长这样,俺也不知道, 俺也不敢问
+  sendSMS = (phoneNumber) => {
+    Ajax.ajax(
+      'post',
+      `/get/sms?mobile=${phoneNumber}`,
+      {},
+      { mobile: phoneNumber },
+      "http://207.148.65.10:8080",
+    )
   }
 
   post = (formData) => {
