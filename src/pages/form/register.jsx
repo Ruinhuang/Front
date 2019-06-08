@@ -82,9 +82,11 @@ class FormRegister extends React.Component {
 
   handleSubmit = () => {
     let formData = this.props.form.getFieldsValue();// 可以(获取表单中)object对象
-    this.post(formData)
-
-
+    this.props.form.validateFields((err, values) => {
+      if (!err) {// ${}  是变量
+        this.post(formData)
+      }
+    });
   };
 
   componentDidMount = () => {
