@@ -284,7 +284,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="邀请码" {...formItemLayout}>
               {
-                getFieldDecorator('inCode', {
+                getFieldDecorator('postCode', {
                   initialValue: '',
                   rules: [
                     {
@@ -299,7 +299,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="身份证号" {...offsetLayout} style={{ display: "none" }}>
               {
-                getFieldDecorator('idcard', {
+                getFieldDecorator('idCode', {
                   initialValue: '',
                   rules: [
                     {

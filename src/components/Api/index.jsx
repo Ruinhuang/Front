@@ -2,6 +2,7 @@ import React from 'react'
 import Login from "../../pages/form/login"
 import UserTable from "../../pages/manager/userTable"
 import CoinTable from "../../pages/manager/coinTable"
+import ApprovalTable from "../../pages/manager/approvalTable"
 import AdTable from "../../pages/manager/adTable"
 import OrderTable from "../../pages/manager/orderTable"
 import PermissionTable from "../../pages/manager/permissionTable"
@@ -33,37 +34,37 @@ const menus = {
     undefined: [
         {
             title: '首页',
-            position:'left',
+            position: 'left',
             key: '/home'
         },
         {
             title: '行情',
-            position:'left',
+            position: 'left',
             key: '/trend',
         },
         {
             title: '广告',
-            position:'left',
+            position: 'left',
             key: '/ads/index',
         },
         {
             title: '游戏',
-            position:'left',
+            position: 'left',
             key: '/games',
         },
         {
             title: '兑换海贝',
-            position:'left',
+            position: 'left',
             key: '/exchange',
         },
         {
             title: '登录',
-            position:'right',
+            position: 'right',
             key: '/login',
         },
         {
             title: '注册',
-            position:'right',
+            position: 'right',
             key: '/register',
         },
 
@@ -71,143 +72,148 @@ const menus = {
     3: [
         {
             title: '首页',
-            position:'left',
+            position: 'left',
             key: '/home',
         },
         {
             title: '行情',
-            position:'left',
+            position: 'left',
             key: '/trend',
         },
         {
             title: '用户管理',
-            position:'left',
+            position: 'left',
             key: '/manager/users',
         },
         {
             title: 'COIN管理',
-            position:'left',
+            position: 'left',
             key: '/manager/coins',
         },
         {
+            title: '审核管理',
+            position: 'left',
+            key: '/manager/approval',
+        },
+        {
             title: '订单管理',
-            position:'left',
+            position: 'left',
             key: '/manager/orders',
         },
         {
             title: '广告管理',
-            position:'left',
+            position: 'left',
             key: '/manager/ads',
         },
         {
             title: '权限管理',
-            position:'left',
+            position: 'left',
             key: '/manager/permission',
         },
         {
             title: '我的信息',
-            position:'left',
+            position: 'left',
             key: '/user/info'
         },
         {
             title: '安全退出',
-            position:'right',
+            position: 'right',
             key: '/logout',
         },
     ],
     2: [
         {
             title: '首页',
-            position:'left',
+            position: 'left',
             key: '/home'
         },
         {
             title: '行情',
-            position:'left',
+            position: 'left',
             key: '/trend',
         },
         {
             title: '广告',
-            position:'left',
+            position: 'left',
             key: '/ads/index',
         },
         {
             title: '游戏',
-            position:'left',
+            position: 'left',
             key: '/games',
         },
         {
             title: '发布广告',
-            position:'left',
+            position: 'left',
             key: '/business/publish',
         },
         {
             title: '我的信息',
-            position:'left',
+            position: 'left',
             key: '/user/info'
         },
         {
             title: '我的广告',
-            position:'left',
+            position: 'left',
             key: '/user/ads',
         },
         {
             title: '我的订单',
-            position:'left',
+            position: 'left',
             key: '/user/orders',
 
         },
         {
             title: '兑换海贝',
-            position:'left',
+            position: 'left',
             key: '/exchange',
         },
         {
             title: '安全退出',
-            position:'right',
+            position: 'right',
             key: '/logout',
         },
     ],
     1: [
         {
             title: '首页',
-            position:'left',
+            position: 'left',
             key: '/home'
         },
         {
             title: '行情',
             key: '/trend',
-            position:'left',
+            position: 'left',
         },
         {
             title: '广告',
-            position:'left',
+            position: 'left',
             key: '/ads/index',
         },
         {
             title: '游戏',
-            position:'left',
+            position: 'left',
             key: '/games',
         },
         {
             title: '我的信息',
-            position:'left',
+            position: 'left',
             key: '/user/info'
         },
         {
             title: '我的订单',
-            position:'left',
+            position: 'left',
             key: '/user/orders',
 
         },
         {
             title: '兑换海贝',
-            position:'left',
+            position: 'left',
             key: '/exchange',
         },
         {
             title: '安全退出',
-            position:'right',
+            position: 'right',
             key: '/logout',
         },
     ],
@@ -221,6 +227,7 @@ const routeMap = {
     '/manager/orders': <Route key="/manager/orders" path="/manager/orders" component={OrderTable} />,
     '/manager/ads': <Route key="/manager/ads" path="/manager/ads" component={AdTable} />,
     '/manager/permission': <Route key="/manager/permission" path="/manager/permission" component={PermissionTable} />,
+    '/manager/approval': <Route key="/manager/approval" path="/manager/approval" component={ApprovalTable} />,
     '/business/publish': <Route key="/business/publish" path="/business/publish" component={Publish} />,
     '/user/info': <Route key="/user/info" path="/user/info" component={MyInfo} />,
     '/user/orders': <Route key="/user/orders" path="/user/orders" component={MyOrders} />,

@@ -11,7 +11,9 @@ const Option = Select.Option
 const RadioGroup = Radio.Group
 const FormItem = Form.Item
 class FormMyInfo extends React.Component {
-  state = {}
+  state = {
+    apply: {},
+  }
 
   handleCancel = () => this.setState({ previewVisible: false });
 
@@ -24,19 +26,7 @@ class FormMyInfo extends React.Component {
 
   handleChange = ({ fileList }) => this.setState({ fileList });
 
-  post = (formData) => {
-    Ajax.ajax(
-      'post',
-      '/user-login',
-      { "X-BM-USER-ID": this.props.token },
-      formData,
-      "https://mook.sunlin.fun/mock/9/"
-    )
-      .then(
-        (res) => {
-        }
-      ).catch(() => { })
-  }
+
   getWallentInfo = () => {
     Ajax.ajax(
       'get',
@@ -57,28 +47,72 @@ class FormMyInfo extends React.Component {
       ).catch(() => { })
   }
 
+  getApplyStatus = () => {
+    Ajax.ajax(
+      'get',
+      '/normal/user/apply/query/',
+      {},
+      {
+        userId: this.props.user.userId
+      },
+      "http://207.148.65.10:8080",
+      // "http://192.168.0.105:8080",
+    )
+      .then(
+        (res) => {
+          this.setState(() => ({
+            apply: res.data === null ? {} : res.data
+          }))
+        }
+      )
+  }
+
   componentDidMount = () => {
     this.getWallentInfo()
+    this.getApplyStatus()
   }
-  handleSubmit = () => {//绑定提交事件进行校验
-    let formData = this.props.form.getFieldsValue()// 可以(获取表单中)object对象
+
+  handleChangePassword = () => {//绑定提交事件进行校验
+    const password = this.props.form.getFieldsValue().password
     this.props.form.validateFields((err, values) => {
-      if (!err) {// ${}  是变量
-        this.post(formData)
+      if (!err) {
+        const formData = { password, token: this.props.token, }
+        Ajax.ajax('post', '/changePassword', {}, formData, "https://mook.sunlin.fun/mock/9/").then((res) => {
+          localStorage.removeItem("token")
+          sessionStorage.removeItem("token")
+          this.props.saveLoginData(res.data)
+          sessionStorage.setItem("token", res.data.token)
+          message.success('修改成功')
+        })
       }
-    })
+    }
+    )
   }
-  handleUserUpdateButtonClick = () => {
-    const idcard = this.props.form.getFieldsValue().idcard
-    console.log(idcard)
-    if (isNaN(idcard) || idcard === undefined) {
+
+  handleBusinessApplyButtonClick = () => {
+    const idCode = this.props.form.getFieldsValue().idCode
+    const idCodePattern = /^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/
+    if (!idCodePattern.test(idCode)) {
       message.info("请先输入正确的身份证号码")
+    } else {
+      Ajax.ajax(
+        'post',
+        '/user/apply/sale',
+        {},
+        { idCode, status: "1", userId: this.props.user.userId },
+        "http://207.148.65.10:8080"
+        // "http://192.168.0.105:8080"
+      ).then(
+        () => {
+          message.success('已发起申请')
+          this.getApplyStatus()
+        }
+      )
     }
   }
 
   passwordValidator = (rule, value, callback) => {
     let password = this.props.form.getFieldsValue().password
-    console.log(rule, value, password)
     if (value && value !== password) {
       callback('密码输入不一致！')
     }
@@ -107,10 +141,18 @@ class FormMyInfo extends React.Component {
         sm: 12
       }
     };
+
     const roleMap = {
       "1": "普通用户",
       "2": "商户",
       "3": "管理员",
+    }
+    const buttonTextMap = {
+      undefined: "申请成为商户",
+      "0": "申请成为商户",
+      "1": "申请待审批",
+      "2": "已认证",
+      "3": "申请被驳回",
     }
 
     return (
@@ -121,113 +163,39 @@ class FormMyInfo extends React.Component {
             layout="horizontal"
           >
             <FormItem label="用户名" {...formItemLayout}>
-              {
-                getFieldDecorator('userName', {
-                  initialValue: this.props.user.userName,
-                  rules: [
-                    {
-                      required: true,
-                      message: '用户名不能为空'
-                    },
-                    {
-                      min: 1, max: 16,
-                      message: '长度不在范围内'
-                    },
-                    {
-                      pattern: new RegExp('^\\w+$', 'g'),
-                      message: '用户名必须为字母或数字'
-                    }
-                  ]
-                })(
-                  <Input placeholder="请输入用户名" />
-                )
-              }
+              <Input disabled value={this.props.user.userName} />
             </FormItem>
             <FormItem label="新密码" {...formItemLayout}>
               {
                 getFieldDecorator('password', {
-                  initialValue: this.props.user.password,
-                })(
-                  <Input placeholder="请输入密码" />
-                )
-              }
-            </FormItem>
-            <FormItem label="确认密码" {...formItemLayout}>
-              {
-                getFieldDecorator('repeat', {
-                  initialValue: this.props.user.password,
                   rules: [
                     {
-                      validator: this.passwordValidator,
-                    }
+                      required: true,
+                      message: '必填'
+                    },
                   ],
-                },
-                )(
-                  <Input placeholder="请输入密码" />
+                })(
+                  <Input.Search
+                    placeholder="请输入新密码"
+                    enterButton="修改密码"
+                    onSearch={this.handleChangePassword}
+                  />
                 )
               }
             </FormItem>
             <FormItem label="用户角色" {...formItemLayout}>
-              {
-                getFieldDecorator('userType', {
-                  initialValue: roleMap[this.props.user.userType],
-                  rules: [{
-                    required: true,
-                    message: '用户角色必选'
-                  },
-                  ]
-                }
-                )(
-                  <Select>
-                    <Option value={0}>普通用户</Option>
-                    <Option value={1}>管理员</Option>
-                    <Option value={2}>商户</Option>
-                  </Select>
-                )
-              }
+              <Input disable placeholder={roleMap[this.props.user.userType]} />
             </FormItem>
             <FormItem label="手机号" {...formItemLayout}>
-              {
-                getFieldDecorator('phone', {
-                  initialValue: this.props.user.phone,
-                  rules: [
-                    {
-                      required: true,
-                      message: '手机号不能为空'
-                    },
-                    {
-                      pattern: new RegExp('^\\d+$', 'g'),
-                      message: '手机号码必须为数字'
-                    }
-                  ]
-                })(
-                  <Input placeholder="请输入手机号码" />
-                )
-              }
+              <Input disabled placeholder={this.props.user.phone} />
             </FormItem>
             <FormItem label="邮箱地址" {...formItemLayout}>
-              {
-                getFieldDecorator('email', {
-                  initialValue: this.props.user.email,
-                  rules: [
-                    {
-                      required: true,
-                      message: '邮箱地址不能为空'
-                    },
-                    {
-                      pattern: new RegExp(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/),
-                      message: '请输入正确的邮箱地址'
-                    }
-                  ]
-                })(
-                  <Input placeholder="请输入邮箱地址" />
-                )
-              }
+              <Input disabled placeholder={this.props.user.email} />
             </FormItem>
             <FormItem label="身份证号" {...formItemLayout}>
               {
-                getFieldDecorator('idcard', {
-                  initialValue: this.props.user.idcard,
+                getFieldDecorator('idCode', {
+                  initialValue: this.state.idCode,
                   rules: [
                     {
                       pattern: new RegExp(/^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/),
@@ -235,26 +203,20 @@ class FormMyInfo extends React.Component {
                     }
                   ]
                 })(
-                  <Input placeholder="请输入身份证号" />
+                  <Input.Search
+                    placeholder={this.state.apply ? this.state.apply.idCode : "申请商户需要身份证信息"}
+                    enterButton={buttonTextMap[this.state.apply.status]}
+                    disabled={parseInt(this.state.apply.status) > 0}
+                    onSearch={this.handleBusinessApplyButtonClick}
+                  />
                 )
               }
-            </FormItem>
-            <FormItem
-              style={{
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                width: 200,
-              }}
-            >
-              <Button type="primary" style={{ margin: 10 }}>更新</Button>
-              <Button type="primary" style={{ margin: 10 }} onClick={this.handleUserUpdateButtonClick}>申请成为商户</Button>
             </FormItem>
           </Form>
         </Card>
         <Card title="我的钱包"
           style={{
-            display: "-webkit - flex",
-            display: "flex",
+            display: "-webkit -flex",
             justifyContent: "center",
           }}
         >

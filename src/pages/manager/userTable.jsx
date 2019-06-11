@@ -252,15 +252,15 @@ export default class userTable extends React.Component {
           return roleMap[text]
         }
       },
-      {
-        title: '状态',
-        key: 'status',
-        width: 80,
-        dataIndex: 'status',
-        render: (text) => {
-          return statusMap[text]
-        }
-      },
+      // {
+      //   title: '状态',
+      //   key: 'status',
+      //   width: 80,
+      //   dataIndex: 'status',
+      //   render: (text) => {
+      //     return statusMap[text]
+      //   }
+      // },
       // 行内操作按钮
       // {
       //   title: 'operation',
@@ -399,7 +399,6 @@ export default class userTable extends React.Component {
           >
             编辑
               </Button> */}
-          <Button disabled={this.state.selectedItems.length > 1}>确认申请</Button>
           <Button
             icon='edit'
             type="primary"

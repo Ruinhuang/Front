@@ -18,30 +18,14 @@ export default class PermissionUser extends React.Component {
     };
 
     request = () => {
-        Ajax.ajax(
-            'get',
-            '/v1/roles',
-            {},
-            { page: this.page },
-            'https://mook.sunlin.fun/mock/9',
-        )
-            .then(
-                data => {
-                    this.setState(
-                        () => (
-                            {
-                                dataSource: data.list,
-                                pagination: pagination(data, (current) => {
-                                    this.page = current
-                                    this.request()
-                                }),
-                            }
-                        )
-                    )
-                })
-            .catch(
-                () => message.error("数据渲染失败")
-            )
+        this.setState(
+            () => ({
+                dataSource: [
+                    { key: 1, userType: 1, role: '普通用户', },
+                    { key: 2, userType: 2, role: '商户', },
+                    { key: 3, userType: 3, role: '管理员', },
+                ],
+            }))
     }
 
     componentWillMount() {
@@ -58,11 +42,11 @@ export default class PermissionUser extends React.Component {
 
     // 角色提交
     handleRoleSubmit = () => {
-        const data = this.roleForm.props.form.getFieldsValue();
+        const data = this.userTypeForm.props.form.getFieldsValue();
         this.setState({
             isRoleVisible: false //关闭弹框
         });
-        this.roleForm.props.form.resetFields(); // 调用表单重置(清空表单数据)
+        this.userTypeForm.props.form.resetFields(); // 调用表单重置(清空表单数据)
         this.request(); //刷新列表数据
     }
 
@@ -73,14 +57,14 @@ export default class PermissionUser extends React.Component {
             isPermVisible: true,
             detailInfo: item,
             // menuInfo: item.menus,
-            menuInfo: (getMenus(item.role)).map(item => item.key),
+            menuInfo: (getMenus(item.userType)).map(item => item.key),
         });
     };
 
     handlePermEditSubmit = () => {
         // 获取表单的值 ,添加wrappedComponentRef属性
         let data = this.permForm.props.form.getFieldsValue();
-        data.role_key = this.state.selectedItem.key; // 将角色key传回
+        data.userType_key = this.state.selectedItem.key; // 将角色key传回
         data.menus = this.state.menuInfo; // 需要将menus数据传到接口
 
         this.setState({
@@ -105,7 +89,7 @@ export default class PermissionUser extends React.Component {
         // id: 角色id , 获取角色id
         Ajax.ajax(
             'get',
-            '/v1/role/users',
+            '/v1/userType/users',
             {},
             { page: this.page },
             'https://mook.sunlin.fun/mock/9',
@@ -121,7 +105,7 @@ export default class PermissionUser extends React.Component {
     // 筛选目标用户
     getAuthUserList = dataSource => {
         // 将数据(目标用户,全量用户)进行过滤的方法
-        const roleUsers = [];
+        const userTypeUsers = [];
         const targetKeys = [];
         if (dataSource && dataSource.length > 0) {
             // 有数据
@@ -129,17 +113,17 @@ export default class PermissionUser extends React.Component {
                 const data = {
                     key: dataSource[i].key,
                     title: dataSource[i].name,
-                    role: dataSource[i].role
+                    userType: dataSource[i].userType
                 };
 
-                if (data.role === this.state.selectedItems[0].role) {
-                    // 如果role相同，说明是目标用户,加到targetKeys数组
+                if (data.userType === this.state.selectedItems[0].userType) {
+                    // 如果userType相同，说明是目标用户,加到targetKeys数组
                     targetKeys.push(data.key);
                 }
                 //全量用户
-                roleUsers.push(data)
+                userTypeUsers.push(data)
                 this.setState(() => ({
-                    roleUsers,
+                    userTypeUsers,
                     targetKeys
                 }))
             }
@@ -150,7 +134,7 @@ export default class PermissionUser extends React.Component {
     handleUserSubmit = () => {
         let data = {};
         data.user_ids = this.state.targetKeys;
-        data.role = this.state.selectedItems[0].role;
+        data.userType = this.state.selectedItems[0].userType;
         this.setState({
             isUserVisible: false
         });
@@ -161,7 +145,7 @@ export default class PermissionUser extends React.Component {
         const columns = [
             {
                 title: "角色",
-                dataIndex: "role_name",
+                dataIndex: "role",
             },
             {
                 title: "使用状态",
@@ -172,9 +156,9 @@ export default class PermissionUser extends React.Component {
             },
             {
                 title: "可访问功能",
-                dataIndex: "role",
-                render: (role) =>
-                    getMenus(role).map(item => `${item.title}, `)
+                dataIndex: "userType",
+                render: (userType) =>
+                    getMenus(userType).map(item => `${item.title}, `)
             },
         ];
         return (
@@ -267,7 +251,7 @@ export default class PermissionUser extends React.Component {
                     visible={this.state.isRoleVisible}
                     onOk={this.handleRoleSubmit}
                     onCancel={() => {
-                        this.roleForm.props.form.resetFields(); // 表单重置
+                        this.userTypeForm.props.form.resetFields(); // 表单重置
                         this.setState({
                             isRoleVisible: false
                         });
@@ -275,7 +259,7 @@ export default class PermissionUser extends React.Component {
                 >
                     <RoleForm
                         wrappedComponentRef={inst => {
-                            this.roleForm = inst;
+                            this.userTypeForm = inst;
                         }}
                     />
                 </Modal>
@@ -320,7 +304,7 @@ export default class PermissionUser extends React.Component {
                         }}
                         detailInfo={this.state.detailInfo}
                         targetKeys={this.state.targetKeys}
-                        roleUsers={this.state.roleUsers}
+                        userTypeUsers={this.state.userTypeUsers}
                         patchUserInfo={(targetKeys) => {
                             this.setState({ targetKeys });
                         }}
@@ -346,7 +330,7 @@ class RoleForm extends React.Component {
         return (
             <Form layout="horizontal">
                 <FormItem label="角色名称" {...formItemLayout}>
-                    {getFieldDecorator("role")(
+                    {getFieldDecorator("userType")(
                         <Input type="text" placeholder="请输入角色名称" />
                     )}
                 </FormItem>
@@ -410,7 +394,7 @@ class PermEditForm extends React.Component {
         return (
             <Form layout="horizontal">
                 <FormItem label="角色名称" {...formItemLayout}>
-                    <Input disabled placeholder={detail_info.role_name} />
+                    <Input disabled placeholder={detail_info.role} />
                 </FormItem>
                 <FormItem label="状态" {...formItemLayout}>
                     {getFieldDecorator("status", {
@@ -464,13 +448,13 @@ class RoleAuthForm extends React.Component {
         return (
             <Form layout="horizontal">
                 <FormItem label="角色名称" {...formItemLayout}>
-                    <Input disabled placeholder={detail_info.role_name} />
+                    <Input disabled placeholder={detail_info.role} />
                 </FormItem>
 
                 <FormItem label="选择用户" {...formItemLayout}>
                     <Transfer
                         listStyle={{ width: 250, height: 400 }}
-                        dataSource={this.props.roleUsers}
+                        dataSource={this.props.userTypeUsers}
                         titles={["待选用户", "已选用户"]}
                         showSearch
                         filterOption={this.filterOption} //过滤选项
