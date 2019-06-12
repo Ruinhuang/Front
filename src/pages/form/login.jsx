@@ -1,11 +1,12 @@
 import React from "react";
 import { connect } from "react-redux"
 import { actionCreator } from "../../redux/action"
-import { Button, Card, Form, Icon, Input, Checkbox, message } from "antd";
-import { goToUrl } from "../../utils"; //导入公共机制
+import { Select, Button, Card, Form, Icon, Input, Checkbox, message } from "antd";
+import { goToUrl, getOptionList } from '../../utils'
+import { areaList } from '../../config/area'
 import Ajax from '../../components/Ajax'
-
 const FormItem = Form.Item;
+
 class FormLogin extends React.Component {
   post = (formData) => {
     Ajax.ajax(
@@ -44,6 +45,7 @@ class FormLogin extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const optionList = getOptionList(areaList)
     const offsetLayout = {
       wrapperCol: {
         xs: 24,
@@ -70,6 +72,22 @@ class FormLogin extends React.Component {
           <Form
             layout="horizontal"
           >
+            <FormItem label="手机所在地"  {...formItemLayout}>
+              {
+                getFieldDecorator('areaCode', {
+                  initialValue: "0086",
+                  rules: [{
+                    required: true,
+                    message: '必选'
+                  },
+                  ]
+                })(
+                  <Select >
+                    {optionList}
+                  </Select>
+                )
+              }
+            </FormItem>
             <FormItem label="手机号" {...formItemLayout}>
               {
                 getFieldDecorator('phone', {

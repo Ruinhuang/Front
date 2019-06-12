@@ -11,7 +11,8 @@ import {
 } from "antd";
 import Ajax from '../../components/Ajax'
 import '../../style/common.scss'
-import { goToUrl } from '../../utils'
+import { goToUrl, getOptionList } from '../../utils'
+import { areaList } from '../../config/area'
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -114,6 +115,7 @@ class FormRegister extends React.Component {
         }
       }
     };
+    const optionList = getOptionList(areaList)
 
 
     return (
@@ -198,7 +200,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="手机所在地"  {...formItemLayout}>
               {
-                getFieldDecorator('area', {
+                getFieldDecorator('areaCode', {
                   initialValue: "0086",
                   rules: [{
                     required: true,
@@ -207,18 +209,7 @@ class FormRegister extends React.Component {
                   ]
                 })(
                   <Select >
-                    <Option value='0082'>
-                      韩国(0082)
-                    </Option>
-                    <Option value='0086'>
-                      中国大陆(0086)
-                    </Option>
-                    <Option value='0081'>
-                      日本(0081)
-                    </Option>
-                    <Option value='001'>
-                      美国(001)
-                    </Option>
+                    {optionList}
                   </Select>
                 )
               }
@@ -256,15 +247,14 @@ class FormRegister extends React.Component {
                     }
                   ]
                 })(
-                  <Input placeholder="请输入手机号码" />
+                  <Input.Search
+                    placeholder="请输入手机号码"
+                    enterButton={this.state.captchaLoading ? this.state.time + '秒后可再次发送' : '发送短信验证'}
+                    disabled={this.state.captchaLoading}
+                    onSearch={this.handleCaptchaButton}
+                  />
                 )
               }
-              <Button type="primary"
-                loading={this.state.captchaLoading}
-                onClick={this.handleCaptchaButton}
-              >
-                {this.state.captchaLoading ? this.state.time + '秒后可再次发送' : '发送短信验证'}
-              </Button>
             </FormItem>
             <FormItem label="验证码" {...formItemLayout}>
               {
