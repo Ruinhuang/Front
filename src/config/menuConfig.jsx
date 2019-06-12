@@ -36,6 +36,10 @@ const menuList = [
         key: '/manager/approval',
     },
     {
+        title: '邀请码管理',
+        key: '/manager/invitation',
+    },
+    {
         title: '广告管理',
         key: '/manager/ads',
     },

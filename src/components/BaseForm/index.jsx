@@ -127,7 +127,7 @@ class BaseForm extends Component {
             <Form layout={this.props.layout}>
                 {this.initFormList()}
                 <Button type="primary" onClick={() => this.handleSubmit()}>
-                    查找
+                   确认 
                 </Button>
             </Form>
         )

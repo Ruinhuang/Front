@@ -6,6 +6,7 @@ import ApprovalTable from "../../pages/manager/approvalTable"
 import AdTable from "../../pages/manager/adTable"
 import OrderTable from "../../pages/manager/orderTable"
 import PermissionTable from "../../pages/manager/permissionTable"
+import InvitationTable from "../../pages/manager/invitationTable"
 import MyInfo from "../../pages/user/myInfo"
 import Exchange from "../../pages/exchange"
 import MyAds from "../../pages/user/myAds"
@@ -89,6 +90,11 @@ const menus = {
             title: 'COIN管理',
             position: 'left',
             key: '/manager/coins',
+        },
+        {
+            title: '邀请码管理',
+            position: 'left',
+            key: '/manager/invitation',
         },
         {
             title: '审核管理',
@@ -228,6 +234,7 @@ const routeMap = {
     '/manager/ads': <Route key="/manager/ads" path="/manager/ads" component={AdTable} />,
     '/manager/permission': <Route key="/manager/permission" path="/manager/permission" component={PermissionTable} />,
     '/manager/approval': <Route key="/manager/approval" path="/manager/approval" component={ApprovalTable} />,
+    '/manager/invitation': <Route key="/manager/invitation" path="/manager/invitation" component={InvitationTable} />,
     '/business/publish': <Route key="/business/publish" path="/business/publish" component={Publish} />,
     '/user/info': <Route key="/user/info" path="/user/info" component={MyInfo} />,
     '/user/orders': <Route key="/user/orders" path="/user/orders" component={MyOrders} />,
