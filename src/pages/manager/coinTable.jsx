@@ -56,17 +56,6 @@ class CoinTable extends React.Component {
             )
     }
 
-    handleFeeButtonClick = () => {
-        if (this.state.selectedItems.length < 1) return
-        this.setState(
-            () => ({
-                visibleModal: "Fee",
-                modalContent: JSON.stringify(this.state.Fee),
-                cardLoading: false,
-
-            }))
-    }
-
     handleUpdateFeeButtonClick = () => {
         if (this.state.selectedItems.length < 1) return
         this.setState(
@@ -176,14 +165,6 @@ class CoinTable extends React.Component {
                         onClick={this.handleUpdateExchangeRateButtonClick}
                     >
                         修改汇率
-        </Button>
-                    <Button
-                        type="primary"
-                        style={{ margin: 10 }}
-                        icon="info"
-                        onClick={this.handleFeeButtonClick}
-                    >
-                        查看手续费
         </Button>
                     <Button
                         style={{ margin: 10 }}

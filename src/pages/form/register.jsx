@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Card,
-  Form,
-  Button,
-  Input,
-  Radio,
-  Checkbox,
-  message,
-  Select,
-} from "antd";
+import { Card, Form, Button, Input, Radio, Checkbox, message, Select, Icon } from "antd";
 import Ajax from '../../components/Ajax'
 import '../../style/common.scss'
 import { goToUrl, getOptionList } from '../../utils'
@@ -46,13 +37,12 @@ class FormRegister extends React.Component {
       });
     }, 1000);
   }
-  // 这个接口为啥长这样,俺也不知道, 俺也不敢问
   sendSMS = (phoneNumber) => {
     Ajax.ajax(
-      'post',
-      `/get/sms?mobile=${phoneNumber}`,
+      'get',
+      `/get/sms`,
       {},
-      { mobile: phoneNumber },
+      { phone: phoneNumber.toString(), type: "1" },
       "http://207.148.65.10:8080",
     )
   }
@@ -141,7 +131,9 @@ class FormRegister extends React.Component {
                     }
                   ]
                 })(
-                  <Input placeholder="请输入用户名" />
+                  <Input
+                    prefix={<Icon type="user" />}
+                    placeholder="请输入用户名" />
                 )
               }
             </FormItem>
@@ -157,7 +149,7 @@ class FormRegister extends React.Component {
                   ]
 
                 })(
-                  <Input placeholder="请输入密码" />
+                  <Input.Password prefix={<Icon type="lock" />} placeholder="请输入密码" />
                 )
               }
             </FormItem>
@@ -175,7 +167,7 @@ class FormRegister extends React.Component {
                   ],
                 },
                 )(
-                  <Input placeholder="请输入密码" />
+                  <Input.Password prefix={<Icon type="lock" />} placeholder="请再次输入密码" />
                 )
               }
             </FormItem>
@@ -198,22 +190,6 @@ class FormRegister extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="手机所在地"  {...formItemLayout}>
-              {
-                getFieldDecorator('areaCode', {
-                  initialValue: "0086",
-                  rules: [{
-                    required: true,
-                    message: '必选'
-                  },
-                  ]
-                })(
-                  <Select >
-                    {optionList}
-                  </Select>
-                )
-              }
-            </FormItem>
             <FormItem label="邮箱地址" {...formItemLayout}>
               {
                 getFieldDecorator('email', {
@@ -229,7 +205,25 @@ class FormRegister extends React.Component {
                     }
                   ]
                 })(
-                  <Input placeholder="请输入邮箱地址" />
+                  <Input
+                    prefix={<Icon type="mail" />}
+                    placeholder="请输入邮箱地址" />
+                )
+              }
+            </FormItem>
+            <FormItem label="手机所在地"  {...formItemLayout}>
+              {
+                getFieldDecorator('areaCode', {
+                  initialValue: "0086",
+                  rules: [{
+                    required: true,
+                    message: '必选'
+                  },
+                  ]
+                })(
+                  <Select >
+                    {optionList}
+                  </Select>
                 )
               }
             </FormItem>
@@ -248,6 +242,7 @@ class FormRegister extends React.Component {
                   ]
                 })(
                   <Input.Search
+                    prefix={<Icon type="phone" />}
                     placeholder="请输入手机号码"
                     enterButton={this.state.captchaLoading ? this.state.time + '秒后可再次发送' : '发送短信验证'}
                     disabled={this.state.captchaLoading}
@@ -268,7 +263,9 @@ class FormRegister extends React.Component {
                   ]
                 }
                 )(
-                  <Input placeholder="请输入验证码" />
+                  <Input
+                    prefix={<Icon type="mobile" />}
+                    placeholder="请输入验证码" />
                 )
               }
             </FormItem>
@@ -283,7 +280,9 @@ class FormRegister extends React.Component {
                     },
                   ]
                 })(
-                  <Input placeholder="请输入邀请码" />
+                  <Input
+                    prefix={<Icon type="team" />}
+                    placeholder="请输入邀请码" />
                 )
               }
             </FormItem>

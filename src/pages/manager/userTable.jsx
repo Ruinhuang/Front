@@ -125,7 +125,6 @@ export default class userTable extends React.Component {
           }))
         })
   }
-
   componentDidMount = () => {
     this.request()
   }
@@ -573,6 +572,35 @@ export default class userTable extends React.Component {
 //   }
 // }
 class UserForm extends React.Component {
+  state = {
+    feeRate: 0,
+    exchangeRate: 0,
+  }
+  getFeeRate = () => {
+    Ajax.ajax(
+      'get',
+      '/coin/query',
+      {},
+      {
+        coinName: "XRB"
+      },
+      'http://45.76.146.27',
+    )
+      .then(
+        (res) => {
+          this.setState(
+            () => ({
+              feeRate: res.data.feeRate,
+              exchangeRate: res.data.exchangeRate,
+            })
+          )
+        }
+      )
+  }
+  componentDidMount = () => {
+    this.getFeeRate()
+  }
+
   handleButtonClick = () => {
     let formInfo = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
     // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
@@ -585,6 +613,7 @@ class UserForm extends React.Component {
           {
             phone: this.props.userInfo.phone,
             point: formInfo.point,
+            fee: Math.abs(this.props.form.getFieldsValue().point * this.state.feeRate),
             token: sessionStorage.getItem('token'),
           },
           "http://207.148.65.10:8080",
@@ -627,6 +656,7 @@ class UserForm extends React.Component {
               <InputNumber step='0.01' />
             )
           }
+          <br /><span>手续费<b>{Math.abs(this.props.form.getFieldsValue().point * this.state.feeRate)}</b> 积分</span>
         </FormItem>
         <FormItem
           style={{ marginLeft: 'auto', marginRight: 'auto', width: 200, }} >

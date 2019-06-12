@@ -51,10 +51,11 @@ class FormHelper extends React.Component {
     return (
       <div>
         <Form
+          style={{ margin: 33 }}
           layout="horizontal"
         >
           <FormItem>
-            <span>我需要兑换</span>
+            <span>兑换</span>
             {
               getFieldDecorator('pointNumber', {
                 initialValue: 0,
@@ -62,16 +63,17 @@ class FormHelper extends React.Component {
                 <InputNumber step="0.01" placeholder="海贝数" />
               )
             }
-            <span>海贝，需要
+            <span>海贝，<br />需要
              <b>{this.props.form.getFieldsValue().pointNumber / this.state.exchangeRate}</b>
-              XRB, 手续费
+              XRB,<br /> 手续费
              <b>{this.props.form.getFieldsValue().pointNumber * this.state.feeRate}</b>
-              海贝，到手
+              海贝，<br />到手
              <b>{this.props.form.getFieldsValue().pointNumber - this.props.form.getFieldsValue().pointNumber * this.state.feeRate}</b>
               海贝 </span>
           </FormItem>
+          <hr />
           <FormItem>
-            <span>我需要兑换</span>
+            <span>兑换</span>
             {
               getFieldDecorator('XRBNumber', {
                 initialValue: 0,
@@ -79,9 +81,9 @@ class FormHelper extends React.Component {
                 <InputNumber step="0.01" placeholder="XRB数" />
               )
             }
-            <span>XRB，需要<b>
+            <span>XRB，<br />需要<b>
               {this.props.form.getFieldsValue().XRBNumber * (1 + this.state.feeRate) * this.state.exchangeRate}
-            </b>海贝, 其中包含手续费 <b>
+            </b>海贝, <br />包含手续费 <b>
                 {this.props.form.getFieldsValue().XRBNumber * this.state.exchangeRate * this.state.feeRate}
               </b>海贝 </span>
           </FormItem>
