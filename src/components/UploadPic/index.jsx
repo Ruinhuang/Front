@@ -18,8 +18,7 @@ class UploadPic extends React.Component {
         Ajax.ajax(
             'get',
             "/user/paytype/list",
-            // { "X-BM-USER-ID": this.props.user.userId },
-            { "X-BM-USER-ID": 336 },
+            { "X-BM-USER-ID": this.props.user.userId },
             {},
             'http://45.76.146.27',
         ).then(
