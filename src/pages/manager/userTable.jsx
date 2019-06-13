@@ -27,8 +27,8 @@ class FilterForm extends React.Component {
               >
                 <Option value=''>全部</Option>
                 <Option value="1">普通用户</Option>
-                <Option value="2">管理员</Option>
-                <Option value="3">商户</Option>
+                <Option value="3">管理员</Option>
+                <Option value="2">商户</Option>
               </Select>
             )
           }
@@ -378,13 +378,13 @@ export default class userTable extends React.Component {
           style={{
             marginTop: '10px',
           }}>
-          多选模式
+          {/* 多选模式
              <Switch
             checkedChildren="开"
             unCheckedChildren="关"
             defaultChecked={this.state.tableType === "checkbox"}
             onClick={(checked) => this.changeTableType(checked)}
-          />
+          /> */}
           {/* <Button
             icon='edit'
             type="primary"
@@ -406,7 +406,7 @@ export default class userTable extends React.Component {
           >
             充值积分
               </Button>
-          <Button
+          {/* <Button
             type="danger"
             icon="delete"
             onClick={
@@ -432,7 +432,7 @@ export default class userTable extends React.Component {
             }
           >
             删除
-            </Button>
+            </Button> */}
         </Card>
         <div className="content-wrap">
           <Table

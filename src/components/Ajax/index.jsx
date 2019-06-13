@@ -44,7 +44,7 @@ export default class Ajax {
 					if (response.status === 200) {
 						let res = response.data
 						//设定业务反馈代码 200 为 正常
-						if (res.status === 200 || res.code === 200 || res.status === 0 || res.code === 0) { //TODO
+						if (res.status === 200 || res.code === 200 || res.status === 0 || res.code === 0|| res.code==="success") { //TODO
 							// 调用resolve或reject并不会终结 Promise 的参数函数的执行
 							// 参数会被传递给回调函数, 这个参数可以是另一个promise对象
 							// Promise 的状态一旦改变，就永久保持该状态,无法被再次改变

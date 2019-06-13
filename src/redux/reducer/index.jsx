@@ -2,7 +2,7 @@ import { actionTypes } from '../action'
 
 const defaultState = {
   isLogin: false,
-  user: {},
+  user: {userType:3},
   userType: undefined,
   token: undefined,
 }

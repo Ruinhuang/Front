@@ -184,7 +184,7 @@ class FormMyInfo extends React.Component {
               }
             </FormItem>
             <FormItem label="用户角色" {...formItemLayout}>
-              <Input disable placeholder={roleMap[this.props.user.userType]} />
+              <Input disabled placeholder={roleMap[this.props.user.userType]} />
             </FormItem>
             <FormItem label="手机号" {...formItemLayout}>
               <Input disabled placeholder={this.props.user.phone} />

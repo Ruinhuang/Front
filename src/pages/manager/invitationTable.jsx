@@ -27,17 +27,21 @@ class ApprovalTable extends React.Component {
         this.orderStatus = null
     }
 
-    request = () => {
+    request = (status) => {
         Ajax.ajax(
             'get',
             '/get/postcode',
             {},
-            { userId: this.props.user.userId },
+            {
+                userId: this.props.user.userId,
+                status: status > 0 ? status : ""
+            },
             'http://207.148.65.10:8080',
         )
             .then(
                 data => {
                     data.data.map(item => item.key = item.id)
+                    data.data.map(item => item.userCode = item.postCode.slice(6, 8))
                     this.setState(
                         () => (
                             {
@@ -45,7 +49,7 @@ class ApprovalTable extends React.Component {
                                 loading: false,
                                 pagination: pagination(data, (current) => {
                                     this.page = current
-                                    // this.request()
+                                    this.request()
                                 }),
                             }
                         )
@@ -57,7 +61,7 @@ class ApprovalTable extends React.Component {
     }
 
     componentDidMount = () => {
-        // this.request()
+        this.request()
     }
     generateInvitationCode = (s) =>
         (
@@ -79,13 +83,13 @@ class ApprovalTable extends React.Component {
                 {},
                 {
                     userId: this.props.user.userId,
-                    postcode: this.generateInvitationCode(userCode)
+                    postCode: this.generateInvitationCode(userCode)
                 },
                 "http://207.148.65.10:8080"
             ).then(
                 () => {
                     message.success("推广码已生成")
-                    // this.request()
+                    this.request()
                 }
             )
         }
@@ -104,15 +108,15 @@ class ApprovalTable extends React.Component {
 
     render = () => {
         const statusMap = {
-            "1": <Badge status="success" text="已使用" />,
-            "0": <Badge status="default" text="未使用" />,
+            "2": <Badge status="success" text="已使用" />,
+            "1": <Badge status="default" text="未使用" />,
         }
         const columns = [
             {
-                title: 'userCode',
-                key: 'userCode',
+                title: '推广码',
+                key: 'postcode',
                 width: 30,
-                dataIndex: 'userCode',
+                dataIndex: 'postCode',
             },
             {
                 title: 'status',
@@ -124,10 +128,16 @@ class ApprovalTable extends React.Component {
                 }
             },
             {
-                title: 'invitationCode',
-                key: 'invitationidCode',
+                title: '推广员',
+                key: 'userCode',
                 width: 30,
-                dataIndex: 'invitationCode',
+                dataIndex: 'userCode',
+            },
+            {
+                title: "生成时间",
+                key: 'time',
+                width: 30,
+                dataIndex: 'createdAt',
             },
         ]
         return (
