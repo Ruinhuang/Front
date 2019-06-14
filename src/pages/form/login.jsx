@@ -13,15 +13,22 @@ class FormLogin extends React.Component {
     captchaLoading: false,
     time: 19,
   }
-  sendSMS = (phoneNumber) => {
+
+  sendSMS = (phone, areaCode) => {
     Ajax.ajax(
-      'get',
-      `/get/sms`,
+      'post',
+      '/get/sms',
       {},
-      { phone: phoneNumber.toString(), type: "1" },
+      {
+        phone,
+        areaCode,
+        type: "1",
+      },
       "http://207.148.65.10:8080",
     )
   }
+
+
   count = () => {
     let { time } = this.state;
     let siv = setInterval(() => {
@@ -43,10 +50,11 @@ class FormLogin extends React.Component {
   }
   handleCaptchaButton = () => {
     const phone = this.props.form.getFieldsValue().phone
+    const areaCode = this.props.form.getFieldsValue().areaCode
     if (!isNaN(phone) && phone !== undefined) {
       this.setState(() => ({ captchaLoading: true }))
       this.count()
-      this.sendSMS(phone)
+      this.sendSMS(phone, areaCode)
     } else {
       message.info("请先输入正确的手机号码")
     }
@@ -54,7 +62,7 @@ class FormLogin extends React.Component {
   post = (formData) => {
     Ajax.ajax(
       'post',
-      this.state.usePassword ? "/user-login" : "/user-sms-login",
+      "/user-login",
       {},
       formData,
       "http://207.148.65.10:8080",
@@ -167,7 +175,7 @@ class FormLogin extends React.Component {
             >
               {
                 getFieldDecorator(
-                  this.state.usePassword ? 'password' : 'captcha',
+                  this.state.usePassword ? 'password' : 'smsCode',
                   {
                     initialValue: '',
                     rules: [{

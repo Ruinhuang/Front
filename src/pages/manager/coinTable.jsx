@@ -157,7 +157,7 @@ class CoinTable extends React.Component {
                         style={{ margin: 10 }}
                         onClick={this.handleUpdateFeeButtonClick}
                     >
-                        修改費率
+                        修改手续费率
         </Button>
                     <Button
                         type="primary"
@@ -327,13 +327,36 @@ class RateForm extends React.Component {
 RateForm = Form.create()(RateForm)
 
 class TrendForm extends React.Component {
+    handleButtonClick = () => {
+        let formInfo = this.props.form.getFieldsValue();//object对象,包含表单中所有信息
+        // 校验表单输入是否符合规则， 不符合err会包含信息, 校验通过err为空
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                const data = {
+                    marketPrice: formInfo.marketPrice,
+                    userId: this.props.user.userId,
+                }
+                Ajax.ajax(
+                    'post',
+                    '/create/market',
+                    {},
+                    data,
+                    'http://207.148.65.10:8080',
+                ).then(
+                    (res) => {
+                        message.info('修改成功')
+                        this.props.closeModal()
+                    })
+            }
+        })
+    }
     render = () => {
         const { getFieldDecorator } = this.props.form;
         return (<Form
             layout="horizontal"
         >
-            <FormItem label='TrendValue' >
-                {getFieldDecorator('TrendValue', {
+            <FormItem label='设定当日比例' >
+                {getFieldDecorator('marketPrice', {
                 })(<InputNumber step="0.01" />)}
             </FormItem>
             <FormItem
@@ -344,12 +367,12 @@ class TrendForm extends React.Component {
         )
     }
 }
-TrendForm = Form.create()(TrendForm)
 // props 属性
 const mapStateToProps = (state) => ({
     isLogin: state.isLogin,
     user: state.user
 })
+TrendForm = connect(mapStateToProps)(Form.create()(TrendForm))
 
 // 把逻辑方法与UI组件连接起来变成新容器组件
 export default connect(mapStateToProps)(CoinTable)

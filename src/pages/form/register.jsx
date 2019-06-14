@@ -17,10 +17,11 @@ class FormRegister extends React.Component {
 
   handleCaptchaButton = () => {
     const phone = this.props.form.getFieldsValue().phone
+    const areaCode = this.props.form.getFieldsValue().areaCode
     if (!isNaN(phone) && phone !== undefined) {
       this.setState(() => ({ captchaLoading: true }))
       this.count()
-      this.sendSMS(phone)
+      this.sendSMS(phone, areaCode)
     } else {
       message.info("请先输入正确的手机号码")
     }
@@ -37,12 +38,17 @@ class FormRegister extends React.Component {
       });
     }, 1000);
   }
-  sendSMS = (phoneNumber) => {
+
+  sendSMS = (phone, areaCode) => {
     Ajax.ajax(
-      'get',
-      `/get/sms`,
+      'post',
+      '/get/sms',
       {},
-      { phone: phoneNumber.toString(), type: "1" },
+      {
+        phone,
+        areaCode,
+        type: "1",
+      },
       "http://207.148.65.10:8080",
     )
   }
@@ -253,7 +259,7 @@ class FormRegister extends React.Component {
             </FormItem>
             <FormItem label="验证码" {...formItemLayout}>
               {
-                getFieldDecorator('captcha', {
+                getFieldDecorator('verifyCode', {
                   initialValue: '',
                   rules: [
                     {

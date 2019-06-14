@@ -76,8 +76,11 @@ class FormMyInfo extends React.Component {
     const password = this.props.form.getFieldsValue().password
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        const formData = { password, token: this.props.token, }
-        Ajax.ajax('post', '/changePassword', {}, formData, "https://mook.sunlin.fun/mock/9/").then((res) => {
+        const formData = {
+          password,
+          userId: this.props.user.userId,
+        }
+        Ajax.ajax('post', '/modify/password', {}, formData, "http://207.148.65.10:8080").then((res) => {
           localStorage.removeItem("token")
           sessionStorage.removeItem("token")
           this.props.saveLoginData(res.data)
@@ -101,7 +104,6 @@ class FormMyInfo extends React.Component {
         {},
         { idCode, status: "1", userId: this.props.user.userId },
         "http://207.148.65.10:8080"
-        // "http://192.168.0.105:8080"
       ).then(
         () => {
           message.success('已发起申请')
@@ -205,8 +207,10 @@ class FormMyInfo extends React.Component {
                 })(
                   <Input.Search
                     placeholder={this.state.apply ? this.state.apply.idCode : "申请商户需要身份证信息"}
-                    enterButton={buttonTextMap[this.state.apply.status]}
-                    disabled={parseInt(this.state.apply.status) > 0}
+                    enterButton={this.props.user.userType === 1 ?
+                      buttonTextMap[this.state.apply.status] : "已认证"
+                    }
+                    disabled={parseInt(this.state.apply.status) > 0 || this.props.user.userType > 1}
                     onSearch={this.handleBusinessApplyButtonClick}
                   />
                 )
