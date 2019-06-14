@@ -415,6 +415,7 @@ class orderTable extends React.Component {
                 </Card>
                 <Card>
                     <Button
+                        style={{ margin: 10 }}
                         type="danger"
                         icon="delete"
                         onClick={
@@ -433,8 +434,8 @@ class orderTable extends React.Component {
                         取消订单
             </Button>
                     <Button
+                        style={{ margin: 10 }}
                         type="primary"
-                        icon="delete"
                         onClick={
                             () => {
                                 if (this.state.selectedItems.length < 1) return
@@ -448,8 +449,8 @@ class orderTable extends React.Component {
                         去付款
             </Button>
                     <Button
+                        style={{ margin: 10 }}
                         type="primary"
-                        icon="delete"
                         onClick={
                             () => {
                                 if (this.state.selectedItems.length < 1) return
@@ -465,8 +466,8 @@ class orderTable extends React.Component {
                         确认付款
             </Button>
                     <Button
+                        style={{ margin: 10 }}
                         type="primary"
-                        icon="finish"
                         onClick={
                             () => {
                                 if (this.state.selectedItems.length < 1) return
@@ -481,21 +482,6 @@ class orderTable extends React.Component {
                         }
                     >
                         放币
-            </Button>
-                    <Button
-                        type="info"
-                        icon="info"
-                        onClick={
-                            () => {
-                                if (this.state.selectedItems.length < 1) return
-                                this.setState(
-                                    () => ({
-                                        visibleModal: "Detail",
-                                    }), () => this.handleDetailButtonClick())
-                            }
-                        }
-                    >
-                        订单详情
             </Button>
                 </Card>
                 <div className="content-wrap">
@@ -603,7 +589,17 @@ class PayingForm extends React.Component {
         ).then(
             (data) => {
                 const list = data.data.map(
-                    (item) => ({ label: item.typeName, value: item.id })
+                    (item) => ({
+                        label: item.typeName,
+                        value: item.id,
+                        "accountName": item.accountName,
+                        "accountNo": item.accountNo,
+                        "address": item.address,
+                        "bank": item.bank,
+                        "branch": item.branch,
+                        "qrCodeUrl": item.qrCodeUrl,
+                        "subBranch": item.subBranch,
+                    })
                 )
                 this.setState(() => ({
                     payeeTypeList: list,
@@ -631,9 +627,6 @@ class PayingForm extends React.Component {
                     initialValue: this.props.orderDetail.orderVO.id,
                 })(<Input disabled={true} />)}
             </FormItem>
-            <FormItem>
-                <img alt="Cierra.jpg" src="https://img.moegirl.org/common/thumb/a/aa/Cierra01.jpg/260px-Cierra01.jpg" />
-            </FormItem>
             <FormItem label="我的收付方式">
                 {
                     getFieldDecorator('payTypeId', {
@@ -644,7 +637,7 @@ class PayingForm extends React.Component {
                     )
                 }
             </FormItem>
-            <FormItem label="對方的收付方式">
+            <FormItem label="对方收付方式">
                 {
                     getFieldDecorator('payeeTypeId', {
                         rules: [{ required: true, message: '支付方式必选' },]
@@ -652,6 +645,9 @@ class PayingForm extends React.Component {
                         <RadioGroup options={this.state.payeeTypeList} />,
                     )
                 }
+            </FormItem>
+            <FormItem>
+                {JSON.stringify(this.state.payeeTypeList)}
             </FormItem>
             <FormItem
                 style={{ marginLeft: 'auto', marginRight: 'auto', width: 200, }} >

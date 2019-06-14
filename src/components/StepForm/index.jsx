@@ -174,7 +174,17 @@ class FormConfirm extends React.Component {
             payeeTypes: []
         }
         this.payTypes = this.props.selectedItem.paytypeList.map(
-            (item) => ({ label: item.typeName, value: item.id })
+            (item) => ({
+                label: item.typeName,
+                value: item.id,
+                "accountName": item.accountName,
+                "accountNo": item.accountNo,
+                "address": item.address,
+                "bank": item.bank,
+                "branch": item.branch,
+                "qrCodeUrl": item.qrCodeUrl,
+                "subBranch": item.subBranch,
+            })
         )
     }
 
@@ -241,22 +251,22 @@ class FormConfirm extends React.Component {
                             )
                         }
                     </FormItem>
-                    <FormItem label="用戶支付渠道" >
+                    <FormItem>
+                        {JSON.stringify(this.payTypes)}
+                    </FormItem>
+                    <FormItem label="用户支付渠道" >
                         {
                             getFieldDecorator("payeeTypeId", {
                                 rules: [
                                     {
                                         required: true,
-                                        message: '選擇支付方式'
+                                        message: '选择支付方式'
                                     },
                                 ]
                             })(
                                 <RadioGroup options={this.state.payeeTypes} />
                             )
                         }
-                    </FormItem>
-                    <FormItem>
-                        <img alt="Cierra.jpg" src="https://img.moegirl.org/common/thumb/a/aa/Cierra01.jpg/260px-Cierra01.jpg" />
                     </FormItem>
                     <FormItem
                         style={{

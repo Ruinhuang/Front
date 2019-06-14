@@ -357,22 +357,6 @@ class orderTable extends React.Component {
                 </Card>
                 <div className="content-wrap">
                     <Card>
-                        <Button
-                            type="info"
-                            icon="info"
-                            onClick={
-                                () => {
-                                    if (this.state.selectedItems.length < 1) return
-                                    Modal.confirm({
-                                        title: "查看详情",
-                                        content: JSON.stringify(this.state.selectedItems),
-                                    }
-                                    )
-                                }
-                            }
-                        >
-                            订单详情
-            </Button>
                     </Card>
                     <Table
                         size="small"

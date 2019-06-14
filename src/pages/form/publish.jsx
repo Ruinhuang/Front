@@ -118,9 +118,9 @@ class FormPublish extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="溢价比例" {...formItemLayout} 
-	    style={{display:"none"}}
-	    >
+            <FormItem label="溢价比例" {...formItemLayout}
+              style={{ display: "none" }}
+            >
               {
                 getFieldDecorator('premium', {
                   initialValue: 0,
@@ -136,8 +136,8 @@ class FormPublish extends React.Component {
               }
             </FormItem>
             <FormItem label="定价类型" {...formItemLayout}
-	    style={{display:"none"}}
-	    >
+              style={{ display: "none" }}
+            >
               {
                 getFieldDecorator("priceType", {
                   initialValue: "FIXED",
@@ -161,8 +161,8 @@ class FormPublish extends React.Component {
               }
             </FormItem>
             <FormItem label="参考价格" {...formItemLayout}
-	    style={{display:"none"}}
-	    >
+              style={{ display: "none" }}
+            >
               {
                 getFieldDecorator('referPrice', {
                   initialValue: 0,
@@ -238,7 +238,7 @@ class FormPublish extends React.Component {
                 )
               }
             </FormItem>
-            <FormItem label="收款方式" {...formItemLayout}>
+            <FormItem label={this.state.payTypes.length > 0 ? "收款方式" : "请先设定收款账户"} {...formItemLayout}>
               {
                 getFieldDecorator("payTypeList", {
                   rules: [

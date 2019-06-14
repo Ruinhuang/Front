@@ -331,22 +331,6 @@ class adTable extends React.Component {
                     >
                         下架广告
             </Button>
-                    <Button
-                        type="info"
-                        icon="info"
-                        onClick={
-                            () => {
-                                if (this.state.selectedItems.length < 1) return
-                                Modal.confirm({
-                                    title: "查看详情",
-                                    content: JSON.stringify(this.state.selectedItems),
-                                }
-                                )
-                            }
-                        }
-                    >
-                        广告详情
-            </Button>
                 </Card>
                 <Card>
                     <BaseForm layout="inline" submitFunc={this.request} switchFunc={() => { }} formList={this.formList} />
