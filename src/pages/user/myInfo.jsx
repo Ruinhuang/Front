@@ -207,7 +207,7 @@ class FormMyInfo extends React.Component {
                 })(
                   <Input.Search
                     placeholder={this.state.apply ? this.state.apply.idCode : "申请商户需要身份证信息"}
-                    enterButton={this.props.user.userType === 1 ?
+                    enterButton={this.props.user.userType === '1' ?
                       buttonTextMap[this.state.apply.status] : "已认证"
                     }
                     disabled={parseInt(this.state.apply.status) > 0 || this.props.user.userType > 1}

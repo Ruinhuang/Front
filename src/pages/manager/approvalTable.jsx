@@ -68,7 +68,6 @@ class ApprovalTable extends React.Component {
             {},
             { status: "2", userId: this.state.selectedItems[0].userId },
             "http://207.148.65.10:8080"
-            // "http://192.168.0.105:8080"
         ).then(
             () => {
                 message.success("已同意申请")

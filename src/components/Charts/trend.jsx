@@ -1,38 +1,45 @@
 import React from "react"
 import '../../style/common.scss'
-import {
-  Chart,
-  Geom,
-  Axis,
-  Tooltip,
-} from "bizcharts";
+import Ajax from '../../components/Ajax'
+import { Chart, Geom, Axis, Tooltip, } from "bizcharts";
 
 export default class Trend extends React.Component {
+
+  state = {
+    date: [],
+  }
+
+  componentDidMount = () => {
+    Ajax.ajax(
+      'post',
+      '/query/market',
+      {},
+      {},
+      "http://207.148.65.10:8080").then(
+        (res) => {
+          this.setState(
+            () => ({
+              data: res.data,
+            })
+          )
+        }
+      )
+
+  }
   render() {
-    const data = [{ day: "1", value: 0.89 }, { day: "2", value: 0.99 }, { day: "3", value: 0.96 }, { day: "4", value: 1.12 }, { day: "5", value: 1.22 }, { day: "6", value: 0.88 }, { day: "7", value: 1.11 }, { day: "8", value: 1.09 }, { day: "9", value: 1.3 }];
-    const cols = { value: { min: 0 }, day: { range: [0, 1] } };
+    // const cols = { marketPrice: { min: 0 }, marketDate: { range: [0, 1] } };
+    const cols = { marketPrice: { range: [0.1, 1] } };
     return (
       <div className="content-wrap">
-          <Chart height={420} data={data} scale={cols} forceFit>
-            <Axis name="day" />
-            <Axis name="value" />
-            <Tooltip
-              crosshairs={{
-                type: "y"
-              }}
-            />
-            <Geom type="line" position="day*value" size={2} />
-            <Geom
-              type="point"
-              position="day*value"
-              size={4}
-              shape={"circle"}
-              style={{
-                stroke: "#fff",
-                lineWidth: 1
-              }}
-            />
-          </Chart>
+        <Chart height={420} data={this.state.data} scale={cols} forceFit>
+          <Axis name="marketDate" />
+          <Axis name="marketPrice" />
+          <Tooltip crosshairs={{ type: "y" }} />
+          <Geom type="line" position="marketDate*marketPrice" size={2} />
+          <Geom type="point" position="marketDate*marketPrice" size={2} shape={"circle"}
+            style={{ stroke: "#fff", lineWidth: 1 }}
+          />
+        </Chart>
       </div>
     );
   }
