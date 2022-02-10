@@ -8,7 +8,7 @@
     "bizcharts": "^3.5.2",
     "gh-pages": "^2.0.1",
     "jspon": "^1.0.1",
-    "node-sass": "^4.11.0",
+    "node-sass": "^7.0.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-redux": "^7.0.3",
